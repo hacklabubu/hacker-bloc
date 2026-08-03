@@ -2,6 +2,7 @@
 
 > Hacker house // Warsaw, PL — est. 2026
 > LIVE OFFLINE. STAY ONLINE.
+> Now shipping from [hacklabubu](https://github.com/hacklabubu).
 
 Landing site for **Hacker Block**, a (fictional, for now) brutalist hacker
 house in Warsaw for builders, dreamers, and digital misfits. Terminal boot
