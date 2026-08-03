@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HACKER BLOCK
 
-## Getting Started
+> Hacker house // Warsaw, PL — est. 2026
+> LIVE OFFLINE. STAY ONLINE.
 
-First, run the development server:
+Landing site for **Hacker Block**, a (fictional, for now) brutalist hacker
+house in Warsaw for builders, dreamers, and digital misfits. Terminal boot
+sequence, live ASCII housing block with flickering windows, scanlines, and a
+signal log of what's happening inside.
+
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router, Turbopack)
+- [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)
+- Fonts: Anton / Orbitron / JetBrains Mono via `next/font`
+
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open the printed localhost URL.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Brand system
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Palette and voice follow the HB brand kit v1.0.0:
 
-## Learn More
+| Token | Hex |
+| --- | --- |
+| Signal green | `#00FF9A` |
+| Deep charcoal | `#0D0D0D` |
+| Concrete | `#8A8A8A` |
+| Panel beige | `#CFC6B3` |
+| Steel | `#46535E` |
+| Asphalt | `#1A1A1A` |
+| Rust red | `#A63A2F` |
 
-To learn more about Next.js, take a look at the following resources:
+Usage: base 60% / support 30% / accent 10%. Text on dark. Signal over status.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+СТРОИМ БУДУЩЕЕ. ЖИВЁМ СЕЙЧАС. // CC BY-NC-SA 4.0
