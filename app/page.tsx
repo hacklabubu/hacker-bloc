@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { AsciiBlock } from "@/components/site/ascii-block";
+import { AsciiBloc } from "@/components/site/ascii-bloc";
 import { BootSequence } from "@/components/site/boot-sequence";
 import { Reveal } from "@/components/site/reveal";
 import { StatusBar } from "@/components/site/status-bar";
@@ -9,12 +9,12 @@ const PRINCIPLES = [
   {
     glyph: "[#]",
     title: "Build together",
-    body: "We share space, skills, and tools. Everything in the block is stronger when we build it together.",
+    body: "We share space, skills, and tools. Everything in the bloc is stronger when we build it together.",
   },
   {
     glyph: "[★]",
     title: "Eastern grit",
-    body: "From concrete roots. Practical, resilient, no-nonsense. The block survived worse than your prod outage.",
+    body: "From concrete roots. Practical, resilient, no-nonsense. The bloc survived worse than your prod outage.",
   },
   {
     glyph: "</>",
@@ -104,10 +104,10 @@ export default function Home() {
           <h1 className="hb-glitch font-heading text-[clamp(3.5rem,12vw,8.5rem)] leading-[0.9] uppercase text-beige">
             Hacker
             <br />
-            Block
+            Bloc
           </h1>
           <p className="mt-6 max-w-md text-sm leading-6 text-concrete">
-            A brutalist housing block turned underground infrastructure. A
+            A brutalist housing bloc turned underground infrastructure. A
             place to live, build, and share signal — anonymous, open,
             resilient. Built for builders, dreamers, and digital misfits.
           </p>
@@ -144,7 +144,7 @@ export default function Home() {
           </dl>
         </div>
         <div className="justify-self-center md:justify-self-end">
-          <AsciiBlock />
+          <AsciiBloc />
         </div>
       </section>
 
@@ -152,7 +152,7 @@ export default function Home() {
 
       {/* ── PRINCIPLES ───────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <SectionHeading code="01_PROTOCOL" title="House rules of the block" />
+        <SectionHeading code="01_PROTOCOL" title="House rules of the bloc" />
         <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
           {PRINCIPLES.map((p, i) => (
             <Reveal key={p.title} delay={i * 60} className="h-full">
@@ -174,7 +174,7 @@ export default function Home() {
           <SectionHeading code="02_SIGNAL_LOG" title="What's happening" />
           <div className="border border-border bg-charcoal">
             <div className="flex items-center justify-between border-b border-border px-4 py-2 text-[10px] tracking-[0.25em] text-concrete uppercase">
-              <span>tail -f /var/log/block.log</span>
+              <span>tail -f /var/log/bloc.log</span>
               <span className="text-signal">live</span>
             </div>
             <div className="p-4 sm:p-6 text-xs sm:text-sm leading-7">
@@ -188,7 +188,7 @@ export default function Home() {
                 </Reveal>
               ))}
               <p className="mt-2 text-signal">
-                <span className="text-steel">root@hacker-block:~#</span>{" "}
+                <span className="text-steel">root@hacker-bloc:~#</span>{" "}
                 <span className="hb-blink">█</span>
               </p>
             </div>
@@ -198,7 +198,7 @@ export default function Home() {
 
       {/* ── FACILITIES ───────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <SectionHeading code="03_FACILITIES" title="Inside the block" />
+        <SectionHeading code="03_FACILITIES" title="Inside the bloc" />
         <ul className="grid gap-x-10 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
           {FACILITIES.map((f, i) => (
             <Reveal key={f} delay={i * 40}>
@@ -241,7 +241,7 @@ export default function Home() {
             ))}
           </div>
           <p className="mt-6 text-xs text-steel">
-            * identities anonymized per block protocol. residents opt onto the
+            * identities anonymized per bloc protocol. residents opt onto the
             wall, never onto the internet.
           </p>
         </div>
@@ -267,10 +267,10 @@ export default function Home() {
         <p className="mt-6 text-xs text-steel">
           want your logo on concrete? →{" "}
           <a
-            href="mailto:core@hackerblock.wtf"
+            href="mailto:core@hackerbloc.wtf"
             className="text-concrete underline decoration-signal/50 underline-offset-4 hover:text-signal"
           >
-            core@hackerblock.wtf
+            core@hackerbloc.wtf
           </a>
         </p>
       </section>
@@ -287,7 +287,7 @@ export default function Home() {
             Stay weird.
           </h2>
           <div className="mx-auto mt-8 max-w-md border border-border bg-charcoal p-4 text-left text-xs sm:text-sm">
-            <p className="text-steel">root@hacker-block:~#</p>
+            <p className="text-steel">root@hacker-bloc:~#</p>
             <p className="text-signal">
               ./apply --resident --bring=projects,stranger-friends
               <span className="hb-blink">█</span>
@@ -302,7 +302,7 @@ export default function Home() {
             size="lg"
             className="mt-8 bg-signal px-10 text-[#051a10] font-bold tracking-[0.2em] uppercase hover:bg-signal/80"
           >
-            <a href="mailto:apply@hackerblock.wtf?subject=RESIDENT%20APPLICATION%20//%20HB">
+            <a href="mailto:apply@hackerbloc.wtf?subject=RESIDENT%20APPLICATION%20//%20HB">
               Apply to stay
             </a>
           </Button>
@@ -314,7 +314,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 text-xs sm:grid-cols-3">
           <div>
             <p className="font-heading text-2xl uppercase text-beige">
-              Hacker Block
+              Hacker Bloc
             </p>
             <p className="mt-1 tracking-[0.25em] text-signal uppercase">
               hacker house for builders

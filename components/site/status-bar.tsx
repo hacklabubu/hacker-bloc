@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/* the block came online 2026-05-17, per brand system issue date */
+/* the bloc came online 2026-05-17, per brand system issue date */
 const EPOCH = Date.UTC(2026, 4, 17, 12, 0, 0);
 
 function formatUptime(now: number) {
@@ -36,7 +36,7 @@ export function StatusBar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-[10px] sm:text-xs tracking-widest uppercase">
         <a href="#top" className="flex items-center gap-2 text-beige">
           <span className="text-signal">▚</span>
-          <span className="font-bold">HACKER BLOCK</span>
+          <span className="font-bold">HACKER BLOC</span>
           <span className="hidden sm:inline text-concrete">// warsaw, pl</span>
         </a>
         <div className="flex items-center gap-4 text-concrete">

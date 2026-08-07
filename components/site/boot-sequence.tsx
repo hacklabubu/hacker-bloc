@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 
 const BOOT_LINES = [
-  "HB_BIOS v1.0.0 — HACKER BLOCK CORE COLLECTIVE",
+  "HB_BIOS v1.0.0 — HACKER BLOC CORE COLLECTIVE",
   "> mount /dev/warsaw ................. OK",
   "> load brand.sys .................... OK",
   "> checking bunks .................... 22 FOUND",
   "> waking residents .................. 07 NODES ONLINE",
   "> signal strength ................... ▮▮▮▮▮ STRONG",
   "> LIVE OFFLINE. STAY ONLINE.",
-  "root@hacker-block:~# ./welcome",
+  "root@hacker-bloc:~# ./welcome",
 ];
 
 export function BootSequence() {

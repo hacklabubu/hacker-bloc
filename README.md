@@ -1,12 +1,12 @@
-# HACKER BLOCK
+# HACKER BLOC
 
 > Hacker house // Warsaw, PL — est. 2026
 > LIVE OFFLINE. STAY ONLINE.
 > Now shipping from [hacklabubu](https://github.com/hacklabubu).
 
-Landing site for **Hacker Block**, a (fictional, for now) brutalist hacker
+Landing site for **Hacker Bloc**, a (fictional, for now) brutalist hacker
 house in Warsaw for builders, dreamers, and digital misfits. Terminal boot
-sequence, live ASCII housing block with flickering windows, scanlines, and a
+sequence, live ASCII housing bloc with flickering windows, scanlines, and a
 signal log of what's happening inside.
 
 ## Stack
