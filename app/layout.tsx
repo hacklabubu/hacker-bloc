@@ -19,7 +19,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HACKER BLOCK — Hacker House // Warsaw",
+  title: "HACKER BLOC — Hacker House // Warsaw",
   description:
     "A brutalist hacker house in Warsaw for builders, dreamers, and digital misfits. Live offline. Stay online.",
 };
