@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Orbitron, JetBrains_Mono } from "next/font/google";
+import { SiteFooter } from "@/components/site/footer";
+import { SiteNav } from "@/components/site/nav";
 import "./globals.css";
 
 const display = Anton({
@@ -19,9 +21,12 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HACKER BLOC — Hacker House // Warsaw",
+  title: {
+    default: "HACKER BLOC — The bloc where Warsaw builds",
+    template: "%s // HACKER BLOC",
+  },
   description:
-    "A brutalist hacker house in Warsaw for builders, dreamers, and digital misfits. Live offline. Stay online.",
+    "A brutalist hacker house in Warsaw. Eastern Bloc roots, Silicon Valley ambition. Weekly meetups, monthly hackathons, free for founders, forever.",
 };
 
 export default function RootLayout({
@@ -32,10 +37,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${display.variable} ${tech.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <SiteNav />
         {children}
+        <SiteFooter />
         <div className="crt-vignette" aria-hidden />
         <div className="crt-scanlines" aria-hidden />
       </body>

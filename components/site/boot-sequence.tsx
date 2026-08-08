@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const BOOT_LINES = [
-  "HB_BIOS v1.0.0 — HACKER BLOC CORE COLLECTIVE",
+  "HB_BIOS v1.1.0 — HACKER BLOC CORE COLLECTIVE",
   "> mount /dev/warsaw ................. OK",
   "> load brand.sys .................... OK",
   "> checking bunks .................... 22 FOUND",
@@ -22,7 +22,8 @@ export function BootSequence() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (sessionStorage.getItem("hb-booted")) return;
     sessionStorage.setItem("hb-booted", "1");
-    setVisible(true);
+    /* deferred so SSR markup and first client render agree */
+    const show = setTimeout(() => setVisible(true), 0);
 
     const interval = setInterval(() => {
       setLineCount((n) => {
@@ -36,7 +37,10 @@ export function BootSequence() {
       });
     }, 180);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(show);
+      clearInterval(interval);
+    };
   }, []);
 
   if (!visible) return null;

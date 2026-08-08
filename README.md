@@ -4,10 +4,11 @@
 > LIVE OFFLINE. STAY ONLINE.
 > Now shipping from [hacklabubu](https://github.com/hacklabubu).
 
-Landing site for **Hacker Bloc**, a (fictional, for now) brutalist hacker
-house in Warsaw for builders, dreamers, and digital misfits. Terminal boot
-sequence, live ASCII housing bloc with flickering windows, scanlines, and a
-signal log of what's happening inside.
+Site for **Hacker Bloc** (né Hacker Block), a brutalist hacker house in
+Warsaw for builders, dreamers, and digital misfits. Full site: home with the
+interactive Stack cross-section and First Wave manifesto, live events from
+[luma.com/hacklab](https://luma.com/hacklab), Alien Bazaar countdown,
+partners page, and a `/join` waitlist backed by Neon Postgres.
 
 ## Stack
 

@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    // Luma event covers
+    remotePatterns: [{ protocol: "https", hostname: "images.lumacdn.com" }],
+  },
 };
 
 export default nextConfig;

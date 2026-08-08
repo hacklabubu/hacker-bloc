@@ -11,6 +11,7 @@
   --font-mono: var(--font-mono-system);
   --font-heading: var(--font-display);
   --color-signal: var(--signal);
+  --color-on-signal: var(--on-signal);
   --color-charcoal: var(--charcoal);
   --color-concrete: var(--concrete);
   --color-beige: var(--beige);
@@ -56,16 +57,17 @@
 }
 
 /*
- * HACKER BLOC brand system v1.0.0
- * base 60% dark / support 30% / accent 10%
+ * HACKER BLOC brand system v2.0.0
+ * black ink on signal green — bloc identity
  */
 :root {
-  --signal: #00ff9a;
-  --charcoal: #0d0d0d;
-  --concrete: #8a8a8a;
-  --beige: #cfc6b3;
-  --steel: #46535e;
-  --asphalt: #1a1a1a;
+  --signal: #000000;
+  --on-signal: #00ff88;
+  --charcoal: #00ff88;
+  --concrete: #005e30;
+  --beige: #000000;
+  --steel: #008a4a;
+  --asphalt: #00e67a;
   --rust: #a63a2f;
 
   --background: var(--charcoal);
@@ -75,16 +77,16 @@
   --popover: var(--asphalt);
   --popover-foreground: var(--beige);
   --primary: var(--signal);
-  --primary-foreground: #051a10;
-  --secondary: #232323;
+  --primary-foreground: var(--on-signal);
+  --secondary: var(--asphalt);
   --secondary-foreground: var(--beige);
-  --muted: #161616;
+  --muted: #00ef80;
   --muted-foreground: var(--concrete);
-  --accent: #10241a;
-  --accent-foreground: var(--signal);
+  --accent: #000000;
+  --accent-foreground: var(--on-signal);
   --destructive: var(--rust);
-  --border: #2c2c2c;
-  --input: #2c2c2c;
+  --border: #000000;
+  --input: #000000;
   --ring: var(--signal);
   --chart-1: var(--signal);
   --chart-2: var(--beige);
@@ -95,10 +97,10 @@
   --sidebar: var(--asphalt);
   --sidebar-foreground: var(--beige);
   --sidebar-primary: var(--signal);
-  --sidebar-primary-foreground: #051a10;
-  --sidebar-accent: #232323;
+  --sidebar-primary-foreground: var(--on-signal);
+  --sidebar-accent: var(--asphalt);
   --sidebar-accent-foreground: var(--beige);
-  --sidebar-border: #2c2c2c;
+  --sidebar-border: #000000;
   --sidebar-ring: var(--signal);
 }
 
@@ -116,7 +118,7 @@
   }
   ::selection {
     background: var(--signal);
-    color: #051a10;
+    color: var(--on-signal);
   }
 }
 
@@ -131,7 +133,7 @@
     to bottom,
     rgba(0, 0, 0, 0) 0px,
     rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.22) 3px
+    rgba(0, 0, 0, 0.07) 3px
   );
   mix-blend-mode: multiply;
 }
@@ -144,7 +146,7 @@
   background: radial-gradient(
     ellipse at center,
     rgba(0, 0, 0, 0) 55%,
-    rgba(0, 0, 0, 0.45) 100%
+    rgba(0, 0, 0, 0.12) 100%
   );
 }
 
@@ -191,6 +193,38 @@
   animation: hb-rise 0.55s ease-out forwards;
 }
 
+@keyframes hb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-22px); }
+}
+@keyframes hb-float-alt {
+  0%, 100% { transform: translateY(-14px) translateX(0); }
+  50% { transform: translateY(10px) translateX(8px); }
+}
+.hb-float {
+  animation: hb-float 7s ease-in-out infinite;
+}
+.hb-float-alt {
+  animation: hb-float-alt 7s ease-in-out infinite;
+}
+
+@keyframes hb-spawn {
+  from { opacity: 0; transform: scale(0.2) rotate(-20deg); }
+  to { opacity: 1; transform: none; }
+}
+.hb-spawn {
+  animation: hb-spawn 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.2) backwards;
+}
+
+@keyframes hb-orbit {
+  from { transform: rotate(0turn) translateX(var(--orbit-r)) rotate(0turn); }
+  to { transform: rotate(1turn) translateX(var(--orbit-r)) rotate(-1turn); }
+}
+.hb-orbit {
+  --orbit-r: min(40vw, 38svh);
+  animation: hb-orbit 60s linear infinite;
+}
+
 @keyframes hb-glitch {
   0%, 100% { text-shadow: none; transform: none; }
   20% { text-shadow: -2px 0 var(--rust), 2px 0 var(--signal); }
@@ -229,6 +263,10 @@
   .hb-blink,
   .hb-flicker,
   .hb-marquee,
+  .hb-float,
+  .hb-float-alt,
+  .hb-spawn,
+  .hb-orbit,
   .hb-glitch:hover {
     animation: none;
   }

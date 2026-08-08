@@ -1,82 +1,34 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AsciiBloc } from "@/components/site/ascii-bloc";
+import { FloatingObjects } from "@/components/site/floating-objects";
 import { BootSequence } from "@/components/site/boot-sequence";
+import { Countdown } from "@/components/site/countdown";
+import { Error529 } from "@/components/site/error-529";
+import { EventCard } from "@/components/site/event-card";
+import { FirstWave } from "@/components/site/first-wave";
+import { BlocMark } from "@/components/site/logo";
+import { PhotoSlot } from "@/components/site/photo-slot";
+import { PhotoWall } from "@/components/site/photo-wall";
 import { Reveal } from "@/components/site/reveal";
-import { StatusBar } from "@/components/site/status-bar";
-import { Ticker } from "@/components/site/ticker";
-
-const PRINCIPLES = [
-  {
-    glyph: "[#]",
-    title: "Build together",
-    body: "We share space, skills, and tools. Everything in the bloc is stronger when we build it together.",
-  },
-  {
-    glyph: "[★]",
-    title: "Eastern grit",
-    body: "From concrete roots. Practical, resilient, no-nonsense. The bloc survived worse than your prod outage.",
-  },
-  {
-    glyph: "</>",
-    title: "Open systems",
-    body: "Open source, open doors, open minds. Knowledge wants to be free, and so does the wifi password.",
-  },
-  {
-    glyph: "[⚡]",
-    title: "Ship fast",
-    body: "Iterate, deploy, break, fix, repeat. Progress over perfection, demos over decks.",
-  },
-  {
-    glyph: "[▯]",
-    title: "House for builders",
-    body: "A home for hackers, makers, and misfits who build the future instead of pitching it.",
-  },
-  {
-    glyph: "((•))",
-    title: "Signal over status",
-    body: "Signal quality beats ego. Stay connected to what really matters, mute the rest.",
-  },
-];
-
-const LOG = [
-  { t: "2026-08-01 21:37", tag: "DEMO_NIGHT", msg: "14 projects shipped live from the common room. 2 caught fire (one literally)." },
-  { t: "2026-07-28 03:12", tag: "SERVER_CLOSET", msg: "resident NIGHTBUS racked a salvaged GPU node. cluster now heats floor 3." },
-  { t: "2026-07-25 19:00", tag: "OPEN_HOUSE", msg: "doors open. strangers became stranger friends. 6 new applications." },
-  { t: "2026-07-20 11:45", tag: "WORKSHOP", msg: "hardware sunday: CNC'd a new door sign. old one stolen (flattered)." },
-  { t: "2026-07-14 23:59", tag: "ROOFTOP", msg: "antenna upgrade complete. we can now hear satellites gossip." },
-  { t: "2026-07-09 08:30", tag: "KITCHEN", msg: "pierogi_daemon pushed breakfast v2.1.0 — zero downtime deployment." },
-];
-
-const FACILITIES = [
-  "gigabit fiber",
-  "24/7 access",
-  "workshop + solder lab",
-  "server closet",
-  "shared kitchen",
-  "laundry",
-  "bike room",
-  "rooftop view",
-  "demo wall + projector",
-  "quiet floor (real quiet)",
-];
-
-const RESIDENTS = [
-  { id: "HB-01", name: "SYNAPSE", role: "builder", clearance: 7 },
-  { id: "HB-02", name: "VOIVODE", role: "hardware", clearance: 5 },
-  { id: "HB-03", name: "MILKBAR", role: "design engineer", clearance: 4 },
-  { id: "HB-07", name: "ZORZA", role: "ml research", clearance: 6 },
-  { id: "HB-11", name: "PIEROGI_DAEMON", role: "infra", clearance: 5 },
-  { id: "HB-13", name: "NIGHTBUS", role: "security", clearance: 7 },
-];
+import { TheStack } from "@/components/site/the-stack";
+import { getUpcomingEvents } from "@/lib/luma";
+import { ALIEN_BAZAAR, SITE } from "@/lib/site";
 
 const SPONSORS = [
+  { name: "EPICOR", gives: "operating partner // the dungeons" },
   { name: "VISTULA COMPUTE", gives: "gpu credits" },
   { name: "SOLDER & SONS", gives: "hardware lab" },
   { name: "KAWA://OS", gives: "infinite coffee" },
   { name: "NIGHTSHIFT ROBOTICS", gives: "workshop machines" },
-  { name: "PEWNY.VC", gives: "first checks" },
   { name: "ZAKŁAD MECHANICZNY №7", gives: "steel + welding" },
 ];
+
+const BAZAAR_SHOTS = [
+  { file: "photos/bazaar-01.jpg", label: "hackathon_000" },
+  { file: "photos/bazaar-02.jpg", label: "the_dungeons" },
+  { file: "photos/bazaar-03.jpg", label: "hardware_only" },
+  { file: "photos/bazaar-04.jpg", label: "no_daylight" },
+] as const;
 
 function SectionHeading({ code, title }: { code: string; title: string }) {
   return (
@@ -89,261 +41,253 @@ function SectionHeading({ code, title }: { code: string; title: string }) {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const upcoming = await getUpcomingEvents();
+  const thisWeek = upcoming.slice(0, 3);
+  const next = upcoming[0] ?? null;
+
   return (
     <main id="top" className="flex-1">
       <BootSequence />
-      <StatusBar />
 
       {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="mx-auto grid max-w-6xl gap-10 px-4 pt-16 pb-12 sm:pt-24 md:grid-cols-[1.2fr_1fr] md:items-center">
-        <div>
-          <p className="mb-4 text-xs tracking-[0.35em] text-signal uppercase">
-            hacker house // warsaw, pl — est. 2026
-          </p>
-          <h1 className="hb-glitch font-heading text-[clamp(3.5rem,12vw,8.5rem)] leading-[0.9] uppercase text-beige">
-            Hacker
+      <section className="relative flex min-h-[calc(100svh-73px)] flex-col items-center justify-center overflow-x-clip px-4 py-10">
+        <FloatingObjects />
+        <div className="relative mx-auto max-w-3xl text-center">
+          <BlocMark className="mx-auto mb-6 h-14 w-auto text-signal xl:h-20" />
+          <h1 className="hb-glitch font-heading text-[clamp(2.5rem,6.5vw,5rem)] leading-[0.9] uppercase text-beige">
+            The bloc where
             <br />
-            Bloc
+            Warsaw builds.
           </h1>
-          <p className="mt-6 max-w-md text-sm leading-6 text-concrete">
-            A brutalist housing bloc turned underground infrastructure. A
-            place to live, build, and share signal — anonymous, open,
-            resilient. Built for builders, dreamers, and digital misfits.
+          <p className="mx-auto mt-6 max-w-md text-sm leading-6 text-concrete">
+            Eastern Bloc roots. Silicon Valley ambition. A brutalist block
+            turned build site for founders, hackers, and hardware freaks —
+            live events, real dungeons, zero decks.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button
               asChild
-              className="bg-signal text-[#051a10] font-bold tracking-widest uppercase hover:bg-signal/80"
+              className="bg-signal text-on-signal font-bold tracking-widest uppercase hover:bg-signal/80"
             >
-              <a href="#apply">Apply to stay</a>
+              {next ? (
+                <a href={next.url} target="_blank" rel="noreferrer">
+                  Come to the next event
+                </a>
+              ) : (
+                <Link href="/events">Come to the next event</Link>
+              )}
             </Button>
             <Button
               asChild
               variant="outline"
               className="border-steel tracking-widest uppercase text-concrete hover:text-beige"
             >
-              <a href="#signal-log">Read the log</a>
+              <Link href="/partners">Sponsor the Bloc</Link>
             </Button>
           </div>
-          <dl className="mt-10 grid max-w-md grid-cols-3 divide-x divide-border border border-border text-center">
-            {[
-              ["residents", "22"],
-              ["nodes online", "07"],
-              ["free bunks", "04"],
-            ].map(([k, v]) => (
-              <div key={k} className="px-2 py-3">
-                <dt className="text-[10px] tracking-[0.2em] text-concrete uppercase">
-                  {k}
-                </dt>
-                <dd className="mt-1 font-(family-name:--font-tech) text-2xl text-signal">
-                  {v}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-        <div className="justify-self-center md:justify-self-end">
-          <AsciiBloc />
         </div>
       </section>
 
-      <Ticker />
-
-      {/* ── PRINCIPLES ───────────────────────────────────── */}
+      {/* ── WHAT IS HACKER BLOC ──────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <SectionHeading code="01_PROTOCOL" title="House rules of the bloc" />
-        <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {PRINCIPLES.map((p, i) => (
-            <Reveal key={p.title} delay={i * 60} className="h-full">
-              <article className="h-full bg-card p-6">
-                <span className="text-signal">{p.glyph}</span>
-                <h3 className="mt-4 font-(family-name:--font-tech) text-sm font-bold tracking-widest text-beige uppercase">
-                  {p.title}
-                </h3>
-                <p className="mt-3 text-xs leading-5 text-concrete">{p.body}</p>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── SIGNAL LOG ───────────────────────────────────── */}
-      <section id="signal-log" className="border-y border-border bg-asphalt">
-        <div className="mx-auto max-w-6xl px-4 py-20">
-          <SectionHeading code="02_SIGNAL_LOG" title="What's happening" />
-          <div className="border border-border bg-charcoal">
-            <div className="flex items-center justify-between border-b border-border px-4 py-2 text-[10px] tracking-[0.25em] text-concrete uppercase">
-              <span>tail -f /var/log/bloc.log</span>
-              <span className="text-signal">live</span>
-            </div>
-            <div className="p-4 sm:p-6 text-xs sm:text-sm leading-7">
-              {LOG.map((e, i) => (
-                <Reveal key={e.t} delay={i * 80}>
-                  <p className="flex flex-wrap gap-x-3">
-                    <span className="text-steel">[{e.t}]</span>
-                    <span className="text-signal">{e.tag}</span>
-                    <span className="text-beige">:: {e.msg}</span>
-                  </p>
-                </Reveal>
-              ))}
-              <p className="mt-2 text-signal">
-                <span className="text-steel">root@hacker-bloc:~#</span>{" "}
-                <span className="hb-blink">█</span>
-              </p>
-            </div>
+        <SectionHeading code="01_WHAT" title="What is Hacker Bloc" />
+        <div className="grid gap-8 md:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-4 text-sm leading-7 text-concrete sm:text-base">
+            <p>
+              <span className="text-rust">Not coworking.</span>{" "}
+              <span className="text-rust">Not an incubator.</span>{" "}
+              <span className="text-rust">Not a theoretical nonprofit.</span>
+            </p>
+            <p className="text-beige">
+              Hacker Bloc is a physical block in Warsaw where builders meet
+              weekly, hack monthly, and ship constantly — a community with a
+              front door instead of a Slack.
+            </p>
+            <p>
+              Everyone here has skin in the game: we put our own money, our
+              weekends, and our power tools into this building. Come see the
+              receipts.
+            </p>
+          </div>
+          <div className="border border-border bg-charcoal p-4 text-xs leading-6 sm:text-sm">
+            <p className="text-steel">root@hacker-bloc:~#</p>
+            <p className="text-signal">
+              whoami
+              <br />
+              <span className="text-beige">
+                &gt; community of builders // warsaw
+              </span>
+              <br />
+              grep -c &quot;decks&quot; /var/lib/bloc/*
+              <br />
+              <span className="text-beige">&gt; 0</span>
+              <span className="hb-blink">█</span>
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── FACILITIES ───────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-20">
-        <SectionHeading code="03_FACILITIES" title="Inside the bloc" />
-        <ul className="grid gap-x-10 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
-          {FACILITIES.map((f, i) => (
-            <Reveal key={f} delay={i * 40}>
-              <li className="flex items-center gap-3 border-b border-border/60 pb-3">
-                <span className="text-signal">[x]</span>
-                <span className="uppercase tracking-wider text-concrete">
-                  {f}
-                </span>
-              </li>
-            </Reveal>
-          ))}
-        </ul>
+      {/* ── ALIEN BAZAAR TEASER ──────────────────────────── */}
+      <section id="alien-bazaar" className="border-y border-signal/30 bg-charcoal">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <div className="mb-10 flex flex-wrap items-baseline gap-4 border-b border-signal/30 pb-3">
+            <span className="text-xs tracking-[0.3em] text-signal">
+              02_INCOMING
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl uppercase tracking-wide text-signal">
+              Alien Bazaar
+            </h2>
+            <span className="ml-auto text-[10px] tracking-[0.25em] text-concrete uppercase">
+              2026-09-19 // the dungeons
+            </span>
+          </div>
+          <Countdown target={ALIEN_BAZAAR.date} className="border border-border" />
+          <p className="mt-8 text-center text-sm tracking-[0.2em] text-beige uppercase sm:text-base">
+            100 builders. Hardware only. Built in the dungeons.
+          </p>
+          <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {BAZAAR_SHOTS.map((s, i) => (
+              <Reveal key={s.file} delay={i * 60}>
+                <PhotoSlot label={s.label} file={s.file} ratio="4/3" />
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Button
+              asChild
+              size="lg"
+              className="bg-signal px-10 text-on-signal font-bold tracking-[0.2em] uppercase hover:bg-signal/80"
+            >
+              <Link href={ALIEN_BAZAAR.url}>Enter the Bazaar →</Link>
+            </Button>
+          </div>
+        </div>
       </section>
 
-      {/* ── RESIDENTS ────────────────────────────────────── */}
+      {/* ── THE STACK ────────────────────────────────────── */}
+      <section id="stack" className="border-y border-border bg-asphalt">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <SectionHeading code="03_THE_STACK" title="Five levels of signal" />
+          <TheStack />
+        </div>
+      </section>
+
+      {/* ── THE FIRST WAVE ───────────────────────────────── */}
+      <section id="first-wave" className="mx-auto max-w-6xl px-4 py-20">
+        <SectionHeading code="04_FIRST_WAVE" title="The first wave" />
+        <FirstWave />
+      </section>
+
+      {/* ── THIS WEEK AT THE BLOC ────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <SectionHeading code="05_THIS_WEEK" title="This week at the Bloc" />
+        {thisWeek.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {thisWeek.map((e, i) => (
+              <Reveal key={e.apiId} delay={i * 60} className="h-full">
+                <EventCard event={e} />
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-concrete">
+            calendar offline — check{" "}
+            <Link href="/events" className="text-signal underline underline-offset-4">
+              the events page
+            </Link>
+            .
+          </p>
+        )}
+        <p className="mt-6 text-xs text-steel">
+          full schedule on{" "}
+          <Link
+            href="/events"
+            className="text-concrete underline decoration-signal/50 underline-offset-4 hover:text-signal"
+          >
+            /events
+          </Link>
+        </p>
+      </section>
+
+      {/* ── PHOTO WALL ───────────────────────────────────── */}
       <section className="border-y border-border bg-asphalt">
         <div className="mx-auto max-w-6xl px-4 py-20">
-          <SectionHeading code="04_RESIDENTS" title="Nodes in the building" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {RESIDENTS.map((r, i) => (
-              <Reveal key={r.id} delay={i * 60}>
-                <article className="group border border-border bg-charcoal p-5 transition-colors hover:border-signal/60">
-                  <div className="flex items-center justify-between text-[10px] tracking-[0.25em] uppercase">
-                    <span className="text-concrete">resident</span>
-                    <span className="border border-border px-1.5 py-0.5 text-concrete">
-                      clearance lvl {r.clearance}
-                    </span>
-                  </div>
-                  <p className="mt-4 font-(family-name:--font-tech) text-2xl font-bold text-signal">
-                    {r.id}
+          <SectionHeading code="06_THE_WALL" title="Proof of life" />
+          <PhotoWall />
+        </div>
+      </section>
+
+      {/* ── ERROR 529 ────────────────────────────────────── */}
+      <section className="mx-auto max-w-4xl px-4 py-20">
+        <SectionHeading code="07_BROADCAST" title="Error 529" />
+        <Error529 />
+      </section>
+
+      {/* ── PARTNERS STRIP ───────────────────────────────── */}
+      <section className="border-y border-border bg-asphalt">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <SectionHeading code="08_POWERED_BY" title="Powered by people who build" />
+          <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {SPONSORS.map((s, i) => (
+              <Reveal key={s.name} delay={i * 60} className="h-full">
+                <div className="group flex h-full flex-col justify-between bg-card p-6">
+                  <p className="font-(family-name:--font-tech) text-sm font-bold tracking-widest text-concrete uppercase transition-colors group-hover:text-signal">
+                    {s.name}
                   </p>
-                  <p className="mt-1 text-sm uppercase tracking-widest text-beige">
-                    {r.name}
+                  <p className="mt-4 text-[10px] tracking-[0.25em] text-steel uppercase">
+                    supplies :: {s.gives}
                   </p>
-                  <p className="mt-3 border-t border-border pt-3 text-xs uppercase tracking-[0.2em] text-concrete">
-                    role :: {r.role}
-                  </p>
-                </article>
+                </div>
               </Reveal>
             ))}
           </div>
           <p className="mt-6 text-xs text-steel">
-            * identities anonymized per bloc protocol. residents opt onto the
-            wall, never onto the internet.
+            want your logo on concrete? →{" "}
+            <Link
+              href="/partners"
+              className="text-concrete underline decoration-signal/50 underline-offset-4 hover:text-signal"
+            >
+              power the bloc
+            </Link>
           </p>
         </div>
       </section>
 
-      {/* ── SPONSORS ─────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-20">
-        <SectionHeading code="05_POWERED_BY" title="Sponsors of the signal" />
-        <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {SPONSORS.map((s, i) => (
-            <Reveal key={s.name} delay={i * 60} className="h-full">
-              <div className="group flex h-full flex-col justify-between bg-card p-6">
-                <p className="font-(family-name:--font-tech) text-sm font-bold tracking-widest text-concrete uppercase transition-colors group-hover:text-signal">
-                  {s.name}
-                </p>
-                <p className="mt-4 text-[10px] tracking-[0.25em] text-steel uppercase">
-                  supplies :: {s.gives}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <p className="mt-6 text-xs text-steel">
-          want your logo on concrete? →{" "}
-          <a
-            href="mailto:core@hackerbloc.wtf"
-            className="text-concrete underline decoration-signal/50 underline-offset-4 hover:text-signal"
-          >
-            core@hackerbloc.wtf
-          </a>
-        </p>
-      </section>
-
-      {/* ── APPLY ────────────────────────────────────────── */}
-      <section id="apply" className="border-t border-border bg-asphalt">
+      {/* ── FINAL CTA ────────────────────────────────────── */}
+      <section id="come-over" className="border-t border-border">
         <div className="mx-auto max-w-3xl px-4 py-24 text-center">
           <p className="text-xs tracking-[0.3em] text-signal uppercase">
-            06_ACCESS
+            09_ACCESS
           </p>
-          <h2 className="mt-4 font-heading text-5xl sm:text-6xl uppercase text-beige">
-            Live. Build.
-            <br />
-            Stay weird.
+          <h2 className="mt-4 font-heading text-5xl sm:text-7xl uppercase text-beige">
+            Just show up.
           </h2>
-          <div className="mx-auto mt-8 max-w-md border border-border bg-charcoal p-4 text-left text-xs sm:text-sm">
-            <p className="text-steel">root@hacker-bloc:~#</p>
-            <p className="text-signal">
-              ./apply --resident --bring=projects,stranger-friends
-              <span className="hb-blink">█</span>
-            </p>
-          </div>
           <p className="mt-6 text-sm text-concrete">
-            22 bunks. 4 free. No CVs — show us what you&apos;ve built or what
-            you&apos;re dying to break.
+            <a
+              href={SITE.mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-beige underline decoration-signal/50 underline-offset-4 hover:text-signal"
+            >
+              ◉ {SITE.address}
+            </a>
+            {next && (
+              <>
+                <br />
+                next open door: <span className="text-signal">{next.name}</span>
+              </>
+            )}
           </p>
           <Button
             asChild
             size="lg"
-            className="mt-8 bg-signal px-10 text-[#051a10] font-bold tracking-[0.2em] uppercase hover:bg-signal/80"
+            className="mt-8 bg-signal px-10 text-on-signal font-bold tracking-[0.2em] uppercase hover:bg-signal/80"
           >
-            <a href="mailto:apply@hackerbloc.wtf?subject=RESIDENT%20APPLICATION%20//%20HB">
-              Apply to stay
-            </a>
+            <Link href="/come-over">Come Over</Link>
           </Button>
         </div>
       </section>
-
-      {/* ── FOOTER ───────────────────────────────────────── */}
-      <footer className="border-t border-border">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 text-xs sm:grid-cols-3">
-          <div>
-            <p className="font-heading text-2xl uppercase text-beige">
-              Hacker Bloc
-            </p>
-            <p className="mt-1 tracking-[0.25em] text-signal uppercase">
-              hacker house for builders
-            </p>
-            <p className="mt-4 text-concrete">
-              место силы для своих. строим будущее. живём сейчас. остаёмся на
-              связи.
-            </p>
-          </div>
-          <div className="text-concrete">
-            <p className="tracking-[0.25em] uppercase text-steel">signal id</p>
-            <p className="mt-2">HB-2026-05-17-WAW</p>
-            <div className="hb-barcode mt-3 max-w-[220px]" aria-hidden />
-            <p className="mt-3 uppercase tracking-widest">
-              stay curious. question everything.
-            </p>
-          </div>
-          <div className="text-concrete sm:text-right">
-            <p>
-              <span className="text-signal">◉</span> 52.2297° N, 21.0122° E
-            </p>
-            <p className="mt-1 uppercase tracking-widest">warsaw, pl</p>
-            <p className="mt-4 text-steel">est. 2026 — cc by-nc-sa 4.0</p>
-            <p className="mt-1 text-steel">
-              a fictional demo brand. no aliens were housed.
-            </p>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

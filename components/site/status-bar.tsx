@@ -18,39 +18,18 @@ export function Uptime() {
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
-    setNow(Date.now());
+    /* first tick via timeout so SSR markup and first client render agree */
+    const t0 = setTimeout(() => setNow(Date.now()), 0);
     const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
+    return () => {
+      clearTimeout(t0);
+      clearInterval(t);
+    };
   }, []);
 
   return (
     <span className="tabular-nums">
       {now === null ? "——D ——:——:——" : formatUptime(now)}
     </span>
-  );
-}
-
-export function StatusBar() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-charcoal/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-[10px] sm:text-xs tracking-widest uppercase">
-        <a href="#top" className="flex items-center gap-2 text-beige">
-          <span className="text-signal">▚</span>
-          <span className="font-bold">HACKER BLOC</span>
-          <span className="hidden sm:inline text-concrete">// warsaw, pl</span>
-        </a>
-        <div className="flex items-center gap-4 text-concrete">
-          <span className="hidden md:inline">
-            uptime <Uptime />
-          </span>
-          <span className="hidden sm:inline">
-            signal <span className="text-signal">▮▮▮▮▮</span>
-          </span>
-          <span className="flex items-center gap-1.5 border border-border px-2 py-0.5 text-beige">
-            online <span className="hb-blink text-signal">●</span>
-          </span>
-        </div>
-      </div>
-    </header>
   );
 }

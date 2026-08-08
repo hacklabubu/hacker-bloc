@@ -14,7 +14,7 @@ const initialLit = () => {
 
 const SIGNAL_FRAMES = [")", "))", ")))", "))) ·"];
 
-export function AsciiBloc() {
+export function AsciiBlock() {
   const [lit, setLit] = useState<Set<number>>(initialLit);
   const [frame, setFrame] = useState(0);
 
@@ -132,7 +132,7 @@ export function AsciiBloc() {
   );
 
   return (
-    <figure className="hb-flicker select-none" aria-label="ASCII drawing of the Hacker Bloc building, windows flickering">
+    <figure className="hb-flicker select-none" aria-label="ASCII drawing of the Hacker Bloc housing block, windows flickering">
       {/* system mono, not next/font: subsetted webfonts drop the box-drawing
           glyphs and mixed fallback widths break column alignment */}
       <pre
