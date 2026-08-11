@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BlocMark } from "@/components/site/logo";
-import { ALIEN_BAZAAR } from "@/lib/site";
 
 const LINKS = [
   { href: "/", label: "The Bloc" },
-  { href: "/events", label: "Events" },
-  { href: ALIEN_BAZAAR.url, label: "Alien Bazaar" },
-  { href: "/partners", label: "Partners" },
+  { href: "/community", label: "Community" },
 ] as const;
 
 export function SiteNav() {
@@ -19,8 +16,7 @@ export function SiteNav() {
     <header className="sticky top-0 z-50 border-b border-border bg-charcoal/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-2 text-[10px] tracking-widest uppercase sm:text-xs">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-beige">
-          <BlocMark className="h-5 w-auto text-signal" />
-          <span className="font-bold">HACKER BLOC</span>
+          <BlocMark className="h-6 w-auto text-signal" />
         </Link>
         <nav
           aria-label="Main"
@@ -40,16 +36,24 @@ export function SiteNav() {
             </Link>
           ))}
         </nav>
-        <Link
-          href="/come-over"
-          className={`shrink-0 border px-4 py-1.5 font-bold transition-colors ${
-            pathname === "/come-over"
-              ? "border-signal bg-signal text-on-signal"
-              : "border-signal text-signal hover:bg-signal hover:text-on-signal"
-          }`}
-        >
-          Come Over
-        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href="/join"
+            className={`border px-5 py-2.5 text-xs font-bold tracking-widest transition-colors sm:px-6 sm:py-3 sm:text-sm ${
+              pathname === "/join"
+                ? "border-signal bg-signal text-on-signal"
+                : "border-signal text-signal hover:bg-signal hover:text-on-signal"
+            }`}
+          >
+            Join
+          </Link>
+          <Link
+            href={pathname === "/" ? "#partners" : "/#partners"}
+            className="border border-steel px-5 py-2.5 text-xs font-bold tracking-widest text-concrete transition-colors hover:border-beige hover:text-beige sm:px-6 sm:py-3 sm:text-sm"
+          >
+            Sponsor
+          </Link>
+        </div>
       </div>
     </header>
   );

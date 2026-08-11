@@ -18,11 +18,11 @@ export async function joinWaitlist(
   if (!name || !building) {
     return {
       status: "error",
-      message: "name and what you're building are required. links optional.",
+      message: "Name and what you're building are required.",
     };
   }
   if (name.length > 200 || building.length > 2000 || links.length > 1000) {
-    return { status: "error", message: "easy — that's too long for the log." };
+    return { status: "error", message: "That submission is too long." };
   }
 
   try {
@@ -31,12 +31,12 @@ export async function joinWaitlist(
   } catch {
     return {
       status: "error",
-      message: "db offline. try again, or just show up in person.",
+      message: "Something went wrong. Try again, or email us.",
     };
   }
 
   return {
     status: "ok",
-    message: `ack ${name} — you're on the wall. we'll ping you before the next wave.`,
+    message: `Thanks ${name} — you're on the list. We'll be in touch.`,
   };
 }

@@ -57,17 +57,16 @@
 }
 
 /*
- * HACKER BLOC brand system v2.0.0
- * black ink on signal green — bloc identity
+ * HACKER BLOC brand system v3.0.0 — post-soviet terminal: near-black, signal green accent
  */
 :root {
-  --signal: #000000;
-  --on-signal: #00ff88;
-  --charcoal: #00ff88;
-  --concrete: #005e30;
-  --beige: #000000;
-  --steel: #008a4a;
-  --asphalt: #00e67a;
+  --signal: #00ff88;
+  --on-signal: #051a10;
+  --charcoal: #050505;
+  --concrete: #8a8a8a;
+  --beige: #d9d9d0;
+  --steel: #2a352e;
+  --asphalt: #0d0d0d;
   --rust: #a63a2f;
 
   --background: var(--charcoal);
@@ -80,13 +79,13 @@
   --primary-foreground: var(--on-signal);
   --secondary: var(--asphalt);
   --secondary-foreground: var(--beige);
-  --muted: #00ef80;
+  --muted: #101010;
   --muted-foreground: var(--concrete);
-  --accent: #000000;
-  --accent-foreground: var(--on-signal);
+  --accent: #0d2418;
+  --accent-foreground: var(--signal);
   --destructive: var(--rust);
-  --border: #000000;
-  --input: #000000;
+  --border: #222222;
+  --input: #222222;
   --ring: var(--signal);
   --chart-1: var(--signal);
   --chart-2: var(--beige);
@@ -100,7 +99,7 @@
   --sidebar-primary-foreground: var(--on-signal);
   --sidebar-accent: var(--asphalt);
   --sidebar-accent-foreground: var(--beige);
-  --sidebar-border: #000000;
+  --sidebar-border: #222222;
   --sidebar-ring: var(--signal);
 }
 
@@ -120,34 +119,6 @@
     background: var(--signal);
     color: var(--on-signal);
   }
-}
-
-/* ── CRT atmosphere ─────────────────────────────────────── */
-
-.crt-scanlines {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.07) 3px
-  );
-  mix-blend-mode: multiply;
-}
-
-.crt-vignette {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 59;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 55%,
-    rgba(0, 0, 0, 0.12) 100%
-  );
 }
 
 /* ── keyframes ──────────────────────────────────────────── */
@@ -225,32 +196,6 @@
   animation: hb-orbit 60s linear infinite;
 }
 
-@keyframes hb-glitch {
-  0%, 100% { text-shadow: none; transform: none; }
-  20% { text-shadow: -2px 0 var(--rust), 2px 0 var(--signal); }
-  21% { text-shadow: none; }
-  53% { transform: translateX(1px); text-shadow: 2px 0 var(--rust), -2px 0 var(--signal); }
-  54% { transform: none; text-shadow: none; }
-}
-.hb-glitch:hover {
-  animation: hb-glitch 0.9s steps(1) infinite;
-}
-
-/* barcode built from a hard-stop gradient — no image assets */
-.hb-barcode {
-  height: 2.25rem;
-  background: repeating-linear-gradient(
-    to right,
-    var(--beige) 0 2px,
-    transparent 2px 5px,
-    var(--beige) 5px 6px,
-    transparent 6px 12px,
-    var(--beige) 12px 16px,
-    transparent 16px 19px
-  );
-  opacity: 0.7;
-}
-
 .hb-dashed {
   background-image: repeating-linear-gradient(
     45deg,
@@ -266,8 +211,7 @@
   .hb-float,
   .hb-float-alt,
   .hb-spawn,
-  .hb-orbit,
-  .hb-glitch:hover {
+  .hb-orbit {
     animation: none;
   }
   .hb-reveal {

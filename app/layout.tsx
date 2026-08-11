@@ -44,8 +44,6 @@ export default function RootLayout({
         <SiteNav />
         {children}
         <SiteFooter />
-        <div className="crt-vignette" aria-hidden />
-        <div className="crt-scanlines" aria-hidden />
       </body>
     </html>
   );

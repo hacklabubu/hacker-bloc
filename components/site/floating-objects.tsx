@@ -44,7 +44,7 @@ export function FloatingObjects() {
               alt=""
               width={o.w}
               height={o.h}
-              className="h-auto w-full drop-shadow-[0_0_18px_var(--charcoal)] transition-transform duration-300 ease-out hover:scale-125"
+              className="h-auto w-full drop-shadow-[0_0_14px_rgba(0,255,136,0.35)] transition-transform duration-300 ease-out hover:scale-125"
             />
           </div>
         </div>
