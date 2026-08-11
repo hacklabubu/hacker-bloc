@@ -8,33 +8,6 @@ import { PhotoWall } from "@/components/site/photo-wall";
 import { TheStack } from "@/components/site/the-stack";
 import { getPastEvents, getUpcomingEvents } from "@/lib/luma";
 
-const PARTNER_TIERS = [
-  {
-    tier: "Diamond",
-    slots: 1,
-    cell: "min-h-40 sm:min-h-48",
-    grid: "grid-cols-1",
-  },
-  {
-    tier: "Gold",
-    slots: 3,
-    cell: "min-h-32 sm:min-h-36",
-    grid: "grid-cols-1 sm:grid-cols-3",
-  },
-  {
-    tier: "Silver",
-    slots: 6,
-    cell: "min-h-24 sm:min-h-28",
-    grid: "grid-cols-2 sm:grid-cols-3",
-  },
-  {
-    tier: "Bronze",
-    slots: 9,
-    cell: "min-h-20 sm:min-h-24",
-    grid: "grid-cols-3 sm:grid-cols-3",
-  },
-] as const;
-
 export default async function Home() {
   const [upcomingAll, pastAll] = await Promise.all([
     getUpcomingEvents(),
@@ -73,7 +46,7 @@ export default async function Home() {
                 variant="outline"
                 className="h-14 border-steel px-10 text-base tracking-[0.2em] uppercase text-concrete hover:text-beige sm:h-16 sm:px-12 sm:text-lg"
               >
-                <Link href="#partners">Sponsor</Link>
+                <Link href="/sponsor">Sponsor</Link>
               </Button>
             </div>
           </div>
@@ -243,39 +216,6 @@ export default async function Home() {
           </h2>
           <div className="mt-10">
             <Error529 />
-          </div>
-        </div>
-      </section>
-
-      {/* ── PARTNERS ─────────────────────────────────────── */}
-      <section
-        id="partners"
-        className="flex min-h-svh items-center border-y border-border"
-      >
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Partners
-          </h2>
-          <div className="mt-12 space-y-10">
-            {PARTNER_TIERS.map(({ tier, slots, cell, grid }) => (
-              <div key={tier}>
-                <p className="mb-4 text-xs font-bold tracking-[0.3em] text-signal uppercase">
-                  {tier}
-                </p>
-                <div className={`grid gap-3 ${grid}`}>
-                  {Array.from({ length: slots }, (_, i) => (
-                    <div
-                      key={`${tier}-${i}`}
-                      className={`flex ${cell} items-center justify-center border border-dashed border-border bg-asphalt px-4`}
-                    >
-                      <span className="text-[10px] tracking-[0.25em] text-steel uppercase sm:text-xs">
-                        {tier} partner
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

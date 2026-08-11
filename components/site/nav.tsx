@@ -7,6 +7,7 @@ import { BlocMark } from "@/components/site/logo";
 const LINKS = [
   { href: "/", label: "The Bloc" },
   { href: "/community", label: "Community" },
+  { href: "/partners", label: "Partners" },
 ] as const;
 
 export function SiteNav() {
@@ -48,8 +49,12 @@ export function SiteNav() {
             Join
           </Link>
           <Link
-            href={pathname === "/" ? "#partners" : "/#partners"}
-            className="border border-steel px-5 py-2.5 text-xs font-bold tracking-widest text-concrete transition-colors hover:border-beige hover:text-beige sm:px-6 sm:py-3 sm:text-sm"
+            href="/sponsor"
+            className={`border px-5 py-2.5 text-xs font-bold tracking-widest transition-colors sm:px-6 sm:py-3 sm:text-sm ${
+              pathname === "/sponsor"
+                ? "border-steel bg-steel text-charcoal"
+                : "border-steel text-concrete hover:border-beige hover:text-beige"
+            }`}
           >
             Sponsor
           </Link>

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { joinWaitlist, type JoinState } from "@/app/actions/join";
+import { JOIN_TYPES } from "@/lib/community";
 
 const initialState: JoinState = { status: "idle", message: "" };
 
@@ -21,6 +22,33 @@ export function JoinForm() {
 
   return (
     <form action={formAction} className="space-y-6">
+      <div>
+        <label
+          htmlFor="join-type"
+          className="mb-2 block text-xs tracking-[0.2em] text-concrete uppercase"
+        >
+          I am a
+        </label>
+        <select
+          id="join-type"
+          name="type"
+          required
+          defaultValue=""
+          className={`${FIELD} appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10`}
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238a8a8a' stroke-width='1.5'/%3E%3C/svg%3E")`,
+          }}
+        >
+          <option value="" disabled>
+            Select type
+          </option>
+          {JOIN_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <div>
         <label
           htmlFor="join-name"
