@@ -4,6 +4,11 @@
 /node_modules
 /.pnp
 .pnp.*
+
+# this project uses npm — package-lock.json is the source of truth.
+# a stray pnpm-lock.yaml makes Vercel pick pnpm and fail the install (see 3a72e41)
+pnpm-lock.yaml
+yarn.lock
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
