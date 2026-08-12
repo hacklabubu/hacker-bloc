@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { LumaEvent } from "@/lib/luma";
 
 export function eventDate(e: LumaEvent) {
@@ -29,24 +30,48 @@ export function EventCard({
       href={event.url}
       target="_blank"
       rel="noreferrer"
-      className="group flex flex-col border border-border bg-charcoal px-5 py-5 transition-colors hover:border-signal sm:px-6 sm:py-6"
+      className="group flex h-full flex-col overflow-hidden border border-border bg-charcoal transition-colors hover:border-signal"
     >
-      <time
-        dateTime={event.startAt}
-        className={`text-xs tracking-[0.2em] uppercase ${
-          past ? "text-steel" : "text-signal"
-        }`}
+      <div
+        className="relative w-full overflow-hidden bg-asphalt"
+        style={{ aspectRatio: "16/9" }}
       >
-        {eventDate(event)}
-        <span className="text-steel"> · </span>
-        {eventTime(event)}
-      </time>
-      <h3 className="mt-3 text-base font-medium leading-snug text-beige transition-colors group-hover:text-signal sm:text-lg">
-        {event.name}
-      </h3>
-      {event.address && (
-        <p className="mt-auto pt-4 text-xs text-concrete">{event.address}</p>
-      )}
+        {event.coverUrl ? (
+          <Image
+            src={event.coverUrl}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className={`object-cover transition-transform duration-300 group-hover:scale-[1.02] ${
+              past ? "opacity-70" : "opacity-90 group-hover:opacity-100"
+            }`}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-[10px] tracking-[0.25em] text-steel uppercase">
+              no photo
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col px-5 py-5 sm:px-6 sm:py-6">
+        <time
+          dateTime={event.startAt}
+          className={`text-xs tracking-[0.2em] uppercase ${
+            past ? "text-steel" : "text-signal"
+          }`}
+        >
+          {eventDate(event)}
+          <span className="text-steel"> · </span>
+          {eventTime(event)}
+        </time>
+        <h3 className="mt-3 text-base font-medium leading-snug text-beige transition-colors group-hover:text-signal sm:text-lg">
+          {event.name}
+        </h3>
+        {event.address && (
+          <p className="mt-auto pt-4 text-xs text-concrete">{event.address}</p>
+        )}
+      </div>
     </a>
   );
 }

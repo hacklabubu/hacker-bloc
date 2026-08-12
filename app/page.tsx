@@ -7,6 +7,7 @@ import { FirstWave } from "@/components/site/first-wave";
 import { PhotoWall } from "@/components/site/photo-wall";
 import { TheStack } from "@/components/site/the-stack";
 import { getPastEvents, getUpcomingEvents } from "@/lib/luma";
+import { SITE } from "@/lib/site";
 
 export default async function Home() {
   const [upcomingAll, pastAll] = await Promise.all([
@@ -20,7 +21,7 @@ export default async function Home() {
     <main id="top" className="flex-1">
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="relative flex min-h-[calc(100svh-73px)] items-center overflow-x-clip px-4 py-10">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 md:grid-cols-[1.15fr_1fr]">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-8 md:grid-cols-[1fr_1.25fr] md:gap-6">
           <div>
             <h1 className="font-heading text-[clamp(4rem,9.5vw,9.5rem)] leading-[0.9] uppercase text-beige">
               Hacker
@@ -44,7 +45,7 @@ export default async function Home() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-14 border-steel px-10 text-base tracking-[0.2em] uppercase text-concrete hover:text-beige sm:h-16 sm:px-12 sm:text-lg"
+                className="h-14 border-beige/50 bg-beige/5 px-10 text-base tracking-[0.2em] uppercase text-beige hover:border-beige hover:bg-beige/10 sm:h-16 sm:px-12 sm:text-lg"
               >
                 <Link href="/sponsor">Sponsor</Link>
               </Button>
@@ -56,7 +57,7 @@ export default async function Home() {
             width={1250}
             height={1159}
             preload
-            className="mx-auto h-auto max-h-[78svh] w-auto"
+            className="mx-auto h-auto max-h-[88svh] w-full max-w-none object-contain md:max-h-[min(92svh,56rem)] md:scale-110 md:origin-center"
           />
         </div>
       </section>
@@ -68,53 +69,61 @@ export default async function Home() {
       >
         <div className="mx-auto w-full max-w-6xl px-4 py-20">
           <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            What is Hacker Bloc
+            What is it?
           </h2>
-          <div className="mt-10 max-w-4xl space-y-8">
-            <p className="text-xl leading-9 text-beige sm:text-2xl sm:leading-10 md:text-3xl md:leading-[1.35]">
-              Hacker Bloc is a physical hacker house in Warsaw — a place where
-              we invite ambitious founders and connect them with investors and
-              media.
+          <div className="mt-10 max-w-3xl space-y-8 text-xl leading-9 text-beige sm:text-2xl sm:leading-10">
+            <p>
+              <span className="text-signal">Floors 0–2</span>
+              {" — "}a hacker house in Warsaw where we live and build our
+              startups:{" "}
+              <a
+                href="https://hacklab.so"
+                target="_blank"
+                rel="noreferrer"
+                className="text-signal underline underline-offset-4 hover:text-beige"
+              >
+                Hacklab
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://epikor.eu"
+                target="_blank"
+                rel="noreferrer"
+                className="text-signal underline underline-offset-4 hover:text-beige"
+              >
+                Epikor
+              </a>
+              .
             </p>
-            <p className="text-base leading-8 text-concrete sm:text-lg sm:leading-9">
-              Not a Slack. Not coworking. A real house with a front door, where
-              the best builders in the city meet, ship, and get put in front of
-              the people who can move their companies forward.
+            <p>
+              <span className="text-signal">Floor −1</span>
+              {" — "}a mini hackerspace where Warsaw founders learn, prototype,
+              and ship MVPs — get first users, early feedback, and learn from
+              each other.
             </p>
-            <p className="text-base leading-8 text-concrete sm:text-lg sm:leading-9">
-              A community and initiative created by the founders of{" "}
-              <span className="text-beige">Hacklab</span> and{" "}
-              <span className="text-beige">Epicor</span>.
+            <p>
+              <span className="text-signal">We&apos;re fucked.</span>
+              {" "}We moved in July 1st and the landlord wants to sell the house.
+              If you care about making Poland Europe&apos;s tech epicenter and
+              want to contribute — visit the{" "}
+              <Link
+                href="/sponsor"
+                className="text-signal underline underline-offset-4 hover:text-beige"
+              >
+                sponsor
+              </Link>{" "}
+              page or{" "}
+              <a
+                href={SITE.calendlyUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-signal underline underline-offset-4 hover:text-beige"
+              >
+                book a meeting
+              </a>{" "}
+              with us directly.
             </p>
           </div>
-          <ul className="mt-14 grid gap-px bg-border sm:grid-cols-3">
-            {[
-              {
-                label: "founders",
-                body: "Ambitious builders invited in — not open applications, not tourists.",
-              },
-              {
-                label: "investors",
-                body: "Capital that shows up in person, not cold inboxes.",
-              },
-              {
-                label: "media",
-                body: "Stories told from the room, not press releases from a deck.",
-              },
-            ].map((item) => (
-              <li
-                key={item.label}
-                className="bg-charcoal px-6 py-8 sm:px-8 sm:py-10"
-              >
-                <p className="text-[10px] tracking-[0.3em] text-signal uppercase">
-                  {item.label}
-                </p>
-                <p className="mt-3 text-sm leading-7 text-concrete sm:text-base">
-                  {item.body}
-                </p>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
@@ -210,7 +219,7 @@ export default async function Home() {
 
       {/* ── ERROR 529 ────────────────────────────────────── */}
       <section className="flex min-h-svh items-center border-y border-border">
-        <div className="mx-auto w-full max-w-4xl px-4 py-20">
+        <div className="mx-auto w-full max-w-6xl px-4 py-20">
           <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
             Error 529
           </h2>

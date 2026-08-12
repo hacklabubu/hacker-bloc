@@ -12,6 +12,7 @@ export const SITE = {
   coordinates: { lat: 52.1701645, lng: 21.0787472 },
   mapsUrl: "https://maps.google.com/?q=Kosiarzy+21B,+02-953+Warszawa",
   email: "core@hackerblock.wtf",
+  calendlyUrl: "https://cal.com/mattbratos/30min",
 } as const;
 
 export const LUMA = {

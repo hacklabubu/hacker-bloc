@@ -63,7 +63,7 @@ export default function SponsorPage() {
             </a>
             <Link
               href="/partners"
-              className="inline-flex h-14 items-center border border-steel px-10 text-base tracking-[0.2em] text-concrete uppercase transition-colors hover:border-beige hover:text-beige sm:text-lg"
+              className="inline-flex h-14 items-center border border-beige/50 bg-beige/5 px-10 text-base tracking-[0.2em] text-beige uppercase transition-colors hover:border-beige hover:bg-beige/10 sm:text-lg"
             >
               Partner tiers
             </Link>

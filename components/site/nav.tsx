@@ -52,8 +52,8 @@ export function SiteNav() {
             href="/sponsor"
             className={`border px-5 py-2.5 text-xs font-bold tracking-widest transition-colors sm:px-6 sm:py-3 sm:text-sm ${
               pathname === "/sponsor"
-                ? "border-steel bg-steel text-charcoal"
-                : "border-steel text-concrete hover:border-beige hover:text-beige"
+                ? "border-beige bg-beige text-charcoal"
+                : "border-beige/50 bg-beige/5 text-beige hover:border-beige hover:bg-beige/10"
             }`}
           >
             Sponsor
