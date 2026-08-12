@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DitherHero } from "@/components/site/dither-hero";
 import { Error529 } from "@/components/site/error-529";
 import { EventCard } from "@/components/site/event-card";
 import { FirstWave } from "@/components/site/first-wave";
@@ -51,14 +52,7 @@ export default async function Home() {
               </Button>
             </div>
           </div>
-          <Image
-            src="/photos/hero-hacker.webp"
-            alt="Hooded builder soldering at a workbench, halftone green"
-            width={1250}
-            height={1159}
-            preload
-            className="mx-auto h-auto max-h-[88svh] w-full max-w-none object-contain md:max-h-[min(92svh,56rem)] md:scale-110 md:origin-center"
-          />
+          <DitherHero />
         </div>
       </section>
 
