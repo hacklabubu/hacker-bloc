@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PhotoSlot } from "@/components/site/photo-slot";
-
-type Phase = "before" | "after";
+import { PhotoCompare } from "@/components/site/photo-compare";
 
 const FLOORS = [
   {
@@ -14,24 +12,30 @@ const FLOORS = [
     after:
       "Full residency floor — founders living where they build. First wave gets first pick.",
     file: "photos/stack-bunks.jpg",
+    beforePhoto: "/photos/stack-dorms-before.webp",
+    afterPhoto: "/photos/stack-dorms-after.webp",
   },
   {
     id: "social",
-    name: "Social",
+    name: "Office",
     before:
       "The social floor. Meetups, demos, long tables, and the room where the house actually gathers.",
     after:
       "Event hall for 100+. Talks, demo nights, and the room that runs the house calendar.",
     file: "photos/stack-commons.jpg",
+    beforePhoto: "/photos/stack-office-before.webp",
+    afterPhoto: "/photos/stack-office-after.webp",
   },
   {
     id: "office",
-    name: "Office & Studio",
+    name: "Studio",
     before:
       "Hacklab office and studio. Day-to-day work floor — desks, recording, and shipping in progress.",
     after:
       "Expanded production studio and founder workspace. More desks, more builds, more signal.",
     file: "photos/stack-commons.jpg",
+    beforePhoto: "/photos/stack-studio-before.webp",
+    afterPhoto: "/photos/stack-studio-after.webp",
   },
   {
     id: "garden",
@@ -41,6 +45,8 @@ const FLOORS = [
     after:
       "Year-round garden kitchen. Soft entry stays; capacity and weatherproofing grow.",
     file: "photos/stack-garden.jpg",
+    beforePhoto: "/photos/stack-garden-before.webp",
+    afterPhoto: "/photos/stack-garden-after.webp",
   },
   {
     id: "dungeons",
@@ -50,14 +56,16 @@ const FLOORS = [
     after:
       "Full hardware dungeon — more stations, more machines, space for bigger builds.",
     file: "photos/stack-dungeons.jpg",
+    beforePhoto: "/photos/stack-dungeons-before.webp",
+    afterPhoto: "/photos/stack-dungeons-after.webp",
   },
 ] as const;
 
 export function TheStack() {
   const [active, setActive] = useState<(typeof FLOORS)[number]["id"]>("social");
-  const [phase, setPhase] = useState<Phase>("before");
+  const [pos, setPos] = useState(50);
   const floor = FLOORS.find((f) => f.id === active)!;
-  const body = phase === "before" ? floor.before : floor.after;
+  const body = pos >= 50 ? floor.before : floor.after;
 
   return (
     <div className="grid gap-8 md:grid-cols-[minmax(12rem,0.7fr)_minmax(0,1.8fr)] md:gap-12 lg:gap-16">
@@ -86,41 +94,26 @@ export function TheStack() {
       </ul>
 
       <div className="flex flex-col">
-        <PhotoSlot
+        <PhotoCompare
           label={floor.name}
-          file={floor.file}
+          before={floor.beforePhoto}
+          after={floor.afterPhoto}
           ratio="4/3"
           className="min-h-[40vh] w-full sm:min-h-[48vh]"
+          value={pos}
+          onChange={setPos}
         />
 
-        <div className="mt-6 flex items-center gap-2">
-          <div
-            className="flex border border-border text-xs tracking-[0.2em] uppercase"
-            role="tablist"
-            aria-label="Investment phase"
-          >
-            {(["before", "after"] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                role="tab"
-                aria-selected={phase === p}
-                onClick={() => setPhase(p)}
-                className={`px-4 py-2 transition-colors ${
-                  phase === p
-                    ? "bg-signal font-bold text-on-signal"
-                    : "text-concrete hover:text-beige"
-                }`}
-              >
-                {p === "before" ? "Before" : "After"} investment
-              </button>
-            ))}
-          </div>
+        <div className="relative mt-5 grid text-base leading-8 text-concrete sm:text-lg sm:leading-9">
+          {FLOORS.flatMap((f) => [f.before, f.after]).map((text) => (
+            <p
+              key={text}
+              className={`[grid-area:1/1] ${text === body ? "" : "invisible"}`}
+            >
+              {text}
+            </p>
+          ))}
         </div>
-
-        <p className="mt-5 text-base leading-8 text-concrete sm:text-lg sm:leading-9">
-          {body}
-        </p>
       </div>
     </div>
   );
