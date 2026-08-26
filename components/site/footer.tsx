@@ -1,4 +1,12 @@
+import Link from "next/link";
 import { SITE, SOCIALS } from "@/lib/site";
+
+/* Deliberately footer-only — the nav stays four links and two buttons. */
+const PAGES = [
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/privacy", label: "Privacy" },
+] as const;
 
 export function SiteFooter() {
   return (
@@ -15,25 +23,36 @@ export function SiteFooter() {
             {SITE.address}
           </a>
         </div>
-        <ul className="flex flex-wrap gap-x-6 gap-y-2 text-xs tracking-widest text-concrete uppercase">
-          {SOCIALS.map((s) => (
-            <li key={s.label}>
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-signal"
-              >
-                {s.label.startsWith("YT") ? "YouTube" : s.label}
+        <div className="flex flex-col gap-3 sm:items-end">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-xs tracking-widest text-concrete uppercase">
+            {PAGES.map((p) => (
+              <li key={p.href}>
+                <Link href={p.href} className="hover:text-signal">
+                  {p.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-xs tracking-widest text-concrete uppercase">
+            {SOCIALS.map((s) => (
+              <li key={s.label}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-signal"
+                >
+                  {s.label.startsWith("YT") ? "YouTube" : s.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href={`mailto:${SITE.email}`} className="hover:text-signal">
+                Email
               </a>
             </li>
-          ))}
-          <li>
-            <a href={`mailto:${SITE.email}`} className="hover:text-signal">
-              Email
-            </a>
-          </li>
-        </ul>
+          </ul>
+        </div>
       </div>
     </footer>
   );

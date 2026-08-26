@@ -48,7 +48,7 @@ export function EventCard({
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[10px] tracking-[0.25em] text-steel uppercase">
+            <span className="text-[10px] tracking-[0.25em] text-concrete uppercase">
               no photo
             </span>
           </div>
@@ -58,7 +58,7 @@ export function EventCard({
         <time
           dateTime={event.startAt}
           className={`text-xs tracking-[0.2em] uppercase ${
-            past ? "text-steel" : "text-signal"
+            past ? "text-concrete" : "text-signal"
           }`}
         >
           {eventDate(event)}

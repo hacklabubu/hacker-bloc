@@ -75,7 +75,13 @@ export function TheStack() {
         aria-label="Floors"
       >
         {FLOORS.map((f) => (
-          <li key={f.id} className="border-b border-border last:border-b-0">
+          /* role=presentation: the list semantics are overridden by the
+             tablist, and a bare li under a tablist is an ARIA violation. */
+          <li
+            key={f.id}
+            role="presentation"
+            className="border-b border-border last:border-b-0"
+          >
             <button
               type="button"
               role="tab"
