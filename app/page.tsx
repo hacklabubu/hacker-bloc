@@ -8,18 +8,62 @@ import { FirstWave } from "@/components/site/first-wave";
 import { PhotoWall } from "@/components/site/photo-wall";
 import { TheStack } from "@/components/site/the-stack";
 import { getPastEvents, getUpcomingEvents } from "@/lib/luma";
-import { SITE } from "@/lib/site";
+import { getRules } from "@/lib/notion";
+import { FUNDING, SITE, SOCIALS, formatEurPlain } from "@/lib/site";
+
+/*
+ * Organization structured data, so search engines and agents get the house's
+ * name, address, and front door without parsing brutalist copy. Every value is
+ * read from lib/site.ts — nothing here is a second copy of the truth.
+ */
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Hacker Bloc",
+  url: SITE.url,
+  description:
+    "A brutalist hacker house in Warsaw where founders live and build. Eastern Bloc roots, Silicon Valley ambition — weekly meetups, monthly hackathons, and a hardware lab in the basement.",
+  email: SITE.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: SITE.postal.streetAddress,
+    postalCode: SITE.postal.postalCode,
+    addressLocality: SITE.postal.addressLocality,
+    addressCountry: SITE.postal.addressCountry,
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "community",
+    email: SITE.email,
+    url: `${SITE.url}/contact`,
+  },
+  sameAs: [...SOCIALS.map((s) => s.url), "https://hacklab.so"],
+};
 
 export default async function Home() {
-  const [upcomingAll, pastAll] = await Promise.all([
+  const [upcomingAll, pastAll, rules] = await Promise.all([
     getUpcomingEvents(),
     getPastEvents(),
+    /* Empty without NOTION_TOKEN — the section is omitted entirely. */
+    getRules(),
   ]);
   const upcoming = upcomingAll.slice(0, 6);
   const past = pastAll.slice(0, 6);
 
   return (
     <main id="top" className="flex-1">
+      {/*
+       * Escaping `<` keeps a stray HTML tag in any of these strings from
+       * breaking out of the script element — the pattern the Next.js JSON-LD
+       * guide prescribes.
+       */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="relative flex min-h-[calc(100svh-73px)] items-center overflow-x-clip px-4 py-10">
         <div className="mx-auto grid w-full max-w-6xl items-center gap-8 md:grid-cols-[1fr_1.25fr] md:gap-6">
@@ -98,8 +142,9 @@ export default async function Home() {
             <p>
               <span className="text-signal">We&apos;re fucked.</span>
               {" "}We moved in July 1st and the landlord wants to sell the house.
-              If you care about making Poland Europe&apos;s tech epicenter and
-              want to contribute — visit the{" "}
+              We need €{formatEurPlain(FUNDING.totalEur)}. €800k to buy it,
+              €200k to renovate and stand it up. If you care about making
+              Poland Europe&apos;s tech epicenter, visit the{" "}
               <Link
                 href="/sponsor"
                 className="text-signal underline underline-offset-4 hover:text-beige"
@@ -135,6 +180,35 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── HOUSE RULES ──────────────────────────────────── */}
+      {rules.length > 0 && (
+        <section
+          id="house-rules"
+          className="flex min-h-svh items-center border-y border-border"
+        >
+          <div className="mx-auto w-full max-w-6xl px-4 py-20">
+            <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
+              House rules
+            </h2>
+            <ol className="mt-10 max-w-3xl border-t border-border">
+              {rules.map((rule, i) => (
+                <li
+                  key={rule}
+                  className="flex gap-6 border-b border-border py-6"
+                >
+                  <span className="shrink-0 pt-1 text-sm font-bold tracking-[0.2em] text-signal tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-lg leading-8 text-beige sm:text-xl sm:leading-9">
+                    {rule}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
 
       {/* ── MISSION — THE FIRST WAVE ─────────────────────── */}
       <section

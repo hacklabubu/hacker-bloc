@@ -6,7 +6,15 @@ import Image from "next/image";
  * degrade identically when a shot hasn't landed yet. Expects a positioned
  * ancestor (the layers are absolutely placed).
  */
-export function PhotoLayer({ src, alt }: { src?: string; alt: string }) {
+export function PhotoLayer({
+  src,
+  alt,
+  priority = false,
+}: {
+  src?: string;
+  alt: string;
+  priority?: boolean;
+}) {
   if (src) {
     return (
       <Image
@@ -15,6 +23,8 @@ export function PhotoLayer({ src, alt }: { src?: string; alt: string }) {
         fill
         sizes="(min-width: 768px) 60vw, 100vw"
         className="object-cover"
+        priority={priority}
+        loading={priority ? "eager" : undefined}
       />
     );
   }
@@ -54,19 +64,21 @@ export function PhotoSlot({
   src,
   ratio = "4/3",
   className = "",
+  priority = false,
 }: {
   label: string;
   file: string;
   src?: string;
   ratio?: string;
   className?: string;
+  priority?: boolean;
 }) {
   return (
     <figure
       className={`group relative overflow-hidden border border-border bg-asphalt ${className}`}
-      style={{ aspectRatio: ratio }}
+      style={ratio ? { aspectRatio: ratio } : undefined}
     >
-      <PhotoLayer src={src} alt={label} />
+      <PhotoLayer src={src} alt={label} priority={priority} />
       <figcaption className="absolute inset-x-0 bottom-0 flex items-baseline justify-between gap-2 border-t border-border bg-charcoal/90 px-3 py-2">
         <span className="text-[10px] tracking-[0.2em] text-beige uppercase">
           {label}
