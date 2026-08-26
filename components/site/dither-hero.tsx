@@ -253,7 +253,17 @@ export function DitherHero() {
     };
 
     img.onload = start;
-    img.src = SRC;
+    /*
+     * Sample from a small optimized variant, not the 500KB original: the
+     * canvas immediately downscales to the glyph grid, so anything sharper
+     * than a few hundred pixels is wasted transfer. Fall back to the raw
+     * file if the optimizer route isn't available.
+     */
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = SRC;
+    };
+    img.src = `/_next/image?url=${encodeURIComponent(SRC)}&w=750&q=75`;
 
     return () => {
       cancelled = true;
@@ -269,9 +279,12 @@ export function DitherHero() {
       style={{ cursor: SQUARE_CURSOR }}
       className="relative mx-auto w-full max-w-none md:origin-center md:scale-125"
     >
-      <div
-        className={`isolate transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
-      >
+      {/*
+        The base image paints immediately — it is the LCP element, and hiding
+        it until the glyph animation booted pushed LCP behind a script. Only
+        the effect canvases fade in when ready.
+      */}
+      <div className="isolate">
         <Image
           src={SRC}
           alt={ALT}
@@ -279,6 +292,12 @@ export function DitherHero() {
           height={H}
           preload
           fetchPriority="high"
+          /*
+           * The image renders at ~62rem max and sits at 50% opacity under the
+           * glyph overlay, so it never needs the 2x/full-quality variant.
+           */
+          sizes="(min-width: 768px) 62rem, 100vw"
+          quality={50}
           className="h-auto max-h-[94svh] w-full max-w-none object-contain opacity-50 md:max-h-[min(96svh,62rem)]"
         />
         <canvas
@@ -286,14 +305,14 @@ export function DitherHero() {
           width={W}
           height={H}
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-contain"
+          className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
         />
         <canvas
           ref={glowRef}
           width={W}
           height={H}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full object-contain mix-blend-multiply"
+          className={`pointer-events-none absolute inset-0 h-full w-full object-contain mix-blend-multiply transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
         />
       </div>
     </div>
