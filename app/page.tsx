@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,10 @@ const organizationJsonLd = {
     url: `${SITE.url}/contact`,
   },
   sameAs: [...SOCIALS.map((s) => s.url), "https://hacklab.so"],
+};
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
 };
 
 export default async function Home() {
@@ -245,7 +250,8 @@ export default async function Home() {
               {upcoming.length > 0 ? (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {upcoming.map((e) => (
-                    <EventCard key={e.apiId} event={e} />
+                    /* h4: these sit under the "Upcoming" h3, not beside it. */
+                    <EventCard key={e.apiId} event={e} headingLevel={4} />
                   ))}
                 </div>
               ) : (
@@ -260,7 +266,7 @@ export default async function Home() {
               {past.length > 0 ? (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {past.map((e) => (
-                    <EventCard key={e.apiId} event={e} past />
+                    <EventCard key={e.apiId} event={e} past headingLevel={4} />
                   ))}
                 </div>
               ) : (

@@ -18,13 +18,27 @@ export function eventTime(e: LumaEvent) {
   });
 }
 
+/*
+ * The card's title level is the caller's to set, because the same card sits at
+ * two different depths: /sponsor drops it straight under an `<h2>` ("The house
+ * is running"), while the homepage nests it under the `<h3>` that splits
+ * upcoming from past. Left hardcoded at `h3` the homepage reads flat — every
+ * event title becomes a sibling of "Upcoming" rather than something under it.
+ *
+ * Purely structural: both levels render with the same classes, so nothing about
+ * the card moves.
+ */
 export function EventCard({
   event,
   past = false,
+  headingLevel = 3,
 }: {
   event: LumaEvent;
   past?: boolean;
+  headingLevel?: 3 | 4;
 }) {
+  const Heading = headingLevel === 4 ? "h4" : "h3";
+
   return (
     <a
       href={event.url}
@@ -65,9 +79,9 @@ export function EventCard({
           <span className="text-steel"> · </span>
           {eventTime(event)}
         </time>
-        <h3 className="mt-3 text-base font-medium leading-snug text-beige transition-colors group-hover:text-signal sm:text-lg">
+        <Heading className="mt-3 text-base font-medium leading-snug text-beige transition-colors group-hover:text-signal sm:text-lg">
           {event.name}
-        </h3>
+        </Heading>
         {event.address && (
           <p className="mt-auto pt-4 text-xs text-concrete">{event.address}</p>
         )}
