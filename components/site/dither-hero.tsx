@@ -273,7 +273,7 @@ export function DitherHero() {
      * fetchpriority=high LCP image, and deferring the boot only moved its
      * main-thread cost into the TBT window (measured: 70ms → 1,870ms).
      */
-    img.src = `/_next/image?url=${encodeURIComponent(SRC)}&w=750&q=75`;
+    img.src = `/_next/image?url=${encodeURIComponent(SRC)}&w=384&q=75`;
 
     return () => {
       cancelled = true;
