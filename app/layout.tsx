@@ -13,6 +13,9 @@ const display = Anton({
 const tech = Orbitron({
   variable: "--font-tech",
   subsets: ["latin"],
+  /* Only the countdown uses it — below the fold, not worth a preload
+     competing with the LCP image. */
+  preload: false,
 });
 
 const mono = JetBrains_Mono({
