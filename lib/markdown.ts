@@ -704,7 +704,7 @@ function privacyMarkdown(): string {
     "",
     "## What we collect",
     "",
-    `The [join form](${url("/join")}) asks for four things plus a category: your name, your email address, what you're building, and any links you want to show us (site, GitHub, X, whatever proves the point), along with whether you're applying as a founder, investor, media, factory, or partner. That is the whole form. There are no hidden fields, and nothing else about you is captured when you submit it.`,
+    `The [join form](${url("/join")}) asks for: what you're applying as (founder, investor, media, content, factory, or partner), your name, your Hacklab profile, how you can be useful, how you heard about us, what excites you most, and a confirmation that you've read the house rules. That is the whole form. There are no hidden fields, and nothing else about you is captured when you submit it.`,
     "",
     "If you email us or book a call instead, we obviously end up with whatever you put in that email or booking. Same rules apply.",
     "",
