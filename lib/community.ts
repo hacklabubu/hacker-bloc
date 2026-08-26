@@ -161,6 +161,7 @@ export const COMMUNITY_TABS: readonly CommunityRole[] = [
 
 /** Types people can select when applying (not core house team). */
 export const JOIN_TYPES = [
+  { value: "hacker", label: "Hacker" },
   { value: "founder", label: "Founder" },
   { value: "media", label: "Media" },
   { value: "investor", label: "Investor" },

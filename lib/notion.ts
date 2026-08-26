@@ -400,10 +400,13 @@ export async function getRules(): Promise<string[]> {
 
 export type ApplicationInput = {
   name: string;
-  email: string;
   type: JoinType;
-  building: string;
-  links: string;
+  /* "Hacklab profile" and "How can I help" mirror the members data source, so
+   * promoting an applicant to a member is a straight copy of those fields. */
+  hacklabProfile: string;
+  howCanIHelp: string;
+  heardAboutUs: string;
+  excitesYouMost: string;
 };
 
 function richTextValue(value: string) {
@@ -430,10 +433,18 @@ export async function createApplication(
         },
         properties: {
           Name: { title: richTextValue(input.name) },
-          Email: { email: input.email },
           Type: { select: { name: input.type } },
-          Building: { rich_text: richTextValue(input.building) },
-          Links: { rich_text: richTextValue(input.links) },
+          "Hacklab profile": { url: input.hacklabProfile },
+          "How can I help": { rich_text: richTextValue(input.howCanIHelp) },
+          "How did you hear about us": {
+            rich_text: richTextValue(input.heardAboutUs),
+          },
+          "What excites you most": {
+            rich_text: richTextValue(input.excitesYouMost),
+          },
+          /* The form refuses to submit without the confirmation, so a row
+           * existing implies it was checked. */
+          "Read the rules": { checkbox: true },
           Stage: { select: { name: "new" } },
         },
       }),
