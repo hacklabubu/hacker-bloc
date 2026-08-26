@@ -142,14 +142,6 @@ export function DitherHero() {
         }
       }
 
-      const draw = () => {
-        ctx.clearRect(0, 0, W, H);
-        for (let i = 0; i < chars.length; i++) {
-          ctx.fillStyle = colors[i];
-          ctx.fillText(chars[i], xs[i], ys[i]);
-        }
-      };
-
       /*
        * The first draw happens in slices behind the opacity-0 canvas: one
        * full pass on a dpr-scaled canvas is a long task exactly when the LCP
@@ -256,6 +248,13 @@ export function DitherHero() {
 
         if (now - lastRoll >= ROLL_MS) {
           lastRoll = now;
+          /*
+           * Dirty-cell redraw: only the ~7% of glyphs that reroll get
+           * repainted, instead of clearing and re-filling all ~5k every
+           * roll. Monospace glyph ink stays inside the cell advance, so a
+           * per-cell clear leaves the neighbours untouched. This is what
+           * keeps the idle animation's CPU cost near zero.
+           */
           for (let i = 0; i < chars.length; i++) {
             let chance = REROLL_CHANCE;
             if (pointerActive) {
@@ -264,9 +263,13 @@ export function DitherHero() {
               if (d < SHADE_RADIUS)
                 chance += AGITATE_CHANCE * (1 - d / SHADE_RADIUS);
             }
-            if (Math.random() < chance) chars[i] = randomChar();
+            if (Math.random() < chance) {
+              chars[i] = randomChar();
+              ctx.clearRect(xs[i] - CELL_W / 2, ys[i] - CELL_H / 2, CELL_W, CELL_H);
+              ctx.fillStyle = colors[i];
+              ctx.fillText(chars[i], xs[i], ys[i]);
+            }
           }
-          draw();
         }
       };
 
