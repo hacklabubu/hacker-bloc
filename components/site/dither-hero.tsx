@@ -150,9 +150,31 @@ export function DitherHero() {
         }
       };
 
-      draw();
-      setReady(true);
-      if (reduced) return;
+      /*
+       * The first draw happens in slices behind the opacity-0 canvas: one
+       * full pass on a dpr-scaled canvas is a long task exactly when the LCP
+       * image wants to paint. Nothing is visible until the last slice flips
+       * `ready`, so the chunking has no visual cost.
+       */
+      const SLICE = 900;
+      let drawn = 0;
+      const firstPaint = () => {
+        if (cancelled) return;
+        const end = Math.min(drawn + SLICE, chars.length);
+        for (let i = drawn; i < end; i++) {
+          ctx.fillStyle = colors[i];
+          ctx.fillText(chars[i], xs[i], ys[i]);
+        }
+        drawn = end;
+        if (drawn < chars.length) {
+          raf = requestAnimationFrame(firstPaint);
+          return;
+        }
+        setReady(true);
+        if (!reduced) run();
+      };
+
+      const run = () => {
 
       wrap.addEventListener("pointermove", onPointerMove);
       wrap.addEventListener("pointerleave", onPointerLeave);
@@ -248,7 +270,10 @@ export function DitherHero() {
         }
       };
 
-      raf = requestAnimationFrame(frame);
+        raf = requestAnimationFrame(frame);
+      };
+
+      raf = requestAnimationFrame(firstPaint);
     };
 
     img.onload = start;
