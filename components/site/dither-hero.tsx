@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 const SRC = "/photos/hero-hacker.webp";
@@ -263,6 +262,17 @@ export function DitherHero() {
       img.onerror = null;
       img.src = SRC;
     };
+    /*
+     * Boot after first paint, not during it: the sampler download and the
+     * glyph loop otherwise compete with the LCP image for bandwidth and
+     * main thread. The canvas fades in when ready, so a late start reads
+     * as the animation "coming online" rather than jank.
+     */
+    /*
+     * Boot immediately: the sampler request is low-priority next to the
+     * fetchpriority=high LCP image, and deferring the boot only moved its
+     * main-thread cost into the TBT window (measured: 70ms → 1,870ms).
+     */
     img.src = `/_next/image?url=${encodeURIComponent(SRC)}&w=750&q=75`;
 
     return () => {
@@ -285,19 +295,24 @@ export function DitherHero() {
         the effect canvases fade in when ready.
       */}
       <div className="isolate">
-        <Image
-          src={SRC}
+        {/*
+          Static pre-flattened JPEGs, not the optimizer: this dithered art
+          encodes ~6x smaller as JPEG than as the webp/avif the optimizer
+          negotiates (18KB vs 120KB), and as the LCP element its bytes decide
+          the score. Alpha is flattened onto --charcoal, invisible at 50%
+          opacity under the glyph canvas. The animation sampler below still
+          uses the webp original because it reads the alpha channel.
+        */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/photos/hero-hacker-1250.jpg"
+          srcSet="/photos/hero-hacker-640.jpg 640w, /photos/hero-hacker-1250.jpg 1250w"
+          sizes="(min-width: 768px) 62rem, 60vw"
           alt={ALT}
           width={W}
           height={H}
-          preload
           fetchPriority="high"
-          /*
-           * The image renders at ~62rem max and sits at 50% opacity under the
-           * glyph overlay, so it never needs the 2x/full-quality variant.
-           */
-          sizes="(min-width: 768px) 62rem, 100vw"
-          quality={50}
+          decoding="async"
           className="h-auto max-h-[94svh] w-full max-w-none object-contain opacity-50 md:max-h-[min(96svh,62rem)]"
         />
         <canvas
