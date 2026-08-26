@@ -1,0 +1,781 @@
+/*
+ * The markdown representation of every public page — the bytes an agent gets
+ * when it asks for `Accept: text/markdown` (see lib/accept.ts and proxy.ts).
+ *
+ * Authored, not scraped. https://acceptmarkdown.com/guides/generating-markdown
+ * lists three ways to produce the variant; runtime HTML-to-markdown is the
+ * worst of them here, because these pages are brutalist layout as much as
+ * they are prose — dithered hero canvases, before/after photo sliders, tab
+ * rows — and a turndown pass would hand agents the scaffolding it is the whole
+ * point to strip. So the prose below is written from the page components, and
+ * everything that is *data* is read from where the pages read it:
+ *
+ *   - lib/site.ts     — address, emails, funding numbers, partners, socials
+ *   - lib/community.ts — join types, authority buckets, ladder assembly
+ *   - lib/notion.ts   — live rules, house roles, members (revalidate 300)
+ *   - lib/luma.ts     — live event calendar (revalidate 1800)
+ *
+ * Prose that also exists in a component carries a pointer to it; when the copy
+ * on a page changes, its section here is the second place to change.
+ *
+ * Server-only by construction: the Notion helpers read NOTION_TOKEN, so this
+ * module must never be imported from a "use client" component.
+ */
+
+import {
+  AUTHORITY_BUCKETS,
+  COMMUNITY_TABS,
+  JOIN_TYPES,
+  authorityLadder,
+  groupMembersByAuthority,
+  groupMembersByRole,
+  houseRoleBadges,
+  type CommunityRole,
+  type HouseRole,
+  type Member,
+} from "@/lib/community";
+import { getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
+import {
+  getCommunityRoles,
+  getHouseRoleLevels,
+  getHouseRoles,
+  getMembers,
+  getRules,
+} from "@/lib/notion";
+import {
+  FUNDING,
+  LUMA,
+  PARTNERS,
+  SITE,
+  SOCIALS,
+  formatEur,
+  formatEurPlain,
+} from "@/lib/site";
+
+/* ── page registry ─────────────────────────────────────────────── */
+
+/*
+ * Every path that has a markdown representation, in sitemap order. The keys are
+ * the canonical, extensionless, trailing-slash-free paths — normalizePath below
+ * is what guarantees a request arrives in that shape.
+ *
+ * Anything not in here 404s with markdownNotFound(), which is the point of item
+ * two in the audit: an agent that asks for markdown at a dead URL should be
+ * handed the way back in, not a wall of branded HTML.
+ */
+const PAGES: Record<string, () => string | Promise<string>> = {
+  "/": homeMarkdown,
+  "/community": communityMarkdown,
+  "/rules": rulesMarkdown,
+  "/join": joinMarkdown,
+  "/partners": partnersMarkdown,
+  "/sponsor": sponsorMarkdown,
+  "/about": aboutMarkdown,
+  "/contact": contactMarkdown,
+  "/privacy": privacyMarkdown,
+};
+
+/*
+ * Canonical form of a request path: leading slash, no trailing slash.
+ *
+ * Deliberately case-sensitive, because Next's own routing is: /ABOUT is a 404
+ * as HTML, so it has to be a 404 as markdown too. Lower-casing here would hand
+ * an agent a 200 at a URL a browser cannot reach.
+ */
+export function normalizePath(pathname: string): string {
+  const withSlash = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  const trimmed = withSlash.length > 1 ? withSlash.replace(/\/+$/, "") : withSlash;
+  return trimmed || "/";
+}
+
+/** The markdown for a path, or `null` when nothing lives there. */
+export async function markdownFor(pathname: string): Promise<string | null> {
+  const build = PAGES[normalizePath(pathname)];
+  if (!build) return null;
+  return await build();
+}
+
+/* ── shared furniture ──────────────────────────────────────────── */
+
+const LLMS_TXT = `${SITE.url}/llms.txt`;
+const SITEMAP = `${SITE.url}/sitemap.xml`;
+
+function url(path: string): string {
+  return path === "/" ? `${SITE.url}/` : `${SITE.url}${path}`;
+}
+
+/*
+ * The header every markdown page opens with: what this document is, what it is
+ * the markdown of, and the two files that map the rest of the site. Kept to
+ * four lines — an agent paying for this in tokens should reach the content fast.
+ */
+function doc(path: string, title: string, body: string): string {
+  return [
+    `# ${SITE.name} — ${title}`,
+    "",
+    `> Markdown representation of ${url(path)} — the same content this URL serves as HTML.`,
+    `> Agent guide: ${LLMS_TXT} · Sitemap: ${SITEMAP}`,
+    "",
+    "---",
+    "",
+    body.trim(),
+    "",
+    "---",
+    "",
+    `_${SITE.name} · ${SITE.address} · ${SITE.email}_`,
+    "",
+  ].join("\n");
+}
+
+/** Bulleted list, empty-safe. */
+function list(items: readonly string[]): string {
+  return items.map((item) => `- ${item}`).join("\n");
+}
+
+/** Numbered list starting at 1. */
+function ordered(items: readonly string[]): string {
+  return items.map((item, i) => `${i + 1}. ${item}`).join("\n");
+}
+
+const WARSAW_DATE = new Intl.DateTimeFormat("en-GB", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "Europe/Warsaw",
+});
+
+function eventLine(event: LumaEvent): string {
+  const when = WARSAW_DATE.format(new Date(event.startAt));
+  const where = event.address ? ` — ${event.address}` : "";
+  return `**${event.name}** — ${when} (Europe/Warsaw)${where} — [RSVP](${event.url})`;
+}
+
+/* ── / ─────────────────────────────────────────────────────────── */
+
+/*
+ * Floor copy mirrors the "before" side of FLOORS in
+ * components/site/the-stack.tsx — the state the house is in today, which is
+ * what the slider shows at rest. The "after" halves are the renovation pitch
+ * and live on /sponsor instead.
+ */
+const FLOORS = [
+  ["Dorms", "Sleeping floor. Bunks and dorm space for founders crashing during builds and hackathons."],
+  ["Office", "The social floor. Meetups, demos, long tables, and the room where the house actually gathers."],
+  ["Studio", "Hacklab office and studio. Day-to-day work floor — desks, recording, and shipping in progress."],
+  ["Garden", "Outdoor yard and BBQ. Soft entry into the bloc — grill smoke, whiteboards, stranger friends."],
+  ["Dungeons", "Hardware lab below street level, run with Epicor. Solder, CNC, GPUs."],
+] as const;
+
+/* components/site/first-wave.tsx */
+const MANIFESTO = [
+  "Warsaw has the talent. It never had the room. HACKER BLOC is the room — a brutalist block with Eastern Bloc roots and Silicon Valley ambition, wired for the people who build instead of pitching.",
+  "We are not coworking. We are not an incubator. We are not a theoretical nonprofit. We put our own money, weekends, and power tools into this building, and it shows.",
+  "The first wave is the founding crew: the ones who showed up when the dungeons were still dark, ran cable through concrete, hosted the first BBQs, and shipped the first hackathon before the paint dried.",
+  "Everything here is skin in the game. Sponsors power it, residents run it, and nobody rents a desk — you earn a spot by building things that work.",
+] as const;
+
+async function homeMarkdown(): Promise<string> {
+  const [upcomingAll, pastAll, rules] = await Promise.all([
+    getUpcomingEvents(),
+    getPastEvents(),
+    getRules(),
+  ]);
+  const upcoming = upcomingAll.slice(0, 6);
+  const past = pastAll.slice(0, 6);
+
+  const sections: string[] = [];
+
+  sections.push(
+    [
+      "Eastern Bloc roots. Silicon Valley ambition.",
+      "",
+      `A hacker house at ${SITE.address} (${SITE.district}, ${SITE.city}).`,
+      "",
+      `[Join](${url("/join")}) · [Sponsor](${url("/sponsor")})`,
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## What is it?",
+      "",
+      "- **Floors 0–2** — a hacker house in Warsaw where we live and build our startups: [Hacklab](https://hacklab.so) and [Epikor](https://epikor.eu).",
+      "- **Floor −1** — a mini hackerspace where Warsaw founders learn, prototype, and ship MVPs — get first users, early feedback, and learn from each other.",
+      `- **We're fucked.** We moved in July 1st and the landlord wants to sell the house. We need €${formatEurPlain(FUNDING.totalEur)}. €${formatEurPlain(FUNDING.buildingEur)} to buy it, €${formatEurPlain(FUNDING.setupEur)} to renovate and stand it up. If you care about making Poland Europe's tech epicenter, visit the [sponsor page](${url("/sponsor")}) or [book a meeting](${SITE.calendlyUrl}) with us directly.`,
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## Floors",
+      "",
+      list(FLOORS.map(([name, body]) => `**${name}** — ${body}`)),
+    ].join("\n"),
+  );
+
+  /* Same condition the page renders under: no rules from the CRM, no section. */
+  if (rules.length > 0) {
+    sections.push(
+      [
+        "## House rules",
+        "",
+        ordered(rules),
+        "",
+        `The rules in full, plus who decides what: ${url("/rules")}`,
+      ].join("\n"),
+    );
+  }
+
+  sections.push(
+    ["## Mission — The First Wave", "", MANIFESTO.map((p) => `> ${p}`).join("\n>\n")].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## Events",
+      "",
+      "Live from the house calendar — this list is the source of truth for dates.",
+      "",
+      "### Upcoming",
+      "",
+      upcoming.length > 0 ? list(upcoming.map(eventLine)) : "No upcoming events yet.",
+      "",
+      "### Past",
+      "",
+      past.length > 0 ? list(past.map(eventLine)) : "No past events yet.",
+      "",
+      `Full calendar: ${LUMA.calendarUrl}`,
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## Proof of life",
+      "",
+      "A photo wall of the house as it actually is — events, builds, unfinished walls. Images only; nothing here reads as text.",
+      "",
+      "## Error 529",
+      "",
+      "The house vlog, on YouTube: https://youtube.com/@hacklabubu",
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## Powered by",
+      "",
+      `A 100% private initiative by the founders of Hacklab and the founder of Epicor. ${PARTNERS.motto}.`,
+      "",
+      list(PARTNERS.wall.map((p) => `[${p.name}](${p.href}) — ${p.role}`)),
+    ].join("\n"),
+  );
+
+  return doc("/", "The Bloc", sections.join("\n\n"));
+}
+
+/* ── /rules ────────────────────────────────────────────────────── */
+
+async function rulesMarkdown(): Promise<string> {
+  const [rules, houseRoles, members] = await Promise.all([
+    getRules(),
+    getHouseRoles(),
+    getMembers(),
+  ]);
+  const ladder = authorityLadder(houseRoles, members);
+
+  const sections: string[] = [
+    "Read them before you show up. We are not a hostel, not a coworking, not a party flat — we are laser focused on building Hacklab.",
+  ];
+
+  if (ladder.length > 0) {
+    sections.push(
+      [
+        "## The hierarchy",
+        "",
+        "Who decides, before what is decided — the rules below read differently once you know which rung you are standing on. Highest rung first.",
+        "",
+        ladder
+          .map((step) => {
+            const lines = [`### ${step.names.join(" / ")} — level ${step.level}`];
+            if (step.responsibilities) lines.push("", step.responsibilities);
+            if (step.members.length > 0) {
+              lines.push("", `On this rung: ${step.members.join(", ")}.`);
+            }
+            return lines.join("\n");
+          })
+          .join("\n\n"),
+      ].join("\n"),
+    );
+  }
+
+  sections.push(
+    [
+      "## The rules",
+      "",
+      rules.length > 0
+        ? ordered(rules)
+        : "Rules are being written — ask hacker daddy.",
+    ].join("\n"),
+  );
+
+  sections.push(
+    `The people standing on the ladder above: ${url("/community")}. Applying means confirming you read this page: ${url("/join")}.`,
+  );
+
+  return doc("/rules", "House rules", sections.join("\n\n"));
+}
+
+/* ── /community ────────────────────────────────────────────────── */
+
+/** One member as a markdown bullet — name, rank, what they build, how to reach them. */
+function memberLine(member: Member, houseRoles: readonly HouseRole[]): string {
+  const parts: string[] = [`**${member.name}**`];
+
+  const badges = houseRoleBadges(member, houseRoles);
+  if (badges.length > 0) parts.push(badges.join(" / "));
+  if (member.status === "alumni") parts.push("alumni");
+  if (member.building) parts.push(`building ${member.building}`);
+  if (member.communityRoles.length > 0) {
+    parts.push(`brings ${member.communityRoles.join(", ")}`);
+  }
+
+  /* The same four actions the profile panel offers, in the same order. */
+  const links: string[] = [];
+  if (member.hacklabProfile) links.push(`[Hacklab profile](${member.hacklabProfile})`);
+  if (member.link) links.push(`[Link](${member.link})`);
+  if (member.bookingLink) links.push(`[Book](${member.bookingLink})`);
+  if (member.email) links.push(`[Email](mailto:${member.email})`);
+  if (links.length > 0) parts.push(links.join(" · "));
+
+  return parts.join(" — ");
+}
+
+function memberGroups(
+  groups: readonly CommunityRole[],
+  byGroup: Record<string, Member[]>,
+  houseRoles: readonly HouseRole[],
+): string {
+  return groups
+    .map((group) => {
+      const bucket = byGroup[group.id] ?? [];
+      const lines = [`### ${group.name} (${bucket.length})`];
+      if (group.description) lines.push("", group.description);
+      lines.push(
+        "",
+        bucket.length > 0
+          ? list(bucket.map((m) => memberLine(m, houseRoles)))
+          : "Nobody here yet.",
+      );
+      return lines.join("\n");
+    })
+    .join("\n\n");
+}
+
+async function communityMarkdown(): Promise<string> {
+  const [notionRoles, members, houseRoles, houseRoleLevels] = await Promise.all([
+    getCommunityRoles(),
+    getMembers(),
+    getHouseRoles(),
+    getHouseRoleLevels(),
+  ]);
+  /* Same fallback the page uses when the CRM is unreachable. */
+  const roles = notionRoles.length > 0 ? notionRoles : COMMUNITY_TABS;
+  const membersByRole = groupMembersByRole(members, roles, houseRoles);
+  const rankable = houseRoleLevels.some((role) => role.level !== null);
+  const membersByAuthority = groupMembersByAuthority(members, houseRoleLevels);
+
+  const sections: string[] = [
+    [
+      "Everyone around the bloc, ranked by how much say they have in the house.",
+      "",
+      `How the house works — the authority hierarchy and the rules: ${url("/rules")}`,
+      "",
+      `${members.length} ${members.length === 1 ? "person" : "people"} listed. Each person appears once per group they belong to; the links are the ones they chose to publish.`,
+    ].join("\n"),
+  ];
+
+  if (rankable) {
+    sections.push(
+      [
+        "## By authority",
+        "",
+        "A rank, not a collection — everyone sits in exactly one rung, the highest one they hold.",
+        "",
+        memberGroups(AUTHORITY_BUCKETS, membersByAuthority, houseRoles),
+      ].join("\n"),
+    );
+  }
+
+  sections.push(
+    [
+      "## By role",
+      "",
+      "What someone is here as. Holding two roles means appearing under both.",
+      "",
+      memberGroups(roles, membersByRole, houseRoles),
+    ].join("\n"),
+  );
+
+  sections.push(
+    `There is no member directory API — this page is the directory. To be on it, apply: ${url("/join")}`,
+  );
+
+  return doc("/community", "Community", sections.join("\n\n"));
+}
+
+/* ── /join ─────────────────────────────────────────────────────── */
+
+/*
+ * The form is a client component posting to a server action
+ * (app/actions/join.ts), so there is nothing an agent can usefully submit from
+ * here — what it needs is what the form asks and where the answers go.
+ */
+function joinMarkdown(): string {
+  const body = [
+    "Apply to the house. Ambitious founders only — we review every application.",
+    "",
+    `The form at ${url("/join")} is the only route in. Emailing an application instead gets it read later, if at all.`,
+    "",
+    "## What the form asks",
+    "",
+    ordered([
+      `**I am a** — one of: ${JOIN_TYPES.map((t) => t.label.toLowerCase()).join(", ")}.`,
+      "**Name.**",
+      "**Hacklab profile** — e.g. `hacklab.so/your-handle`.",
+      "**How can you be useful to our community?** — skills, projects, intros; what you actually bring to the bloc.",
+      "**How did you hear about our community?**",
+      "**What are you most excited about?** — what would be the highest value we could give you.",
+      `**Confirmation that you read the house rules** (${url("/rules")}). We want you to read them for real.`,
+    ]),
+    "",
+    "## What happens to it",
+    "",
+    `Submissions land in our Notion CRM and are mirrored to a Postgres backup. We read everything. What is collected, how long it is kept, and how to have it deleted: ${url("/privacy")}`,
+    "",
+    "## Before you apply",
+    "",
+    list([
+      `The house rules and the authority hierarchy: ${url("/rules")}`,
+      `Who is already here: ${url("/community")}`,
+      `Questions that are not an application: ${url("/contact")}`,
+    ]),
+  ].join("\n");
+
+  return doc("/join", "Join", body);
+}
+
+/* ── /about ────────────────────────────────────────────────────── */
+
+function aboutMarkdown(): string {
+  const body = [
+    `Warsaw has the talent. It never had the room. Hacker Bloc is the room — a house at ${SITE.address} (${SITE.mapsUrl}) where people live where they build, instead of commuting to a desk they rent.`,
+    "",
+    "## The house",
+    "",
+    "Floors 0–2 are where we live and work: [Hacklab](https://hacklab.so) gets built here every day, alongside [Epikor](https://epikor.eu). Dorms for founders crashing through a build, a studio floor of desks and cameras, an office floor that turns into an event hall, and a garden that runs on grill smoke and whiteboards.",
+    "",
+    "Floor −1 is the dungeons: a hardware lab below street level, run with Epicor. Solder, CNC, GPUs, bench space. It is the reason a hardware hackathon here is a real thing rather than a slide.",
+    "",
+    "We are not coworking. We are not an incubator. We are not a party flat and not a theoretical nonprofit. We put our own money, weekends, and power tools into this building, and it shows in every unfinished wall.",
+    "",
+    "## What happens here",
+    "",
+    `Weekly meetups, demo nights, workshops, and hackathons — Warsaw founders come to prototype, ship an MVP, find first users, and get feedback from people who have already shipped. The upcoming and past events are listed on [the homepage](${url("/")}), straight off our public calendar.`,
+    "",
+    `Nobody rents a desk. You earn a spot by building things that work. The community is a ladder rather than a membership list: everyone around the bloc sits somewhere on it, and where you stand decides what you get a say in. The rungs and the responsibilities attached to them are written down on [the rules page](${url("/rules")}), and the people are on [the community page](${url("/community")}).`,
+    "",
+    "## Who runs it",
+    "",
+    `A 100% private initiative by the founders of Hacklab and the founder of Epicor. No grant office, no city programme, no landlord-with-a-vision. ${PARTNERS.operating.name} is the operating partner and runs the dungeons; the residents run the house. Everything is skin in the game — sponsors power it, residents keep it standing.`,
+    "",
+    `Eastern Bloc roots, Silicon Valley ambition: a concrete block in ${SITE.district}, run with the expectation that what leaves it competes globally. That is the whole thesis, and it is why the building matters.`,
+    "",
+    `We moved in on July 1st and the landlord wants to sell. Keeping the house means raising €${formatEurPlain(FUNDING.totalEur)} — €${formatEurPlain(FUNDING.buildingEur)} to buy ${SITE.postal.streetAddress} and €${formatEurPlain(FUNDING.setupEur)} to renovate and stand it up. The numbers, the lanes, and what a sponsor actually gets are on [the sponsor page](${url("/sponsor")}).`,
+    "",
+    "---",
+    "",
+    `[Apply to the house](${url("/join")}) · [Talk to us](${url("/contact")})`,
+  ].join("\n");
+
+  return doc("/about", "About", body);
+}
+
+/* ── /contact ──────────────────────────────────────────────────── */
+
+/* app/contact/page.tsx REASONS */
+const REASONS = [
+  ["Events", "Hosting, speaking, co-running a hackathon, or bringing a group through the dungeons."],
+  ["Joining", "Questions before you apply. The application itself goes through the join form, not the inbox."],
+  ["Sponsoring", "Money, machines, or shop time toward buying the building. Read the sponsor page first, then write."],
+  ["Press", "Interviews, filming in the house, photos. Tell us what you need and when."],
+] as const;
+
+function contactMarkdown(): string {
+  const body = [
+    "One inbox, one address, one calendar. We read everything and answer the things worth answering.",
+    "",
+    "## Direct",
+    "",
+    list([
+      `**Email** — ${SITE.email}`,
+      `**Sponsorship** — ${SITE.sponsorEmail}`,
+      `**The house** — ${SITE.address} (${SITE.district}) — ${SITE.mapsUrl} — don't just show up, write first.`,
+      `**Book a call** — 30 minutes, straight in the calendar: ${SITE.calendlyUrl}`,
+    ]),
+    "",
+    "## What to write about",
+    "",
+    list(REASONS.map(([title, body]) => `**${title}** — ${body}`)),
+    "",
+    `Applying to the house? Don't email — fill in [the join form](${url("/join")}). It lands in the CRM where we actually review applications, and an email lands in a pile where we might not.`,
+    "",
+    "## Elsewhere",
+    "",
+    list(
+      SOCIALS.map((s) => {
+        const label = s.label.startsWith("YT") ? "YouTube" : s.label;
+        return `${label} — ${s.handle} — ${s.url}`;
+      }),
+    ),
+  ].join("\n");
+
+  return doc("/contact", "Contact", body);
+}
+
+/* ── /partners ─────────────────────────────────────────────────── */
+
+function partnersMarkdown(): string {
+  const body = [
+    "Who powers the house.",
+    "",
+    list(PARTNERS.wall.map((p) => `**${p.name}** — ${p.role} — ${p.href}`)),
+    "",
+    `${PARTNERS.operating.name} is the ${PARTNERS.operating.role}.`,
+    "",
+    `Empty logo slots are still empty. [Become a sponsor](${url("/sponsor")}).`,
+  ].join("\n");
+
+  return doc("/partners", "Partners", body);
+}
+
+/* ── /sponsor ──────────────────────────────────────────────────── */
+
+/* app/sponsor/page.tsx OBJECTS / LANES / NO_LIST */
+const OBJECTS = [
+  [
+    formatEur(FUNDING.buildingEur),
+    "The building",
+    `Buy ${SITE.postal.streetAddress}. The deed, the ground, the rooms the house already lives in. Without this there is no Bloc.`,
+  ],
+  [
+    "Setup",
+    "Dungeons",
+    "Wire the basement. Benches, machines, power. Epicor already runs the shop — this money makes it a lab, not a dark room.",
+  ],
+  [
+    "Setup",
+    "Live floors",
+    "Beds, the event hall, the garden kitchen. Renovation and setup so founders can sleep, demo, and eat where they build.",
+  ],
+] as const;
+
+const LANES = [
+  [
+    "Patron",
+    "Money",
+    "Name on the wall. First dinners. A floor that exists because you wrote the cheque.",
+  ],
+  [
+    "Factory",
+    "Machines, parts, shop time",
+    "Your bench in the dungeon. Workshop nights. Hiring access to people who already solder.",
+  ],
+  [
+    "Investor",
+    "Time and capital",
+    "Demo nights, founder dinners, intros — before a deck exists. Sit in the room, not the inbox.",
+  ],
+] as const;
+
+const NO_LIST = [
+  "We are not coworking.",
+  "We are not an incubator.",
+  "We are not a lobby billboard.",
+  "You do not buy the right to turn this into WeWork with stickers.",
+] as const;
+
+async function sponsorMarkdown(): Promise<string> {
+  const upcoming = (await getUpcomingEvents()).slice(0, 3);
+
+  const sections: string[] = [];
+
+  sections.push(
+    [
+      `## Keep the house — €${formatEurPlain(FUNDING.totalEur)}`,
+      "",
+      `Moved in 1 July 2026 · ${SITE.district} · ${SITE.city}`,
+      "",
+      `[Book 30 min](${SITE.calendlyUrl}) · Email ${SITE.sponsorEmail}`,
+      "",
+      "We rented a hacker house to build [hacklab.so](https://hacklab.so) from it. During this process we built an incredible community and realized this is exactly what the next generation of founders need. A place where 24/7 founders live, build and talk about startups.",
+      "",
+      "We are already helping founders in the earliest stages, explaining SAFEs, fundraising, helping with tech and prototypes, connecting with VCs, finding first customers, cofounders and investors.",
+      "",
+      "This isn't a rational investment in real estate. With current rent, which is the max what we can afford, your ROI will be ~2.5%. This is an investment that really can help young founders with doing their first steps and coming from 0 to 1. The earliest, dirtiest and hardest founder days will be happening here.",
+      "",
+      "We just ask you to buy this house and let us live here for some more years before Hacklab will be able to buy back the property from you.",
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## The split",
+      "",
+      list([
+        `**${formatEur(FUNDING.buildingEur)} — the building.** Buy the house. ${formatEur(FUNDING.buildingEur)} for ${SITE.postal.streetAddress} so Warsaw keeps a building where founders live and ship.`,
+        `**${formatEur(FUNDING.setupEur)} — renovation + setup.** Stand it up. Floors, power, dungeons, beds, the room that holds a hundred people. The house works. It is not finished.`,
+      ]),
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## What the money buys",
+      "",
+      "Objects you can point at. Not vibes.",
+      "",
+      list(OBJECTS.map(([tag, title, body]) => `**${title}** (${tag}) — ${body}`)),
+    ].join("\n"),
+  );
+
+  sections.push(
+    [
+      "## Three ways in",
+      "",
+      LANES.map(
+        ([title, give, get], i) =>
+          `### ${String(i + 1).padStart(2, "0")} ${title}\n\nGives ${give.toLowerCase()}. Gets: ${get}`,
+      ).join("\n\n"),
+    ].join("\n"),
+  );
+
+  sections.push(["## What you do not buy", "", list(NO_LIST)].join("\n"));
+
+  sections.push(
+    [
+      "## Already in",
+      "",
+      `A private initiative. These two put the house on its feet. Empty logo slots live on [Partners](${url("/partners")}).`,
+      "",
+      list(PARTNERS.wall.map((p) => `[${p.name}](${p.href}) — ${p.role}`)),
+    ].join("\n"),
+  );
+
+  /* Same condition the page renders the proof strip under. */
+  if (upcoming.length > 0) {
+    sections.push(
+      [
+        "## The house is running",
+        "",
+        "Live calendar. Show up before you write anything.",
+        "",
+        list(upcoming.map(eventLine)),
+      ].join("\n"),
+    );
+  }
+
+  sections.push(
+    [
+      "## Book the meeting",
+      "",
+      "Tell us who you are and which lane. We talk about the building, not a partnership brochure.",
+      "",
+      list([`Book 30 min: ${SITE.calendlyUrl}`, `Email: ${SITE.sponsorEmail}`]),
+    ].join("\n"),
+  );
+
+  return doc("/sponsor", "Sponsor", sections.join("\n\n"));
+}
+
+/* ── /privacy ──────────────────────────────────────────────────── */
+
+function privacyMarkdown(): string {
+  const body = [
+    "Short version: the only personal data we collect is what you type into the join form. We use it to read your application and to write back. We don't sell it, we don't track you around the web, and you can have it deleted by asking.",
+    "",
+    "## What we collect",
+    "",
+    `The [join form](${url("/join")}) asks for four things plus a category: your name, your email address, what you're building, and any links you want to show us (site, GitHub, X, whatever proves the point), along with whether you're applying as a founder, investor, media, factory, or partner. That is the whole form. There are no hidden fields, and nothing else about you is captured when you submit it.`,
+    "",
+    "If you email us or book a call instead, we obviously end up with whatever you put in that email or booking. Same rules apply.",
+    "",
+    "## Where it goes",
+    "",
+    "Submissions are written to our Notion workspace, which is the CRM we review applications in, and mirrored into a Neon Postgres database as a backup so a Notion outage can't lose your application. The site itself runs on Vercel, so requests pass through Vercel's infrastructure on the way there. All three act as processors on our instructions, and all three are US providers — the backup database currently runs in a US region — so your data is transferred outside the EEA under their standard contractual clauses.",
+    "",
+    "Access is limited to the people in the house who review applications. We do not sell your data, we do not rent it, and we do not hand it to sponsors, partners, or anyone else for their own marketing.",
+    "",
+    "## Why we're allowed to",
+    "",
+    "You asked us to consider you. Under the GDPR, that's our legitimate interest in reviewing an application you sent us and contacting you about it — nothing more. We do not use the form to build a mailing list, and we won't send you unrelated broadcasts.",
+    "",
+    `Members shown on the [community page](${url("/community")}) are people who are part of the house and whose profile we publish with their agreement. Applicants are never published.`,
+    "",
+    "## Tracking",
+    "",
+    "There is no analytics on this site. No Google Analytics, no Plausible, no PostHog, no pixels, no advertising tags, and no cookie banner, because we don't set cookies to track you. Fonts and event images are served from our own domain rather than fetched from someone else's, so loading a page here doesn't announce you to a third party. Links you click through to — the event calendar, the booking link, our social profiles — run under their own privacy policies, not ours.",
+    "",
+    "Our hosting provider keeps standard server logs (IP address, page requested, timestamp) for operational and security reasons, the way every web server does.",
+    "",
+    "## How long we keep it",
+    "",
+    "Until you ask us to delete it. Applications stay in the CRM because the house is a long game — someone who was too early in spring is often exactly right by autumn, and we'd rather re-read your application than make you rewrite it. If you'd rather not be on that list, say so and you're off it.",
+    "",
+    "## Your rights",
+    "",
+    `You can ask for a copy of what we hold on you, ask us to correct it, ask us to delete it, or object to us holding it at all. Email ${SITE.email} from the address you applied with — or tell us which address to look for — and we'll handle it, from both Notion and the Postgres backup, within 30 days. No form, no fee, no argument.`,
+    "",
+    "If we get it wrong, you can complain to your local data protection authority; in Poland that is the President of the Personal Data Protection Office (UODO). We'd rather you told us first.",
+    "",
+    `Questions about any of this go to the same address as everything else: ${url("/contact")}`,
+  ].join("\n");
+
+  return doc("/privacy", "Privacy", body);
+}
+
+/* ── 404 ───────────────────────────────────────────────────────── */
+
+/*
+ * The markdown half of the branded 404 in app/not-found.tsx. An agent that
+ * guessed a URL wrong needs one line telling it so and the shortest path back
+ * to something real — the two machine-readable maps first, then the rooms that
+ * do exist.
+ */
+export function markdownNotFound(pathname: string): string {
+  const requested = normalizePath(pathname);
+
+  return [
+    `# ${SITE.name} — 404`,
+    "",
+    `> No such page: ${requested}. Nothing lives at this address.`,
+    `> Agent guide: ${LLMS_TXT} · Sitemap: ${SITEMAP}`,
+    "",
+    "---",
+    "",
+    "## Try instead",
+    "",
+    list([
+      `[Home](${url("/")}) — the house, the floors, the house rules, the events, the funding ask`,
+      `[Community](${url("/community")}) — everyone around the bloc`,
+      `[Rules](${url("/rules")}) — who decides what, and the house rules`,
+      `[Join](${url("/join")}) — apply to the house`,
+      `[Sponsor](${url("/sponsor")}) — the €${formatEurPlain(FUNDING.totalEur)} ask`,
+      `[Partners](${url("/partners")}) — who powers the house`,
+      `[About](${url("/about")}) — the house and who runs it`,
+      `[Contact](${url("/contact")}) — email, address, calendar`,
+      `[Privacy](${url("/privacy")}) — what the join form collects`,
+    ]),
+    "",
+    `Every page above serves this same markdown when asked with \`Accept: text/markdown\`.`,
+    "",
+  ].join("\n");
+}

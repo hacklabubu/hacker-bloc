@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anton, Orbitron, JetBrains_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteNav } from "@/components/site/nav";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 const display = Anton({
@@ -24,12 +25,30 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
     default: "HACKER BLOC — The bloc where Warsaw builds",
     template: "%s // HACKER BLOC",
   },
   description:
     "A brutalist hacker house in Warsaw. Eastern Bloc roots, Silicon Valley ambition. Weekly meetups, monthly hackathons, free for founders, forever.",
+  openGraph: {
+    type: "website",
+    siteName: "HACKER BLOC",
+    url: "/",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Hacker Bloc — the crowd at a house event",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og.jpg"],
+  },
   manifest: "/site.webmanifest",
   icons: {
     icon: [
