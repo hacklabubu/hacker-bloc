@@ -7,6 +7,7 @@ import { BlocMark } from "@/components/site/logo";
 const LINKS = [
   { href: "/", label: "The Bloc" },
   { href: "/community", label: "Community" },
+  { href: "/rules", label: "Rules" },
   { href: "/partners", label: "Partners" },
 ] as const;
 
@@ -16,7 +17,11 @@ export function SiteNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-charcoal/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-2 text-[10px] tracking-widest uppercase sm:text-xs">
-        <Link href="/" className="flex shrink-0 items-center gap-2 text-beige">
+        <Link
+          href="/"
+          aria-label="Hacker Bloc — home"
+          className="flex shrink-0 items-center gap-2 text-beige"
+        >
           <BlocMark className="h-6 w-auto text-signal" />
         </Link>
         <nav

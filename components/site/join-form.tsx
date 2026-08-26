@@ -68,6 +68,24 @@ export function JoinForm() {
       </div>
       <div>
         <label
+          htmlFor="join-email"
+          className="mb-2 block text-xs tracking-[0.2em] text-concrete uppercase"
+        >
+          Email
+        </label>
+        <input
+          id="join-email"
+          name="email"
+          type="email"
+          required
+          maxLength={254}
+          autoComplete="email"
+          placeholder="you@domain.com"
+          className={FIELD}
+        />
+      </div>
+      <div>
+        <label
           htmlFor="join-building"
           className="mb-2 block text-xs tracking-[0.2em] text-concrete uppercase"
         >
