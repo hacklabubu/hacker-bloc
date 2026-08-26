@@ -340,7 +340,7 @@ export function DitherHero() {
           width={W}
           height={H}
           fetchPriority="high"
-          decoding="async"
+          decoding="sync"
           className="h-auto max-h-[94svh] w-full max-w-none object-contain opacity-50 md:max-h-[min(96svh,62rem)]"
         />
         <canvas
