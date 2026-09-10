@@ -27,9 +27,11 @@ export function SiteNav() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  /* The one call to action in the nav: create an account, or, once signed
+   * in, the members area. Accounts are step one; payment comes after. */
   const account = signedIn
     ? { href: "/members", label: "Members" }
-    : { href: "/auth/sign-up", label: "Sign up" };
+    : { href: "/auth/sign-up", label: "Join" };
 
   return (
     <header className="terminal-nav">
@@ -47,15 +49,14 @@ export function SiteNav() {
               {link.label}
             </Link>
           ))}
-          {AUTH_CONFIGURED ? (
-            <Link
-              href={account.href}
-              aria-current={pathname === account.href ? "page" : undefined}
-            >
-              {account.label}
-            </Link>
-          ) : null}
         </nav>
+        <Link
+          href={account.href}
+          className="terminal-nav-join"
+          aria-current={pathname === account.href ? "page" : undefined}
+        >
+          {account.label}
+        </Link>
         <ThemeToggle />
       </div>
     </header>

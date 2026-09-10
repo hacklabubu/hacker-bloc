@@ -8,7 +8,7 @@ export function SiteFooter() {
       <div>
         <a href={`mailto:${SITE.email}`}>Contact</a>
         <Link href="/rules">Rules</Link>
-        <Link href="/join">Join</Link>
+        <Link href="/join">Apply</Link>
         <Link href="/terms">Terms</Link>
         <Link href="/refunds">Refunds</Link>
         <Link href="/privacy">Privacy</Link>

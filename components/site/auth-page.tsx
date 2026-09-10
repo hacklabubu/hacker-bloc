@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { authConfigured } from "@/lib/auth";
 
 /* The frame every /auth page sits in: same terminal layout as the rest of the site. */
 export function AuthPage({
@@ -20,7 +21,9 @@ export function AuthPage({
       </section>
       <section className="terminal-section" aria-labelledby="auth-legend">
         <h2 id="auth-legend" className="terminal-legend">{legend}</h2>
-        <div className="terminal-section-content">{children}</div>
+        <div className="terminal-section-content">
+          {authConfigured() ? children : <p className="terminal-muted">Accounts open soon.</p>}
+        </div>
       </section>
     </main>
   );

@@ -30,6 +30,7 @@ import {
   ROADMAP,
   formatUsd,
 } from "@/lib/membership";
+import { authConfigured } from "@/lib/auth";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import { getHouseRoles, getMembers, getRules } from "@/lib/notion";
 import { REFUNDS, TERMS, type LegalDoc } from "@/lib/legal";
@@ -225,9 +226,13 @@ function membershipMarkdown(): string {
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    memberEnabled
-      ? `Step one: [create an account](${url("/auth/sign-up")}). Step two: press "Become a member" on [the membership page](${url("/membership")}#member); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
-      : "Payments open soon.",
+    authConfigured()
+      ? `Step one: [create an account](${url("/auth/sign-up")}). Step two: ${
+          memberEnabled
+            ? `press "Become a member" on [the membership page](${url("/membership")}#member); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
+            : "payments open soon; members with an account will be emailed."
+        }`
+      : "Accounts and payments open soon.",
     "",
     "## Become a patron",
     "",

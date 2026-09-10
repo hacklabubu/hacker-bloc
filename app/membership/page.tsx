@@ -19,9 +19,10 @@ export default async function MembershipPage({
   searchParams: Promise<{ member?: string; patron?: string }>;
 }) {
   await connection();
-  const memberEnabled = membershipCheckoutEnabled() && authConfigured();
+  const accountsEnabled = authConfigured();
+  const paymentsEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
-  const user = memberEnabled ? await getSessionUser() : null;
+  const user = accountsEnabled ? await getSessionUser() : null;
   /* Stripe sends a finished checkout back here with ?member=thanks or ?patron=thanks. */
   const params = await searchParams;
   const memberThanks = params.member === "thanks";
@@ -52,7 +53,8 @@ export default async function MembershipPage({
             ))}
           </ul>
           <MemberForm
-            enabled={memberEnabled}
+            accountsEnabled={accountsEnabled}
+            paymentsEnabled={paymentsEnabled}
             signedIn={user !== null}
             thanks={memberThanks}
             note={
