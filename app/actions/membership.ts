@@ -13,11 +13,12 @@ export type MembershipState = { error: string | null };
  *
  * Both amounts live on one subscription so a member is one customer with one
  * subscription in Stripe. The $1,000 signup price is a one-time line on the
- * first invoice. The $100 recurring price does not bill until the billing
- * cycle anchor a month out, and `proration_behavior: "none"` stops Stripe
- * from charging a prorated slice of the first month on top of the signup fee.
- * The first invoice is therefore exactly $1,000, the second (a month later)
- * $100, and every month after that $100.
+ * first invoice. The $100 recurring price sits behind a one-month trial
+ * (`trial_end`), so it bills nothing today and Stripe creates no prorations.
+ * (A billing-cycle anchor with `proration_behavior: "none"` is rejected by
+ * Checkout when a one-time price is present.) The first invoice is therefore
+ * exactly $1,000, the second (a month later) $100, and every month after that
+ * $100. The subscription is "trialing" for the first month and "active" after.
  *
  * Fulfillment is in app/api/stripe/webhook/route.ts, which mirrors the
  * customer, subscription, and invoices into Neon.
@@ -45,8 +46,7 @@ export async function startMembershipCheckout(): Promise<MembershipState> {
         { price: prices.signup, quantity: 1 },
       ],
       subscription_data: {
-        billing_cycle_anchor: anchor,
-        proration_behavior: "none",
+        trial_end: anchor,
         metadata: { kind: "membership" },
       },
       custom_text: {
