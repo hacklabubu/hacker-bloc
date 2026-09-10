@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteFooter } from "@/components/site/footer";
+import { SiteNav } from "@/components/site/nav";
 
 export const metadata: Metadata = {
   title: "404",
@@ -15,6 +17,8 @@ const EXITS = [
 
 export default function NotFound() {
   return (
+    <>
+    <SiteNav />
     <main id="top" className="terminal-page">
       <section className="terminal-intro" aria-labelledby="nf-heading">
         <p className="terminal-location">404</p>
@@ -42,5 +46,7 @@ export default function NotFound() {
         </div>
       </section>
     </main>
+    <SiteFooter />
+    </>
   );
 }

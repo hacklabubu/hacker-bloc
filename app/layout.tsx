@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Anton, Orbitron, JetBrains_Mono, Kode_Mono } from "next/font/google";
-import { SiteFooter } from "@/components/site/footer";
-import { SiteNav } from "@/components/site/nav";
 import { SITE } from "@/lib/site";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -82,11 +80,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-full flex flex-col">
-        <SiteNav />
-        {children}
-        <SiteFooter />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

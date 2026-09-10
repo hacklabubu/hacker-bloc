@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BrandLogo } from "@/components/site/brand-logo";
 import { SpaceNav } from "@/components/site/space-nav";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 import { authConfigured, getSessionUser } from "@/lib/auth";
 
 /* Reads the session cookie on every request; never prerender. */
@@ -13,9 +16,9 @@ export const metadata: Metadata = {
 };
 
 /*
- * The signed-in area. Sign-in is Supabase Auth (app/auth); everything under
- * /space assumes a session and gets the sidebar. Membership data comes from
- * the Stripe mirror in Neon, matched by the signed-in email.
+ * The signed-in area, with its own chrome: no site header or footer, just a
+ * sidebar. Sign-in is Supabase Auth (app/auth); membership data is the
+ * Stripe mirror in Neon, matched by the signed-in email.
  */
 export default async function SpaceLayout({ children }: { children: React.ReactNode }) {
   if (!authConfigured()) {
@@ -24,6 +27,7 @@ export default async function SpaceLayout({ children }: { children: React.ReactN
         <section className="terminal-intro">
           <p className="terminal-location">Space</p>
           <h1>Accounts open soon.</h1>
+          <p><Link href="/" className="underline underline-offset-4">Back to the site</Link></p>
         </section>
       </main>
     );
@@ -33,11 +37,18 @@ export default async function SpaceLayout({ children }: { children: React.ReactN
   if (!user) redirect("/auth/login?next=%2Fspace");
 
   return (
-    <main id="top" className="terminal-page space">
+    <div className="space-shell">
       <aside className="space-side">
+        <Link href="/" className="terminal-home space-home" aria-label="Hacker Bloc — home">
+          <BrandLogo />
+        </Link>
         <SpaceNav email={user.email} />
+        <div className="space-side-foot">
+          <Link href="/">← hackerbloc.com</Link>
+          <ThemeToggle />
+        </div>
       </aside>
-      <div className="space-main">{children}</div>
-    </main>
+      <main id="top" className="space-main">{children}</main>
+    </div>
   );
 }

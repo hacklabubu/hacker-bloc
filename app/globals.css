@@ -636,25 +636,42 @@ a.terminal-button:hover {
 
 .terminal-ladder .terminal-muted { font-size: 12px; }
 
-/* ── /space: signed-in area with a sidebar ───────────────── */
+/* ── /space: signed-in area, sidebar only ───────────────── */
 
-.space {
+.space-shell {
   display: grid;
   grid-template-columns: 1fr;
+  min-height: 100svh;
+  font-family: var(--font-terminal-system), monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
 }
 
 @media (min-width: 640px) {
-  .space { grid-template-columns: 148px 1fr; }
+  .space-shell { grid-template-columns: 200px 1fr; }
 }
 
 .space-side {
-  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
   border-bottom: 1px dashed var(--terminal-border);
 }
 
 @media (min-width: 640px) {
-  .space-side { border-right: 1px dashed var(--terminal-border); border-bottom: 0; }
+  .space-side {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    border-right: 1px dashed var(--terminal-border);
+    border-bottom: 0;
+  }
 }
+
+.space-home { display: inline-flex; width: 28px; }
 
 .space-side nav {
   display: flex;
@@ -671,20 +688,33 @@ a.terminal-button:hover {
   text-decoration: none;
 }
 
-.space-side a::before { content: "  "; white-space: pre; }
-.space-side a[aria-current="page"] { color: var(--terminal-text); }
-.space-side a[aria-current="page"]::before { content: "> "; }
+.space-side nav a::before { content: "  "; white-space: pre; }
+.space-side nav a[aria-current="page"] { color: var(--terminal-text); }
+.space-side nav a[aria-current="page"]::before { content: "> "; }
 .space-side a:hover { color: var(--terminal-text); }
 
 .space-side .terminal-muted {
-  margin-top: 20px;
   font-size: 12px;
   overflow-wrap: anywhere;
 }
 
-.space-main { min-width: 0; }
+.space-side-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  font-size: 12px;
+}
+
+.space-main {
+  min-width: 0;
+  width: min(680px, 100%);
+  padding: 24px;
+}
+
 .space-main .terminal-section:first-child { border-top: 0; }
-.space-main .terminal-section:first-child .terminal-legend { margin-top: 24px; }
+.space-main .terminal-section:first-child .terminal-legend { margin-top: 0; }
 
 /* ── auth + members forms ───────────────────────────────── */
 
