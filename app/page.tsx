@@ -1,420 +1,122 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { DitherHero } from "@/components/site/dither-hero";
-import { Error529 } from "@/components/site/error-529";
-import { EventCard } from "@/components/site/event-card";
-import { FirstWave } from "@/components/site/first-wave";
-import { PhotoWall } from "@/components/site/photo-wall";
-import { TheStack } from "@/components/site/the-stack";
-import { getPastEvents, getUpcomingEvents } from "@/lib/luma";
-import { getRules } from "@/lib/notion";
-import { FUNDING, SITE, SOCIALS, formatEurPlain } from "@/lib/site";
+import { connection } from "next/server";
+import { PatronForm } from "@/components/site/patron-form";
+import { TerminalWordmark } from "@/components/site/terminal-art";
+import { MEMBERSHIP, formatUsd, getMembershipPaymentUrl } from "@/lib/membership";
+import { SITE, SOCIALS } from "@/lib/site";
+import { patronCheckoutEnabled } from "@/lib/stripe";
+import { getWordmarks } from "@/lib/wordmarks";
 
-/*
- * Organization structured data, so search engines and agents get the house's
- * name, address, and front door without parsing brutalist copy. Every value is
- * read from lib/site.ts — nothing here is a second copy of the truth.
- */
+const description =
+  "A hackerspace in Warsaw, built by founders. Palo Alto at home: a house where startup founders meet, build, and start companies. Become a member or a patron.";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description,
+  alternates: { canonical: "/" },
+};
+
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Hacker Bloc",
   url: SITE.url,
-  description:
-    "A brutalist hacker house in Warsaw where founders live and build. Eastern Bloc roots, Silicon Valley ambition — weekly meetups, monthly hackathons, and a hardware lab in the basement.",
+  description,
   email: SITE.email,
   address: {
     "@type": "PostalAddress",
-    streetAddress: SITE.postal.streetAddress,
-    postalCode: SITE.postal.postalCode,
-    addressLocality: SITE.postal.addressLocality,
-    addressCountry: SITE.postal.addressCountry,
+    ...SITE.postal,
   },
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "community",
-    email: SITE.email,
-    url: `${SITE.url}/contact`,
-  },
-  sameAs: [...SOCIALS.map((s) => s.url), "https://hacklab.so"],
-};
-
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  sameAs: [...SOCIALS.map((social) => social.url), "https://hacklab.so"],
 };
 
 export default async function Home() {
-  const [upcomingAll, pastAll, rules] = await Promise.all([
-    getUpcomingEvents(),
-    getPastEvents(),
-    /* Empty without NOTION_TOKEN — the section is omitted entirely. */
-    getRules(),
-  ]);
-  const upcoming = upcomingAll.slice(0, 6);
-  const past = pastAll.slice(0, 6);
+  // Read the collection on refresh so new artwork can be tried without a rebuild.
+  await connection();
+  const wordmarks = getWordmarks();
+  const memberUrl = getMembershipPaymentUrl();
+  const patronEnabled = patronCheckoutEnabled();
 
   return (
-    <main id="top" className="flex-1">
-      {/*
-       * Escaping `<` keeps a stray HTML tag in any of these strings from
-       * breaking out of the script element — the pattern the Next.js JSON-LD
-       * guide prescribes.
-       */}
+    <main id="top" className="terminal-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c"),
         }}
       />
-
-      {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="relative flex min-h-[calc(100svh-73px)] items-center overflow-x-clip px-4 py-10">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-8 md:grid-cols-[1fr_1.25fr] md:gap-6">
-          <div>
-            <h1 className="font-heading text-[clamp(4rem,9.5vw,9.5rem)] leading-[0.9] uppercase text-beige">
-              Hacker
-              <br />
-              Bloc
-            </h1>
-            <p className="mt-6 text-sm leading-7 tracking-[0.25em] uppercase text-concrete sm:text-base">
-              Eastern Bloc roots.
-              <br />
-              <span className="text-signal">Silicon Valley ambition.</span>
-            </p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="h-14 bg-signal px-10 text-base text-on-signal font-bold tracking-[0.2em] uppercase hover:bg-signal/80 sm:h-16 sm:px-12 sm:text-lg"
-              >
-                <Link href="/join">Join</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="h-14 border-beige/50 bg-beige/5 px-10 text-base tracking-[0.2em] uppercase text-beige hover:border-beige hover:bg-beige/10 sm:h-16 sm:px-12 sm:text-lg"
-              >
-                <Link href="/sponsor">Sponsor</Link>
-              </Button>
-            </div>
-          </div>
-          <DitherHero />
-        </div>
+      <section className="terminal-intro" aria-labelledby="home-heading">
+        <TerminalWordmark wordmarks={wordmarks} />
+        <p className="terminal-location">
+          {SITE.city} / {SITE.district} /{" "}
+          <a href={SITE.mapsUrl} className="underline underline-offset-4">
+            {SITE.postal.streetAddress}
+          </a>
+        </p>
+        <h1 id="home-heading">We have Palo Alto at home</h1>
+        <p>
+          We want the kind of space we saw in Silicon Valley: a house where startup founders meet, build, start
+          their first Delaware C-corp, get their first check, find cofounders,
+          and build billion-dollar companies.
+        </p>
+        <p>
+          We are not community builders. We are founders. We rented this house
+          to build the next trillion-dollar company,{" "}
+          <a href="https://hacklab.so" className="underline underline-offset-4">hacklab.so</a>,
+          and we live and work here 24/7. We&apos;re pre-seed, pre-revenue,{" "}
+          <a href="https://www.youtube.com/shorts/n5dAIvH2cQw" className="underline underline-offset-4">pure potential</a>,
+          so we figured a hackerspace would help us not die in the initial grind.
+        </p>
+        <p>
+          If you want a place like this in Warsaw, and want to help Poland become
+          Europe&apos;s Silicon Valley, there are two ways in.
+        </p>
       </section>
 
-      {/* ── WHAT IS HACKER BLOC ──────────────────────────── */}
-      <section
-        id="bloc"
-        className="flex min-h-svh items-center border-y border-border"
-      >
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            What is it?
-          </h2>
-          <div className="mt-10 max-w-3xl space-y-8 text-xl leading-9 text-beige sm:text-2xl sm:leading-10">
-            <p>
-              <span className="text-signal">Floors 0–2</span>
-              {" — "}a hacker house in Warsaw where we live and build our
-              startups:{" "}
-              <a
-                href="https://hacklab.so"
-                target="_blank"
-                rel="noreferrer"
-                className="text-signal underline underline-offset-4 hover:text-beige"
-              >
-                Hacklab
-              </a>{" "}
-              and{" "}
-              <a
-                href="https://epikor.eu"
-                target="_blank"
-                rel="noreferrer"
-                className="text-signal underline underline-offset-4 hover:text-beige"
-              >
-                Epikor
-              </a>
-              .
-            </p>
-            <p>
-              <span className="text-signal">Floor −1</span>
-              {" — "}a mini hackerspace where Warsaw founders learn, prototype,
-              and ship MVPs — get first users, early feedback, and learn from
-              each other.
-            </p>
-            <p>
-              <span className="text-signal">We&apos;re fucked.</span>
-              {" "}We moved in July 1st and the landlord wants to sell the house.
-              We need €{formatEurPlain(FUNDING.totalEur)}. €800k to buy it,
-              €200k to renovate and stand it up. If you care about making
-              Poland Europe&apos;s tech epicenter, visit the{" "}
-              <Link
-                href="/sponsor"
-                className="text-signal underline underline-offset-4 hover:text-beige"
-              >
-                sponsor
-              </Link>{" "}
-              page or{" "}
-              <a
-                href={SITE.calendlyUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-signal underline underline-offset-4 hover:text-beige"
-              >
-                book a meeting
-              </a>{" "}
-              with us directly.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FLOORS ───────────────────────────────────────── */}
-      <section
-        id="stack"
-        className="flex min-h-svh items-center border-y border-border"
-      >
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Floors
-          </h2>
-          <div className="mt-10">
-            <TheStack />
-          </div>
-        </div>
-      </section>
-
-      {/* ── HOUSE RULES ──────────────────────────────────── */}
-      {rules.length > 0 && (
-        <section
-          id="house-rules"
-          className="flex min-h-svh items-center border-y border-border"
-        >
-          <div className="mx-auto w-full max-w-6xl px-4 py-20">
-            <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-              House rules
-            </h2>
-            <ol className="mt-10 max-w-3xl border-t border-border">
-              {rules.map((rule, i) => (
-                <li
-                  key={rule}
-                  className="flex gap-6 border-b border-border py-6"
-                >
-                  <span className="shrink-0 pt-1 text-sm font-bold tracking-[0.2em] text-signal tabular-nums">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-lg leading-8 text-beige sm:text-xl sm:leading-9">
-                    {rule}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      )}
-
-      {/* ── MISSION — THE FIRST WAVE ─────────────────────── */}
-      <section
-        id="first-wave"
-        className="flex min-h-svh items-center border-y border-border"
-      >
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Mission
-            <span className="text-signal"> — </span>
-            The First Wave
-          </h2>
-          <div className="mt-10">
-            <FirstWave />
-          </div>
-        </div>
-      </section>
-
-      {/* ── EVENTS ───────────────────────────────────────── */}
-      <section
-        id="events"
-        className="flex min-h-svh items-center border-y border-border"
-      >
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Events
-          </h2>
-
-          <div className="mt-12 space-y-14">
-            <div>
-              <h3 className="mb-6 text-sm font-bold tracking-[0.3em] text-signal uppercase sm:text-base">
-                Upcoming
-              </h3>
-              {upcoming.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {upcoming.map((e) => (
-                    /* h4: these sit under the "Upcoming" h3, not beside it. */
-                    <EventCard key={e.apiId} event={e} headingLevel={4} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-concrete">No upcoming events yet.</p>
-              )}
-            </div>
-
-            <div>
-              <h3 className="mb-6 text-sm font-bold tracking-[0.3em] text-concrete uppercase sm:text-base">
-                Past
-              </h3>
-              {past.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {past.map((e) => (
-                    <EventCard key={e.apiId} event={e} past headingLevel={4} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-concrete">No past events yet.</p>
-              )}
-            </div>
-          </div>
-
-
-        </div>
-      </section>
-
-      {/* ── PROOF OF LIFE ────────────────────────────────── */}
-      <section className="flex min-h-svh items-center border-y border-border">
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Proof of life
-          </h2>
-          <div className="mt-10">
-            <PhotoWall />
-          </div>
-        </div>
-      </section>
-
-      {/* ── ERROR 529 ────────────────────────────────────── */}
-      <section className="flex min-h-svh items-center border-y border-border">
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Error 529
-          </h2>
-          <div className="mt-10">
-            <Error529 />
-          </div>
-        </div>
-      </section>
-
-      {/* ── POWERED BY ───────────────────────────────────── */}
-      <section className="flex min-h-svh items-center border-y border-border">
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-            Powered by
-          </h2>
-          <p className="mt-8 max-w-2xl text-lg leading-8 text-concrete sm:text-xl sm:leading-9">
-            A 100% private initiative by the founders of Hacklab and the
-            founder of Epicor.
+      <section id="member" className="terminal-section" aria-labelledby="member-heading">
+        <h2 id="member-heading" className="terminal-legend">Become a member</h2>
+        <div className="terminal-section-content">
+          <p className="terminal-price">
+            <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
           </p>
-          <div className="mt-16 grid gap-4 sm:grid-cols-2 sm:gap-6">
-            <a
-              href="https://hacklab.so"
-              target="_blank"
-              rel="noreferrer"
-              className="group relative flex min-h-[16rem] flex-col border border-border bg-asphalt transition-colors hover:border-signal sm:min-h-[20rem] lg:min-h-[22rem]"
-            >
-              <div
-                className="pointer-events-none absolute inset-0 opacity-40 transition-opacity group-hover:opacity-70"
-                aria-hidden
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, rgba(0,255,136,0.08) 0%, transparent 65%)",
-                }}
-              />
-              <span
-                className="pointer-events-none absolute top-0 left-0 h-5 w-5 border-t-2 border-l-2 border-signal"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute top-0 right-0 h-5 w-5 border-t-2 border-r-2 border-signal"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute bottom-0 left-0 h-5 w-5 border-b-2 border-l-2 border-signal"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute right-0 bottom-0 h-5 w-5 border-r-2 border-b-2 border-signal"
-                aria-hidden
-              />
-              <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-10 sm:px-10">
-                <Image
-                  src="/logos/hacklab.png"
-                  alt="Hacklab"
-                  width={5184}
-                  height={3351}
-                  className="h-auto w-[130%] max-w-none object-contain mix-blend-screen transition-transform duration-300 group-hover:scale-105 sm:w-[145%]"
-                />
-              </div>
-              <div className="relative flex items-center justify-between border-t border-border px-5 py-3">
-                <span className="text-xs font-bold tracking-[0.25em] text-beige uppercase">
-                  Hacklab
-                </span>
-                <span className="text-[10px] tracking-[0.2em] text-steel uppercase transition-colors group-hover:text-signal">
-                  founders
-                </span>
-              </div>
-            </a>
-
-            <a
-              href="https://epikor.eu"
-              target="_blank"
-              rel="noreferrer"
-              className="group relative flex min-h-[16rem] flex-col border border-border bg-asphalt transition-colors hover:border-signal sm:min-h-[20rem] lg:min-h-[22rem]"
-            >
-              <div
-                className="pointer-events-none absolute inset-0 opacity-40 transition-opacity group-hover:opacity-70"
-                aria-hidden
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, rgba(0,255,136,0.08) 0%, transparent 65%)",
-                }}
-              />
-              <span
-                className="pointer-events-none absolute top-0 left-0 h-5 w-5 border-t-2 border-l-2 border-signal"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute top-0 right-0 h-5 w-5 border-t-2 border-r-2 border-signal"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute bottom-0 left-0 h-5 w-5 border-b-2 border-l-2 border-signal"
-                aria-hidden
-              />
-              <span
-                className="pointer-events-none absolute right-0 bottom-0 h-5 w-5 border-r-2 border-b-2 border-signal"
-                aria-hidden
-              />
-              <div className="relative flex flex-1 items-center justify-center px-8 py-12 sm:px-12">
-                <Image
-                  src="/logos/epicor.svg"
-                  alt="Epicor"
-                  width={2522}
-                  height={986}
-                  unoptimized
-                  className="h-auto w-full max-w-sm object-contain transition-transform duration-300 group-hover:scale-105 sm:max-w-md"
-                />
-              </div>
-              <div className="relative flex items-center justify-between border-t border-border px-5 py-3">
-                <span className="text-xs font-bold tracking-[0.25em] text-beige uppercase">
-                  Epicor
-                </span>
-                <span className="text-[10px] tracking-[0.2em] text-steel uppercase transition-colors group-hover:text-signal">
-                  founder
-                </span>
-              </div>
-            </a>
+          <p className="terminal-signup">
+            + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
+          </p>
+          <ul className="terminal-perks" aria-label="Member benefits">
+            {MEMBERSHIP.benefits.map((benefit) => (
+              <li key={benefit.title}>
+                <span aria-hidden="true">[+]</span>
+                <span>{benefit.description}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="terminal-checkout">
+            {memberUrl ? (
+              <a href={memberUrl} className="terminal-button">
+                Become a member <span aria-hidden="true">↗</span>
+              </a>
+            ) : (
+              <Link href="/membership" className="terminal-button">
+                Become a member <span aria-hidden="true">→</span>
+              </Link>
+            )}
+            <p className="terminal-muted">
+              First {MEMBERSHIP.limit} members. No refunds.{" "}
+              <Link href="/membership#risk" className="underline underline-offset-4">Read the risk note →</Link>
+            </p>
           </div>
         </div>
       </section>
+
+      <section id="patron" className="terminal-section" aria-labelledby="patron-heading">
+        <h2 id="patron-heading" className="terminal-legend">Become a patron</h2>
+        <div className="terminal-section-content terminal-roadmap">
+          <p>Not moving in, but want this to exist? Put any amount into the space.</p>
+          <PatronForm enabled={patronEnabled} />
+        </div>
+      </section>
+
     </main>
   );
 }

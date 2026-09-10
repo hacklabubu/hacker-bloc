@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const EXITS = [
-  { href: "/", label: "The Bloc", note: "the house, the floors, the events" },
+  { href: "/", label: "The Bloc", note: "founding membership and Space 1.0" },
   { href: "/community", label: "Community", note: "everyone around the bloc" },
   { href: "/rules", label: "Rules", note: "who decides what, and why" },
   { href: "/join", label: "Join", note: "apply to the house" },

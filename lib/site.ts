@@ -23,10 +23,10 @@ export const SITE = {
   city: "Warsaw, PL",
   postal: POSTAL,
   address: `${POSTAL.streetAddress}, ${POSTAL.postalCode} ${POSTAL.addressLocality}`,
-  district: "Wilanów Niski",
+  district: "Wilanów",
   coordinates: { lat: 52.1701645, lng: 21.0787472 },
   mapsUrl: "https://maps.google.com/?q=Kosiarzy+21B,+02-953+Warszawa",
-  email: "contact@hackerbloc.com",
+  email: "matt@hacklab.so",
   sponsorEmail: "matt@homebrew.so",
   calendlyUrl: "https://cal.com/mattbratos/30min",
 } as const;

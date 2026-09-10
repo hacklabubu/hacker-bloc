@@ -40,9 +40,13 @@ import type { NextConfig } from "next";
 const APP_ROUTER_VARY =
   "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch";
 
-/* The negotiated pages, i.e. app/sitemap.ts's routes. */
+/* The negotiated pages: app/sitemap.ts's routes plus the unlisted /pati. */
 const NEGOTIATED_PAGES = [
   "/",
+  "/events",
+  "/membership",
+  "/roadmap",
+  "/wishlist",
   "/community",
   "/rules",
   "/join",
@@ -51,6 +55,7 @@ const NEGOTIATED_PAGES = [
   "/about",
   "/contact",
   "/privacy",
+  "/pati",
 ] as const;
 
 const nextConfig: NextConfig = {
@@ -66,6 +71,10 @@ const nextConfig: NextConfig = {
      */
     formats: ["image/webp"],
   },
+  /* Support the Bloc became the wishlist; old links keep working. */
+  redirects: async () => [
+    { source: "/support", destination: "/wishlist", permanent: true },
+  ],
   headers: async () =>
     NEGOTIATED_PAGES.map((source) => ({
       source,

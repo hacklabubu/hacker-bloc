@@ -3,12 +3,16 @@ import { SITE } from "@/lib/site";
 
 /*
  * Every indexable page, in the order a stranger would meet them. Frequencies
- * describe how often the copy actually moves: the homepage carries the live
- * event list, /community is redrawn whenever the CRM changes, and the trust
- * pages sit still for months at a time.
+ * describe how often the copy actually moves: /events follows the live calendar,
+ * /community is redrawn whenever the CRM changes, and the trust pages sit still
+ * for months at a time.
  */
 const ROUTES = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
+  { path: "/events", changeFrequency: "daily", priority: 0.9 },
+  { path: "/membership", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/roadmap", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/wishlist", changeFrequency: "weekly", priority: 0.7 },
   { path: "/community", changeFrequency: "weekly", priority: 0.8 },
   { path: "/rules", changeFrequency: "monthly", priority: 0.7 },
   { path: "/join", changeFrequency: "monthly", priority: 0.9 },
