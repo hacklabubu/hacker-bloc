@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
+import { formatEventDate, getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
 import { LUMA } from "@/lib/site";
 import styles from "./events.module.css";
 
@@ -12,34 +12,15 @@ export const metadata: Metadata = {
 };
 
 function EventDate({ event }: { event: LumaEvent }) {
-  const date = new Date(event.startAt);
+  const formatted = formatEventDate(event);
 
-  if (Number.isNaN(date.getTime())) {
+  if (!formatted) {
     return <span>Date to be announced</span>;
-  }
-
-  let timezone = event.timezone || "UTC";
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  };
-  let formatter: Intl.DateTimeFormat;
-
-  try {
-    formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
-  } catch {
-    timezone = "UTC";
-    formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
   }
 
   return (
     <time dateTime={event.startAt}>
-      {formatter.format(date)} ({timezone})
+      {formatted.label} ({formatted.timezone})
     </time>
   );
 }

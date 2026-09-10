@@ -35,7 +35,14 @@ import {
   type Member,
 } from "@/lib/community";
 import { getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
-import { MEMBERSHIP, formatUsd, getMembershipPaymentUrl } from "@/lib/membership";
+import {
+  MEMBERSHIP,
+  RISK_NOTE,
+  ROADMAP,
+  formatUsd,
+  getMembershipPaymentUrl,
+} from "@/lib/membership";
+import { patronCheckoutEnabled } from "@/lib/stripe";
 import {
   getCommunityRoles,
   getHouseRoleLevels,
@@ -69,7 +76,8 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/": homeMarkdown,
   "/events": eventsMarkdown,
   "/membership": membershipMarkdown,
-  "/support": supportMarkdown,
+  "/roadmap": roadmapMarkdown,
+  "/wishlist": wishlistMarkdown,
   "/community": communityMarkdown,
   "/rules": rulesMarkdown,
   "/join": joinMarkdown,
@@ -162,15 +170,25 @@ function homeMarkdown(): string {
   const body = [
     "A space for people who build.",
     "",
-    "Warsaw, Poland.",
+    `${SITE.city} / ${SITE.district} / ${SITE.postal.streetAddress}`,
     "",
-    `We're bringing together the first ${MEMBERSHIP.limit} members to get our hackerspace off the ground. A place to work, meet, make things, and shape what comes next. Help build it with us.`,
+    "We're building Palo Alto at home. We want the kind of space we saw in San Francisco: a house where startup founders meet, build, start their first Delaware C-corp, get their first check, find cofounders, and eventually build billion-dollar companies.",
     "",
-    list([
-      `[Events](${url("/events")}) — Meet the people building here.`,
-      `[Membership](${url("/membership")}) — ${formatUsd(MEMBERSHIP.monthlyUsd)} USD/month + ${formatUsd(MEMBERSHIP.signupUsd)} signup. First ${MEMBERSHIP.limit} members.`,
-      `[Support the Bloc](${url("/support")}) — ${formatUsd(MEMBERSHIP.spaceGoalUsd)} gets Space 1.0 off the ground.`,
-    ]),
+    "We are not community builders. We are founders. We rented this house to build the next trillion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, pure potential, so we figured a hackerspace would help us not die in the initial grind.",
+    "",
+    "If you want a place like this in Warsaw, and want to help Poland become Europe's Silicon Valley, there are two ways in.",
+    "",
+    "## Become a member",
+    "",
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. No refunds.`,
+    "",
+    list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
+    "",
+    `[Become a member](${url("/membership")}#member)`,
+    "",
+    "## Become a patron",
+    "",
+    `Not moving in, but want this to exist? Put any amount into the space: [become a patron](${url("/membership")}#patron).`,
   ].join("\n");
 
   return doc("/", "Home", body);
@@ -236,68 +254,84 @@ async function eventsMarkdown(): Promise<string> {
 
 /* ── /membership ──────────────────────────────────────────────── */
 
-/* Mirrors the founding membership offer in app/membership/page.tsx. */
+/* Mirrors app/membership/page.tsx: the two ways to pay, and the small print. */
 function membershipMarkdown(): string {
-  const paymentUrl = getMembershipPaymentUrl();
+  const memberUrl = getMembershipPaymentUrl();
+  const patronEnabled = patronCheckoutEnabled();
   const body = [
-    "Become a Hacker Bloc founding member.",
+    `Become one of the first ${MEMBERSHIP.limit} members of the Bloc.`,
     "",
-    `A hackerspace in Warsaw, built by the people who use it. Founding membership is limited to the first ${MEMBERSHIP.limit} members.`,
-    "",
-    "## Membership",
+    "## Become a member",
     "",
     `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.**`,
     "",
-    list(MEMBERSHIP.benefits.map((benefit) => `**${benefit.title}** ${benefit.description}`)),
+    list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    paymentUrl
-      ? `[Join](${paymentUrl}) — pay directly.`
+    memberUrl
+      ? `[Become a member](${memberUrl}) — pay directly. No refunds; read the risk note below.`
+      : "Payments open soon.",
+    "",
+    "## Become a patron",
+    "",
+    "Not moving in, but want this to exist? Put any amount into the space.",
+    "",
+    patronEnabled
+      ? `Enter an amount on [the membership page](${url("/membership")}#patron); checkout is hosted by Stripe.`
       : "Payments open soon.",
     "",
     "## Where the money goes",
     "",
-    "Membership money goes straight into making the space happen:",
+    `${MEMBERSHIP.rentPercent}% rent, ${MEMBERSHIP.setupPercent}% setting up the space. [See the roadmap](${url("/roadmap")}).`,
     "",
-    list([
-      `**${MEMBERSHIP.rentPercent}% goes to rent.**`,
-      `**${MEMBERSHIP.setupPercent}% goes to setting up the space.**`,
-    ]),
+    ...(MEMBERSHIP.taken > 0
+      ? ["## Spots", "", `${MEMBERSHIP.taken} / ${MEMBERSHIP.limit} taken.`, ""]
+      : []),
+    "## Risk",
     "",
-    `[Support the Bloc](${url("/support")}) — Space 1.0 and what comes next.`,
+    RISK_NOTE,
   ].join("\n");
 
-  return doc("/membership", "Founding membership", body);
+  return doc("/membership", "Membership", body);
 }
 
-/* ── /support ─────────────────────────────────────────────────── */
+/* ── /roadmap ─────────────────────────────────────────────────── */
 
-function supportMarkdown(): string {
+function roadmapMarkdown(): string {
   const body = [
-    "Help build the Bloc.",
+    "The plan for building the space, one version at a time.",
     "",
-    "## The first milestone / Space 1.0",
-    "",
-    `${formatUsd(MEMBERSHIP.spaceGoalUsd)} USD gets Space 1.0 off the ground.`,
-    "",
-    "Membership money goes straight into making the space happen:",
-    "",
-    list([
-      `**${MEMBERSHIP.rentPercent}% goes to rent.**`,
-      `**${MEMBERSHIP.setupPercent}% goes to setting up the space.**`,
+    ...ROADMAP.flatMap((milestone) => [
+      `## Hacker Bloc ${milestone.version} — ${formatUsd(milestone.goalUsd)} USD`,
+      "",
+      milestone.summary,
+      "",
+      list([...milestone.items]),
+      "",
     ]),
+    "## Fund it",
     "",
-    `[Become a founding member](${url("/membership")}).`,
-    "",
-    "## Wishlist / roadmap",
-    "",
-    "Coming soon. The things we want to build and buy for the space, with a way to fund specific items.",
-    "",
-    "## Contribute",
-    "",
-    `Have equipment, time, or resources to contribute? [Get in touch](mailto:${SITE.email}).`,
+    `Founding membership pays for 1.0. [Become a member](${url("/membership")}) or [see the wishlist](${url("/wishlist")}).`,
   ].join("\n");
 
-  return doc("/support", "Support the Bloc", body);
+  return doc("/roadmap", "Roadmap", body);
+}
+
+/* ── /wishlist ────────────────────────────────────────────────── */
+
+function wishlistMarkdown(): string {
+  const body = [
+    "The things we want to build and buy next, with a way to fund specific items.",
+    "",
+    "## Items",
+    "",
+    "Coming soon.",
+    "",
+    "## Have something to give?",
+    "",
+    `Equipment, time, or resources? Tell us what you have in mind and we'll figure out how it can help the space. [Get in touch](mailto:${SITE.email}).`,
+  ].join("\n");
+
+  return doc("/wishlist", "Wishlist", body);
 }
 
 /* ── /rules ────────────────────────────────────────────────────── */
@@ -822,7 +856,7 @@ export function markdownNotFound(pathname: string): string {
       `[Home](${url("/")}) — a space for people who build`,
       `[Events](${url("/events")}) — upcoming and recent events`,
       `[Membership](${url("/membership")}) — founding membership, benefits, pricing, and payment availability`,
-      `[Support the Bloc](${url("/support")}) — Space 1.0, the funding split, and the wishlist placeholder`,
+      `[Wishlist](${url("/wishlist")}) — what the space needs next, and how to give equipment or time`,
       `[Community](${url("/community")}) — everyone around the bloc`,
       `[Rules](${url("/rules")}) — who decides what, and the house rules`,
       `[Join](${url("/join")}) — apply to the house`,

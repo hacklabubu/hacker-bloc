@@ -12,8 +12,9 @@ four separate pages:
 - **Events** (`/events`): upcoming and recent events from the public Luma calendar.
 - **Membership** (`/membership`): the founding offer for the first 100 members,
   $100 USD/month plus a $1,000 USD signup fee, benefits, and payment availability.
-- **Support the Bloc** (`/support`): the $10,000 Space 1.0 goal, the 50/50 membership
-  funding split between rent and setup, contributions, and a wishlist/roadmap placeholder.
+- **Roadmap** (`/roadmap`): Hacker Bloc 1.0, 2.0, and 3.0, what each costs and buys.
+- **Wishlist** (`/wishlist`): what the space needs next, and how to contribute equipment or time.
+  `/support` redirects here.
 
 The existing community, information, and application pages remain available
 at their URLs.
@@ -34,14 +35,26 @@ npm run dev
 
 Then open the printed localhost URL.
 
-## Membership payment link
+## Payments
 
-Set `FOUNDING_MEMBERSHIP_PAYMENT_URL` in `.env.local` and in the deployment
-environment to the HTTPS checkout URL for the $1,000 USD one-time fee plus
-$100 USD/month subscription. Rebuild/redeploy after setting it. The Membership
-page links directly to that checkout; pricing and the 100-member limit must
-be configured in the payment provider. Until a valid link is set, the button
-is disabled and the page says “Payments open soon.”
+Two ways in, both on the homepage and on the Membership page. Each stays
+disabled with “Payments open soon.” until its environment variable is set in
+`.env.local` and in the deployment environment.
+
+- `FOUNDING_MEMBERSHIP_PAYMENT_URL` — become a member: an HTTPS Stripe Payment
+  Link for the $1,000 USD one-time signup fee plus the $100 USD/month
+  subscription. Pricing and the 100-member cap are configured on the Stripe side.
+- `STRIPE_SECRET_KEY` — become a patron: the visitor types any whole amount
+  (bounds in `PATRON` in `lib/membership.ts`) and `app/actions/patron.ts`
+  creates a Stripe Checkout Session for it. Use a restricted key with write
+  access to Checkout Sessions. Stripe sends the patron back to
+  `/membership?patron=thanks`.
+- `STRIPE_WEBHOOK_SECRET` — the webhook that mirrors members into Neon; see
+  `app/api/stripe/webhook/route.ts`. Patron sessions carry
+  `metadata.kind = "patron"` and are skipped by the member upsert.
+
+`MEMBERSHIP.taken` in `lib/membership.ts` is the hand-edited count of paid
+members; the Spots section only appears once it is above zero.
 
 ## Brand system
 

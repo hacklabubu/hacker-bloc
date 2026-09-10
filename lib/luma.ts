@@ -71,6 +71,46 @@ async function fetchPeriod(period: "future" | "past"): Promise<LumaEvent[]> {
 export const getUpcomingEvents = () => fetchPeriod("future");
 export const getPastEvents = () => fetchPeriod("past");
 
+/*
+ * "Sat, 19 Sept 2026, 09:00" in the event's own zone. Luma sometimes ships a
+ * zone Intl does not know; fall back to UTC rather than throw mid-render.
+ * Returns null when the start date is unparseable.
+ */
+export function formatEventDate(
+  event: LumaEvent
+): { label: string; timezone: string } | null {
+  const date = new Date(event.startAt);
+  if (Number.isNaN(date.getTime())) return null;
+
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  };
+
+  let timezone = event.timezone || "UTC";
+  let formatter: Intl.DateTimeFormat;
+  try {
+    formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
+  } catch {
+    timezone = "UTC";
+    formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
+  }
+
+  return { label: formatter.format(date), timezone };
+}
+
+/* Whole days from now until the event starts, clamped at 0 for "today". */
+export function daysUntil(event: LumaEvent, now = Date.now()): number | null {
+  const start = new Date(event.startAt).getTime();
+  if (Number.isNaN(start)) return null;
+  return Math.max(0, Math.ceil((start - now) / 86_400_000));
+}
+
 export function isHackathon(e: LumaEvent) {
   return /hackathon|bazaar/i.test(e.name);
 }

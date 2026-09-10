@@ -1,35 +1,69 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { PatronForm } from "@/components/site/patron-form";
 import {
   MEMBERSHIP,
+  RISK_NOTE,
   formatUsd,
   getMembershipPaymentUrl,
 } from "@/lib/membership";
+import { patronCheckoutEnabled } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Membership",
-  description: `Join Hacker Bloc’s first ${MEMBERSHIP.limit} members. All events, 24/7 hackerspace access, and a say in the space. ${formatUsd(MEMBERSHIP.monthlyUsd)} USD/month + ${formatUsd(MEMBERSHIP.signupUsd)} signup.`,
+  description: `Become one of the first ${MEMBERSHIP.limit} members of Hacker Bloc for ${formatUsd(MEMBERSHIP.monthlyUsd)} USD/month, or become a patron with a one-time donation of any amount.`,
   alternates: { canonical: "/membership" },
 };
 
-export default async function MembershipPage() {
+function PayButton({
+  href,
+  label,
+  note,
+}: {
+  href: string | null;
+  label: string;
+  note?: string;
+}) {
+  const statusId = `${label.toLowerCase().replace(/\s+/g, "-")}-status`;
+  return (
+    <div className="terminal-checkout">
+      {href ? (
+        <a href={href} className="terminal-button">
+          {label} <span aria-hidden="true">↗</span>
+        </a>
+      ) : (
+        <button type="button" disabled aria-describedby={statusId} className="terminal-button">
+          {label} <span aria-hidden="true">↗</span>
+        </button>
+      )}
+      <p id={statusId} className="terminal-muted">
+        {href ? note : "Payments open soon."}
+      </p>
+    </div>
+  );
+}
+
+export default async function MembershipPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ patron?: string }>;
+}) {
   await connection();
-  const paymentUrl = getMembershipPaymentUrl();
+  const memberUrl = getMembershipPaymentUrl();
+  const patronEnabled = patronCheckoutEnabled();
+  /* Stripe sends a finished patron back here with ?patron=thanks. */
+  const thanks = (await searchParams).patron === "thanks";
 
   return (
     <main id="top" className="terminal-page">
       <section className="terminal-intro" aria-labelledby="membership-heading">
-        <p className="terminal-location">Membership / The first {MEMBERSHIP.limit}</p>
-        <h1 id="membership-heading">Become a Hacker Bloc founding member.</h1>
-        <p>
-          Help get our hackerspace off the ground. Join the first {MEMBERSHIP.limit}
-          {" "}people building a place to work, meet, and make things together.
-        </p>
+        <p className="terminal-location">Membership</p>
+        <h1 id="membership-heading">Become one of the first {MEMBERSHIP.limit} members of the Bloc.</h1>
       </section>
 
-      <section id="membership" className="terminal-section" aria-labelledby="offer-heading">
-        <h2 id="offer-heading" className="terminal-legend">Founding membership</h2>
+      <section id="member" className="terminal-section" aria-labelledby="member-heading">
+        <h2 id="member-heading" className="terminal-legend">Become a member</h2>
         <div className="terminal-section-content">
           <p className="terminal-price">
             <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
@@ -37,8 +71,7 @@ export default async function MembershipPage() {
           <p className="terminal-signup">
             + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
           </p>
-
-          <ul className="terminal-perks" aria-label="Founding member privileges">
+          <ul className="terminal-perks" aria-label="Member benefits">
             {MEMBERSHIP.benefits.map((benefit) => (
               <li key={benefit.title}>
                 <span aria-hidden="true">[+]</span>
@@ -46,36 +79,45 @@ export default async function MembershipPage() {
               </li>
             ))}
           </ul>
-
-          <div className="terminal-checkout">
-            {paymentUrl ? (
-              <a href={paymentUrl} className="terminal-button">
-                Join <span aria-hidden="true">↗</span>
-              </a>
-            ) : (
-              <button type="button" disabled aria-describedby="payment-status" className="terminal-button">
-                Join <span aria-hidden="true">↗</span>
-              </button>
-            )}
-            <p id="payment-status" className="terminal-muted">
-              {paymentUrl ? "All prices in USD." : "Payments open soon."}
-            </p>
-          </div>
+          <PayButton
+            href={memberUrl}
+            label="Become a member"
+            note="No refunds. Read the risk note below."
+          />
         </div>
       </section>
 
-      <section className="terminal-section" aria-labelledby="funding-heading">
-        <h2 id="funding-heading" className="terminal-legend">Where your money goes</h2>
-        <div className="terminal-section-content">
-          <p>Membership money goes straight into making the space happen.</p>
-          <dl className="terminal-allocation">
-            <div><dt>Rent</dt><dd>{MEMBERSHIP.rentPercent}%</dd></div>
-            <div><dt>Setting up the space</dt><dd>{MEMBERSHIP.setupPercent}%</dd></div>
-          </dl>
-          <p className="terminal-funding-description">
-            Our first milestone is {formatUsd(MEMBERSHIP.spaceGoalUsd)} USD for Space 1.0.
-            {" "}<Link href="/support" className="underline underline-offset-4">See how to support the Bloc →</Link>
+      <section id="patron" className="terminal-section" aria-labelledby="patron-heading">
+        <h2 id="patron-heading" className="terminal-legend">Become a patron</h2>
+        <div className="terminal-section-content terminal-roadmap">
+          <p>Not moving in, but want this to exist? Put any amount into the space.</p>
+          <PatronForm enabled={patronEnabled} thanks={thanks} />
+        </div>
+      </section>
+
+      <section id="money" className="terminal-section" aria-labelledby="money-heading">
+        <h2 id="money-heading" className="terminal-legend">Where the money goes</h2>
+        <div className="terminal-section-content terminal-roadmap">
+          <p>
+            {MEMBERSHIP.rentPercent}% rent, {MEMBERSHIP.setupPercent}% setting up the space.
           </p>
+          <Link href="/roadmap" className="underline underline-offset-4">See the roadmap →</Link>
+        </div>
+      </section>
+
+      {MEMBERSHIP.taken > 0 && (
+        <section id="spots" className="terminal-section" aria-labelledby="spots-heading">
+          <h2 id="spots-heading" className="terminal-legend">Spots</h2>
+          <div className="terminal-section-content">
+            <p>[ {MEMBERSHIP.taken} / {MEMBERSHIP.limit} taken ]</p>
+          </div>
+        </section>
+      )}
+
+      <section id="risk" className="terminal-section" aria-labelledby="risk-heading">
+        <h2 id="risk-heading" className="terminal-legend">Risk</h2>
+        <div className="terminal-section-content terminal-roadmap">
+          <p>{RISK_NOTE}</p>
         </div>
       </section>
     </main>

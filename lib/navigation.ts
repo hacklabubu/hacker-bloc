@@ -2,7 +2,8 @@ export const MAIN_NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
   { href: "/membership", label: "Membership" },
-  { href: "/support", label: "Support the Bloc" },
+  { href: "/roadmap", label: "Roadmap" },
+  { href: "/wishlist", label: "Wishlist" },
 ] as const;
 
 export function isMainPage(pathname: string) {

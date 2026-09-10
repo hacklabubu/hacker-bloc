@@ -184,7 +184,6 @@ body:has(.terminal-page)::after {
 
 .terminal-nav {
   width: 100%;
-  border-bottom: 1px dashed var(--terminal-border);
   background: var(--terminal-bg);
   color: var(--terminal-text);
 }
@@ -371,8 +370,13 @@ body:has(.terminal-page)::after {
   font-weight: 400;
 }
 
-.terminal-intro > p:last-child {
+/* Everything under the heading is body copy: dimmed, with a gap between paragraphs. */
+.terminal-intro h1 ~ p {
   color: var(--terminal-secondary);
+}
+
+.terminal-intro h1 ~ p + p {
+  margin-top: 14px;
 }
 
 .terminal-section {
@@ -398,7 +402,12 @@ body:has(.terminal-page)::after {
 }
 
 .terminal-directory {
+  padding-top: 14px;
   list-style: none;
+}
+
+.terminal-directory li:first-child a {
+  border-top: 0;
 }
 
 .terminal-directory a {
@@ -407,7 +416,7 @@ body:has(.terminal-page)::after {
   border-top: 1px dashed var(--terminal-border);
 }
 
-.terminal-directory h2 {
+.terminal-directory h3 {
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -420,7 +429,7 @@ body:has(.terminal-page)::after {
   color: var(--terminal-muted);
 }
 
-.terminal-directory a:hover h2 {
+.terminal-directory a:hover h3 {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -542,12 +551,107 @@ a.terminal-button:hover {
 
 .terminal-roadmap p { margin-bottom: 12px; }
 
+.terminal-patron {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.terminal-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  max-width: 280px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--terminal-strong-border);
+  color: var(--terminal-muted);
+}
+
+.terminal-amount input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  color: var(--terminal-text);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.terminal-amount input::placeholder { color: var(--terminal-dots); }
+.terminal-amount input:focus-visible { outline: none; }
+.terminal-amount:focus-within { border-bottom-style: solid; border-bottom-color: var(--terminal-text); }
+.terminal-amount input[aria-invalid="true"] { text-decoration: underline wavy; }
+.terminal-amount input:disabled { color: var(--terminal-muted); }
+
+/* ── homepage ───────────────────────────────────────────── */
+
+.terminal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 26px;
+}
+
+.terminal-status {
+  display: grid;
+  gap: 10px;
+}
+
+.terminal-status > div {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.terminal-status > div::before {
+  content: "";
+  order: 1;
+  flex: 1;
+  border-bottom: 1px dotted var(--terminal-dots);
+}
+
+.terminal-status dt { color: var(--terminal-muted); }
+.terminal-status dd { order: 2; text-align: right; }
+
+.terminal-event h3 {
+  margin: 8px 0 22px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.terminal-space {
+  display: grid;
+  gap: 28px 32px;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+}
+
+.terminal-space .terminal-perks { margin-block: 18px 22px; }
+
+.terminal-photo {
+  margin: 0;
+}
+
+.terminal-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px dashed var(--terminal-border);
+  filter: grayscale(1) contrast(1.05);
+}
+
+.terminal-photo figcaption {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
 .terminal-footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 14px 24px;
-  padding-block: 24px 64px;
+  /* Body is a min-height:100% flex column; auto margin pins this to the bottom on short pages. */
+  margin-top: auto;
+  padding-block: 24px 32px;
   color: var(--terminal-muted);
   font-size: 12px;
 }
@@ -563,6 +667,10 @@ a.terminal-button:hover {
   .terminal-nav nav { order: 1; flex-basis: 100%; justify-content: flex-start; gap: 12px 20px; }
 }
 
+@media (max-width: 760px) {
+  .terminal-space { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 600px) {
   .terminal-page { margin-top: 32px; }
   .terminal-intro { padding: 28px 20px 30px; }
@@ -570,6 +678,8 @@ a.terminal-button:hover {
   .terminal-directory a { padding: 22px 20px; }
   .terminal-legend { margin-left: 12px; font-size: 12px; }
   .terminal-checkout { align-items: start; flex-direction: column; }
+  .terminal-actions { flex-direction: column; }
+  .terminal-actions .terminal-button { width: 100%; }
   .terminal-footer { font-size: 11px; }
 }
 

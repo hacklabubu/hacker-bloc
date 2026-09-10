@@ -45,7 +45,8 @@ const NEGOTIATED_PAGES = [
   "/",
   "/events",
   "/membership",
-  "/support",
+  "/roadmap",
+  "/wishlist",
   "/community",
   "/rules",
   "/join",
@@ -70,6 +71,10 @@ const nextConfig: NextConfig = {
      */
     formats: ["image/webp"],
   },
+  /* Support the Bloc became the wishlist; old links keep working. */
+  redirects: async () => [
+    { source: "/support", destination: "/wishlist", permanent: true },
+  ],
   headers: async () =>
     NEGOTIATED_PAGES.map((source) => ({
       source,

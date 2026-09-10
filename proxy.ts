@@ -5,6 +5,7 @@ import {
   notAcceptableBody,
   preferredType,
 } from "@/lib/accept";
+import { updateSession } from "@/lib/supabase/middleware";
 
 /*
  * Markdown content negotiation, the acceptmarkdown.com way: the same URL serves
@@ -28,8 +29,36 @@ import {
 
 const MARKDOWN_ROUTE = "/api/markdown";
 
-export function proxy(request: NextRequest) {
+/*
+ * The Supabase auth scaffold (app/auth, app/protected) needs its session
+ * cookies refreshed on every request to those routes, and sends visitors
+ * without a session to the login page. That must never touch the public site:
+ * a hackerspace homepage that redirects strangers to /auth/login is broken.
+ * So only these prefixes go through updateSession; every other path is a
+ * public page and gets content negotiation as before.
+ */
+const AUTH_PREFIXES = ["/auth", "/protected"];
+
+function needsSession(pathname: string) {
+  return AUTH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (needsSession(pathname)) {
+    /* Without Supabase configured the scaffold cannot work anyway; let the
+     * pages render (and fail) on their own rather than crash every request. */
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    ) {
+      return passThrough();
+    }
+    return updateSession(request);
+  }
 
   /*
    * Negotiation decides what a *reader* is handed. A POST here is a Server
