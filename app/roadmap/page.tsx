@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MEMBERSHIP, ROADMAP, formatUsd } from "@/lib/membership";
+import { ROADMAP } from "@/lib/membership";
 
 export const metadata: Metadata = {
   title: "Roadmap",
-  description: `The plan for building Hacker Bloc, one version at a time. Hacker Bloc 1.0 is ${formatUsd(MEMBERSHIP.spaceGoalUsd)} USD and gets the hackerspace working.`,
+  description: "The plan for building Hacker Bloc, one version at a time. Ten hackers unlock 1.0 and the hackerspace starts working; every ten more unlock the next version.",
   alternates: { canonical: "/roadmap" },
 };
 
@@ -23,7 +23,7 @@ export default function RoadmapPage() {
             <h2 id={`${id}-heading`} className="terminal-legend">Hacker Bloc {milestone.version}</h2>
             <div className="terminal-section-content terminal-roadmap">
               <p className="terminal-price">
-                <strong>{formatUsd(milestone.goalUsd)}</strong> USD
+                <strong>{milestone.hackers}</strong> hackers
               </p>
               <p className="terminal-muted">{milestone.summary}</p>
               <ul className="terminal-perks" aria-label={`Hacker Bloc ${milestone.version}`}>
@@ -42,7 +42,7 @@ export default function RoadmapPage() {
       <section id="fund" className="terminal-section" aria-labelledby="fund-heading">
         <h2 id="fund-heading" className="terminal-legend">Fund it</h2>
         <div className="terminal-section-content terminal-roadmap">
-          <p>Founding membership pays for 1.0. Everything after that, we build together.</p>
+          <p>Every version unlocks when enough hackers have joined. Ten get us to 1.0.</p>
           <p>
             <Link href="/membership" className="underline underline-offset-4">Become a member →</Link>
           </p>

@@ -5,8 +5,7 @@
 Founding membership costs $100 USD per month plus a $1,000 USD one-time signup
 fee. Members get access to every event in the Bloc, 24/7 access to the
 hackerspace, and a say in shaping the space. Half of the money goes to rent;
-the other half goes to setting up the space. The first goal is $10,000 USD
-for Hacker Bloc 1.0. The roadmap is published; the wishlist is a coming-soon placeholder.
+the other half goes to setting up the space. Ten members unlock Hacker Bloc 1.0. The roadmap is published; the wishlist is a coming-soon placeholder.
 
 The Membership page shows payment availability and links directly to checkout when
 payments open. The offer is limited to 100 founding members; the site does
@@ -20,7 +19,7 @@ Contact: matt@hacklab.so.
 - [Home](https://www.hackerbloc.com/): An introduction to the space and links to its main pages.
 - [Events](https://www.hackerbloc.com/events): Upcoming and recent events, with RSVP links and the public calendar.
 - [Membership](https://www.hackerbloc.com/membership): Two ways to pay. Become a member ($100 USD/month plus a $1,000 USD signup fee, first 100 people) or become a patron (a one-time donation of any amount). Benefits, where the money goes, and the risk note.
-- [Roadmap](https://www.hackerbloc.com/roadmap): The space, one version at a time. Hacker Bloc 1.0 ($10,000 USD) gets it working: bathroom, kitchen, lighting, Wi-Fi, lockers, member door lock. 2.0 ($20,000 USD) adds tools (monitors, 3D printers, welding station). 3.0 ($30,000 USD) adds a garden sauna and jacuzzi, graffiti, and rent fully covered by the hackerspace.
+- [Roadmap](https://www.hackerbloc.com/roadmap): The space, one version at a time. Hacker Bloc 1.0 (10 hackers) gets it working: bathroom, kitchen, lighting, Wi-Fi, lockers, member door lock. 2.0 (20 hackers) adds tools (monitors, 3D printers, welding station). 3.0 (30 hackers) adds a garden sauna and jacuzzi, graffiti, and rent fully covered by the hackerspace.
 - [Wishlist](https://www.hackerbloc.com/wishlist): The things the space needs next, with a way to fund specific items (coming soon), and how to contribute equipment, time, or resources.
 
 ## Additional existing pages

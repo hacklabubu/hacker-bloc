@@ -301,7 +301,7 @@ function roadmapMarkdown(): string {
     "The plan for building the space, one version at a time.",
     "",
     ...ROADMAP.flatMap((milestone) => [
-      `## Hacker Bloc ${milestone.version} — ${formatUsd(milestone.goalUsd)} USD`,
+      `## Hacker Bloc ${milestone.version} — ${milestone.hackers} hackers`,
       "",
       milestone.summary,
       "",
@@ -310,7 +310,7 @@ function roadmapMarkdown(): string {
     ]),
     "## Fund it",
     "",
-    `Founding membership pays for 1.0. [Become a member](${url("/membership")}) or [see the wishlist](${url("/wishlist")}).`,
+    `Every version unlocks when enough hackers have joined; ten get us to 1.0. [Become a member](${url("/membership")}) or [see the wishlist](${url("/wishlist")}).`,
   ].join("\n");
 
   return doc("/roadmap", "Roadmap", body);
