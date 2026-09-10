@@ -71,7 +71,7 @@ export function ThemeToggle() {
       type="button"
       className="terminal-theme-toggle"
       onClick={toggleTheme}
-      aria-label={`Switch to ${targetTheme} theme`}
+      aria-label={`[d] ${targetTheme === "light" ? "Light" : "Dark"}: switch to the ${targetTheme} theme`}
       aria-keyshortcuts="D"
       title="Switch theme (D)"
     >
