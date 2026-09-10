@@ -583,6 +583,59 @@ a.terminal-button:hover {
 .terminal-amount input[aria-invalid="true"] { text-decoration: underline wavy; }
 .terminal-amount input:disabled { color: var(--terminal-muted); }
 
+/* ── prose pages (privacy, terms, refunds, rules) ────────── */
+
+.terminal-prose {
+  display: grid;
+  gap: 16px;
+  max-width: 62ch;
+}
+
+.terminal-prose a { text-decoration: underline; text-underline-offset: 4px; }
+
+.terminal-rules {
+  display: grid;
+  gap: 14px;
+  max-width: 62ch;
+  padding: 0;
+  list-style: none;
+  counter-reset: rule;
+}
+
+.terminal-rules li {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  counter-increment: rule;
+}
+
+.terminal-rules li::before {
+  flex-shrink: 0;
+  color: var(--terminal-muted);
+  content: counter(rule, decimal-leading-zero);
+}
+
+.terminal-ladder {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px dashed var(--terminal-strong-border);
+}
+
+.terminal-ladder li {
+  display: grid;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--terminal-strong-border);
+}
+
+@media (min-width: 640px) {
+  .terminal-ladder li { grid-template-columns: 64px 200px 1fr; }
+}
+
+.terminal-ladder .terminal-muted { font-size: 12px; }
+
 /* ── auth + members forms ───────────────────────────────── */
 
 .terminal-form {

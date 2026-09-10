@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SectionHeading } from "@/components/site/section-heading";
 import {
   CANCEL_MAILTO,
   WITHDRAW_MAILTO,
@@ -7,8 +6,6 @@ import {
   type LegalSection,
 } from "@/lib/legal";
 import { OPERATOR } from "@/lib/site";
-
-const LINK = "text-signal underline underline-offset-4 hover:text-beige";
 
 /*
  * The two action words in the refund policy resolve to pre-filled mailto
@@ -32,13 +29,13 @@ function Paragraph({ text }: { text: string }) {
         const action = ACTIONS[href];
         if (action) {
           return (
-            <a key={i} href={action} className={LINK}>
+            <a key={i} href={action}>
               {label}
             </a>
           );
         }
         return (
-          <Link key={i} href={href} className={LINK}>
+          <Link key={i} href={href}>
             {label}
           </Link>
         );
@@ -49,9 +46,9 @@ function Paragraph({ text }: { text: string }) {
 
 function Section({ section }: { section: LegalSection }) {
   return (
-    <section className="mt-16 sm:mt-20">
-      <SectionHeading>{section.heading}</SectionHeading>
-      <div className="max-w-3xl space-y-6 text-base leading-8 text-concrete sm:text-lg sm:leading-9">
+    <section className="terminal-section" aria-label={section.heading}>
+      <h2 className="terminal-legend">{section.heading}</h2>
+      <div className="terminal-section-content terminal-prose">
         {section.paragraphs.map((paragraph) => (
           <Paragraph key={paragraph} text={paragraph} />
         ))}
@@ -74,20 +71,14 @@ function longDate(iso: string): string {
  * requires for contracts concluded online: a clearly labelled button that
  * leads to a pre-filled withdrawal message. Only the refund policy shows it.
  */
-function WithdrawalButton() {
+function WithdrawalButtons() {
   return (
-    <div className="mt-10 flex flex-wrap gap-4">
-      <a
-        href={WITHDRAW_MAILTO}
-        className="inline-flex h-12 items-center border border-beige/50 bg-beige/5 px-6 text-xs tracking-[0.2em] text-beige uppercase transition-colors hover:border-beige hover:bg-beige/10"
-      >
-        Withdraw from contract here
+    <div className="terminal-actions">
+      <a href={WITHDRAW_MAILTO} className="terminal-button">
+        Withdraw from contract here <span aria-hidden="true">↗</span>
       </a>
-      <a
-        href={CANCEL_MAILTO}
-        className="inline-flex h-12 items-center border border-border px-6 text-xs tracking-[0.2em] text-concrete uppercase transition-colors hover:text-signal"
-      >
-        Cancel membership
+      <a href={CANCEL_MAILTO} className="terminal-button">
+        Cancel membership <span aria-hidden="true">↗</span>
       </a>
     </div>
   );
@@ -101,30 +92,26 @@ export function LegalPage({
   withdrawal?: boolean;
 }) {
   return (
-    <main className="flex-1">
-      <section className="mx-auto w-full max-w-6xl px-4 py-20 sm:py-28">
-        <h1 className="font-heading text-4xl leading-tight uppercase text-beige sm:text-5xl md:text-6xl">
-          {doc.title}
-        </h1>
-        <p className="mt-4 text-sm tracking-widest text-steel uppercase">
-          Last updated {longDate(doc.updated)}
-        </p>
-        <p className="mt-8 max-w-3xl text-lg leading-8 text-concrete sm:text-xl sm:leading-9">
-          {doc.intro}
-        </p>
-        {withdrawal && <WithdrawalButton />}
+    <main id="top" className="terminal-page">
+      <section className="terminal-intro" aria-labelledby="legal-heading">
+        <p className="terminal-location">{doc.title}</p>
+        <h1 id="legal-heading">{doc.title}</h1>
+        <p className="terminal-muted">Last updated {longDate(doc.updated)}</p>
+        <p>{doc.intro}</p>
+        {withdrawal ? <WithdrawalButtons /> : null}
+      </section>
 
-        {doc.sections.map((section) => (
-          <Section key={section.heading} section={section} />
-        ))}
+      {doc.sections.map((section) => (
+        <Section key={section.heading} section={section} />
+      ))}
 
-        <p className="mt-16 max-w-3xl text-sm text-steel">
-          Questions go to{" "}
-          <a href={`mailto:${OPERATOR.email}`} className="underline underline-offset-4 hover:text-signal">
-            {OPERATOR.email}
-          </a>
-          .
-        </p>
+      <section className="terminal-section" aria-label="Questions">
+        <h2 className="terminal-legend">Questions</h2>
+        <div className="terminal-section-content terminal-prose">
+          <p>
+            Questions go to <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>.
+          </p>
+        </div>
       </section>
     </main>
   );

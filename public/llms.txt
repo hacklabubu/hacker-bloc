@@ -24,25 +24,19 @@ Contact: matt@hacklab.so.
 
 ## Additional existing pages
 
-- [Community](https://www.hackerbloc.com/community): Everyone around the bloc — house team, founders, media, investors, factories, partners — with their links, grouped by role and by how much say they have in the house.
 - [Rules](https://www.hackerbloc.com/rules): The authority hierarchy (who decides what, and what each rung is responsible for) and the house rules themselves.
 - [Join](https://www.hackerbloc.com/join): The existing house application form, separate from founding membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
-- [Sponsor](https://www.hackerbloc.com/sponsor): The existing building sponsorship proposal, separate from the founding membership offer.
-- [Partners](https://www.hackerbloc.com/partners): Who powers the house — Hacklab and Epikor.
-- [About](https://www.hackerbloc.com/about): The house, what happens in it, and who runs it.
-- [Contact](https://www.hackerbloc.com/contact): Email, sponsorship email, street address with map link, call booking link, and social accounts.
+- [Members](https://www.hackerbloc.com/members): Sign in to see your membership and manage billing (account required; create one at /auth/sign-up before paying).
 - [Privacy](https://www.hackerbloc.com/privacy): What the join form collects, where it is stored, how long it is kept, and how to get it deleted.
 
 ## When to use
 
 Use this site to:
 
-- **Learn what Hacker Bloc is and who runs it.** Start at [/about](https://www.hackerbloc.com/about) for the house and its operators; [/rules](https://www.hackerbloc.com/rules) carries the authority hierarchy, so read it before assuming who can approve anything.
-- **Browse the community and reach a member.** [/community](https://www.hackerbloc.com/community) lists people by role and by rank, with the links they chose to publish. There is no member directory API — the page is the directory.
+- **Learn how the house works.** [/rules](https://www.hackerbloc.com/rules) carries the authority hierarchy and the house rules, so read it before assuming who can approve anything.
 - **Become a member or a patron.** Start at [Membership](https://www.hackerbloc.com/membership) for the terms, the one-time patron option, and current payment availability.
 - **Give equipment or time.** [Wishlist](https://www.hackerbloc.com/wishlist) lists what the space needs and how to get in touch about contributing.
 - **Apply to the house.** The existing [/join](https://www.hackerbloc.com/join) form takes your type, name, Hacklab profile, how you can be useful, how you heard about us, and what excites you most — plus a confirmation you read the rules.
-- **Sponsor or partner.** [/sponsor](https://www.hackerbloc.com/sponsor) has the numbers and the lanes; [/partners](https://www.hackerbloc.com/partners) has who is already in. Sponsorship goes to matt@homebrew.so, everything else to matt@hacklab.so.
 - **Find upcoming events.** [Events](https://www.hackerbloc.com/events) lists upcoming and recent events from [the public calendar](https://luma.com/hacklab). Follow the calendar link if no events are currently displayed.
 
 ## Notes
