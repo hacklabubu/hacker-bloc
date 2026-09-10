@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import {
   startMembershipCheckout,
@@ -31,7 +32,16 @@ export function MemberForm({
   let status: React.ReactNode = note;
   if (!enabled) status = "Payments open soon.";
   else if (state.error) status = state.error;
-  else if (thanks) status = "Welcome in. Your membership is active; the receipt is in your inbox.";
+  else if (thanks)
+    status = (
+      <>
+        Welcome in. Your membership is active; the receipt is in your inbox.{" "}
+        <Link href="/auth/sign-up" className="underline underline-offset-4">
+          Create your member account
+        </Link>{" "}
+        with the same email to manage billing.
+      </>
+    );
 
   return (
     <form action={action} className="terminal-checkout">

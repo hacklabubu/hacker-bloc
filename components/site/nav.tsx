@@ -25,6 +25,12 @@ export function SiteNav() {
               {link.label}
             </Link>
           ))}
+          <Link
+            href="/members"
+            aria-current={pathname === "/members" ? "page" : undefined}
+          >
+            Members
+          </Link>
         </nav>
         <ThemeToggle />
       </div>

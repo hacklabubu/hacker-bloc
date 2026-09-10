@@ -4,10 +4,11 @@ import Stripe from "stripe";
  * Server-only Stripe clients. Null when the key is unset, so every checkout
  * surface can render itself disabled ("Payments open soon.").
  *
- * One key (STRIPE_SECRET_KEY) serves both checkouts. Both only create
- * Checkout Sessions, so a restricted key (rk_…) with Checkout Sessions write
- * access is enough. STRIPE_SECRET_KEY_MEMBERSHIP, if set, overrides it for the
- * membership checkout so that key can be revoked on its own.
+ * One key (STRIPE_SECRET_KEY) serves both checkouts and the members' billing
+ * portal (app/actions/billing.ts). A restricted key (rk_…) with write access
+ * to Checkout Sessions and Customer portal is enough.
+ * STRIPE_SECRET_KEY_MEMBERSHIP, if set, overrides it for membership checkout
+ * and the portal so that key can be revoked on its own.
  */
 function client(name: string): Stripe | null {
   const key = process.env[name]?.trim();
