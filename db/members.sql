@@ -38,3 +38,29 @@ create table if not exists stripe_events (
   payload jsonb not null,
   received_at timestamptz not null default now()
 );
+
+-- Everyone with an account (Supabase Auth), remembered the first time they
+-- reach a signed-in page (lib/profile.ts). Drives the public /members list
+-- together with the two payment tables: no member row and no patron payment
+-- makes a "lurker".
+create table if not exists profiles (
+  supabase_user_id text primary key,
+  email text not null,
+  github_username text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists profiles_email_idx on profiles (lower(email));
+
+-- One-time patron contributions (app/actions/patron.ts), written by the
+-- webhook from checkout.session.completed.
+create table if not exists patron_payments (
+  stripe_session_id text primary key,
+  stripe_customer_id text,
+  email text,
+  amount_cents integer not null,
+  currency text not null,
+  paid_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists patron_payments_email_idx on patron_payments (lower(email));

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { MemberForm } from "@/components/site/member-form";
 import { authConfigured, getSessionUser } from "@/lib/auth";
+import { rememberProfile } from "@/lib/profile";
 import { PatronForm } from "@/components/site/patron-form";
 import { MEMBERSHIP, RISK_NOTE, formatUsd } from "@/lib/membership";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
@@ -23,6 +24,7 @@ export default async function MembershipPage({
   const paymentsEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
   const user = accountsEnabled ? await getSessionUser() : null;
+  if (user) await rememberProfile(user);
   /* Stripe sends a finished checkout back here with ?member=thanks or ?patron=thanks. */
   const params = await searchParams;
   const memberThanks = params.member === "thanks";

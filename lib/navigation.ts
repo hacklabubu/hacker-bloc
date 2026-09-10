@@ -4,4 +4,5 @@ export const MAIN_NAV_LINKS = [
   { href: "/membership", label: "Membership" },
   { href: "/roadmap", label: "Roadmap" },
   { href: "/wishlist", label: "Wishlist" },
+  { href: "/members", label: "Members" },
 ] as const;

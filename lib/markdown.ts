@@ -33,6 +33,7 @@ import {
 import { authConfigured } from "@/lib/auth";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import { getHouseRoles, getMembers, getRules } from "@/lib/notion";
+import { getPeople } from "@/lib/people";
 import { REFUNDS, TERMS, type LegalDoc } from "@/lib/legal";
 import { LUMA, OPERATOR, SITE } from "@/lib/site";
 
@@ -53,6 +54,7 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/membership": membershipMarkdown,
   "/roadmap": roadmapMarkdown,
   "/wishlist": wishlistMarkdown,
+  "/members": membersMarkdown,
   "/rules": rulesMarkdown,
   "/join": joinMarkdown,
   "/terms": () => legalMarkdown(TERMS),
@@ -297,6 +299,31 @@ function wishlistMarkdown(): string {
   return doc("/wishlist", "Wishlist", body);
 }
 
+/* ── /members ─────────────────────────────────────────────────── */
+
+/* Mirrors app/(site)/members/page.tsx. */
+async function membersMarkdown(): Promise<string> {
+  const people = await getPeople();
+  const body = [
+    "Everyone with a key to the Bloc. Members pay the membership, patrons put money in once, lurkers made an account and are thinking about it. Only GitHub usernames are shown.",
+    "",
+    "## The list",
+    "",
+    people === null
+      ? "The list is offline right now."
+      : people.length === 0
+        ? "Nobody yet."
+        : list(
+            people.map((person) =>
+              `${person.github ? `[${person.github}](https://github.com/${person.github})` : "anonymous"} — ${person.status}`,
+            ),
+          ),
+    "",
+    `Get on the list: ${url("/auth/sign-up")} · Become a member: ${url("/membership")}#member`,
+  ].join("\n");
+  return doc("/members", "Members", body);
+}
+
 /* ── /rules ────────────────────────────────────────────────────── */
 
 async function rulesMarkdown(): Promise<string> {
@@ -496,6 +523,7 @@ export function markdownNotFound(pathname: string): string {
       `[Events](${url("/events")}) — upcoming and recent events`,
       `[Membership](${url("/membership")}) — founding membership, benefits, pricing, and payment availability`,
       `[Wishlist](${url("/wishlist")}) — what the space needs next, and how to give equipment or time`,
+      `[Members](${url("/members")}) — everyone with an account: members, patrons, lurkers`,
       `[Rules](${url("/rules")}) — who decides what, and the house rules`,
       `[Join](${url("/join")}) — apply to the house`,
       `[Terms](${url("/terms")}) — membership terms`,

@@ -5,6 +5,7 @@ import { BrandLogo } from "@/components/site/brand-logo";
 import { SpaceNav } from "@/components/site/space-nav";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { authConfigured, getSessionUser } from "@/lib/auth";
+import { rememberProfile } from "@/lib/profile";
 
 /* Reads the session cookie on every request; never prerender. */
 export const dynamic = "force-dynamic";
@@ -35,6 +36,7 @@ export default async function SpaceLayout({ children }: { children: React.ReactN
 
   const user = await getSessionUser();
   if (!user) redirect("/auth/login?next=%2Fspace");
+  await rememberProfile(user);
 
   return (
     <div className="space-shell">

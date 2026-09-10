@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const LINKS = [
   { href: "/space", label: "Profile" },
   { href: "/space/billing", label: "Billing" },
+  { href: "/members", label: "Members" },
 ] as const;
 
 /* The sidebar of /space: two links, the current one marked with ">". */

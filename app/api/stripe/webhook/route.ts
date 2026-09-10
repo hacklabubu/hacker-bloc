@@ -77,10 +77,26 @@ async function upsertMember(patch: MemberPatch) {
   `;
 }
 
+async function onPatronPaid(session: Stripe.Checkout.Session) {
+  if (session.payment_status !== "paid") return;
+  const sql = getSql();
+  await sql`
+    INSERT INTO patron_payments (
+      stripe_session_id, stripe_customer_id, email, amount_cents, currency, paid_at
+    ) VALUES (
+      ${session.id}, ${idOf(session.customer)}, ${session.customer_details?.email ?? null},
+      ${session.amount_total ?? 0}, ${session.currency ?? "usd"},
+      ${toIso(session.created) ?? new Date().toISOString()}
+    )
+    ON CONFLICT (stripe_session_id) DO NOTHING
+  `;
+}
+
 async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
   /* Patron contributions (app/actions/patron.ts) are one-time payments, not
-   * memberships; they stay in stripe_events for the audit trail only. */
-  if (session.mode !== "subscription" || session.metadata?.kind === "patron") return;
+   * memberships; they get their own ledger for the members list. */
+  if (session.metadata?.kind === "patron") return onPatronPaid(session);
+  if (session.mode !== "subscription") return;
 
   const customerId = idOf(session.customer);
   if (!customerId) return;
