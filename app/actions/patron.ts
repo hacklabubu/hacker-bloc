@@ -33,6 +33,8 @@ export async function startPatronCheckout(
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      /* Always charge in USD; no local-currency conversion offers. */
+      adaptive_pricing: { enabled: false },
       submit_type: "donate",
       line_items: [
         {

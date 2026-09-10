@@ -41,6 +41,8 @@ export async function startMembershipCheckout(): Promise<MembershipState> {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
+      /* Always charge in USD; no local-currency conversion offers. */
+      adaptive_pricing: { enabled: false },
       line_items: [
         { price: prices.monthly, quantity: 1 },
         { price: prices.signup, quantity: 1 },
