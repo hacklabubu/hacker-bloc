@@ -28,6 +28,17 @@ export default function NotFound() {
           rooms that does.
         </p>
       </section>
+      <section className="terminal-section" aria-labelledby="nf-maps">
+        <h2 id="nf-maps" className="terminal-legend">Maps</h2>
+        <div className="terminal-section-content">
+          <p className="terminal-muted">
+            Every page is listed in the{" "}
+            <a href="/sitemap.xml" className="underline underline-offset-4">sitemap</a> and described in{" "}
+            <a href="/llms.txt" className="underline underline-offset-4">llms.txt</a>. Ask any page with{" "}
+            <code>Accept: text/markdown</code> for its markdown.
+          </p>
+        </div>
+      </section>
       <section className="terminal-section" aria-labelledby="nf-legend">
         <h2 id="nf-legend" className="terminal-legend">Rooms</h2>
         <div className="terminal-section-content">

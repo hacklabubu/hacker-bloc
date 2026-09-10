@@ -18,18 +18,37 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+/*
+ * Entity graph for crawlers and agents: the organisation and the site it
+ * runs, both under the canonical URL so "Hacker Bloc" resolves to this domain.
+ */
 const organizationJsonLd = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Hacker Bloc",
-  url: SITE.url,
-  description,
-  email: SITE.email,
-  address: {
-    "@type": "PostalAddress",
-    ...SITE.postal,
-  },
-  sameAs: [...SOCIALS.map((social) => social.url), "https://hacklab.so"],
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE.url}/#organization`,
+      name: "Hacker Bloc",
+      alternateName: ["HACKER BLOC", "hackerbloc.com"],
+      url: SITE.url,
+      description,
+      email: SITE.email,
+      address: {
+        "@type": "PostalAddress",
+        ...SITE.postal,
+      },
+      sameAs: [...SOCIALS.map((social) => social.url), "https://hacklab.so"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE.url}/#website`,
+      name: "Hacker Bloc",
+      alternateName: "HACKER BLOC",
+      url: SITE.url,
+      inLanguage: "en",
+      publisher: { "@id": `${SITE.url}/#organization` },
+    },
+  ],
 };
 
 export default async function Home() {
@@ -55,6 +74,7 @@ export default async function Home() {
           </a>
         </p>
         <h1 id="home-heading">We have Palo Alto at home</h1>
+        <h2 className="sr-only">What we are building</h2>
         <p>
           We want the kind of space we saw in Silicon Valley: a house where startup founders meet, build, start
           their first Delaware C-corp, get their first check, find cofounders,
@@ -83,6 +103,7 @@ export default async function Home() {
           <p className="terminal-signup">
             + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
           </p>
+          <h3 className="sr-only">Member benefits</h3>
           <ul className="terminal-perks" aria-label="Member benefits">
             {MEMBERSHIP.benefits.map((benefit) => (
               <li key={benefit.title}>
