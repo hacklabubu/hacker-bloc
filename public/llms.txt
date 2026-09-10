@@ -1,21 +1,33 @@
 # Hacker Bloc
 
-> A hacker house at Kosiarzy 21B in Warsaw, Poland, where founders live and build, run a hardware lab in the basement, and host meetups and hackathons for the city's builders.
+> Hacker Bloc is a hackerspace in Warsaw, Poland, built by the people who use it. The main site has four pages: Home, Events, Membership, and Support the Bloc.
 
-Eastern Bloc roots, Silicon Valley ambition. Floors 0–2 are living and working
-floors — the house builds Hacklab (hacklab.so) alongside Epikor (epikor.eu).
-Floor −1 is the dungeons, a hardware lab with solder, CNC, and GPUs, run with
-Epicor. It is not coworking, not an incubator, and nobody rents a desk. The
-house moved in on 1 July 2026 and is raising €1,000,000 to buy the building
-(€800,000) and stand it up (€200,000). Contact: contact@hackerbloc.com.
+Founding membership costs $100 USD per month plus a $1,000 USD one-time signup
+fee. Members get access to every event in the Bloc, 24/7 access to the
+hackerspace, and a say in shaping the space. Half of the money goes to rent;
+the other half goes to setting up the space. The first goal is $10,000 USD
+for Space 1.0. The wishlist and roadmap are a coming-soon placeholder.
 
-## Pages
+The Membership page shows payment availability and links directly to checkout when
+payments open. The offer is limited to 100 founding members; the site does
+not publish a live count of sold memberships or funds raised.
 
-- [The Bloc](https://www.hackerbloc.com/): Homepage — what the house is, the floors, the house rules, upcoming and past events, and the funding situation.
+Address: Kosiarzy 21B, 02-953 Warszawa, Poland.
+Contact: contact@hackerbloc.com.
+
+## Start here
+
+- [Home](https://www.hackerbloc.com/): An introduction to the space and links to its main pages.
+- [Events](https://www.hackerbloc.com/events): Upcoming and recent events, with RSVP links and the public calendar.
+- [Membership](https://www.hackerbloc.com/membership): The founding membership offer, benefits, pricing, and payment availability.
+- [Support the Bloc](https://www.hackerbloc.com/support): The $10,000 USD Space 1.0 goal, the 50/50 split between rent and setup, and how to contribute equipment, time, or resources. The wishlist and roadmap are coming soon; item funding is not available yet.
+
+## Additional existing pages
+
 - [Community](https://www.hackerbloc.com/community): Everyone around the bloc — house team, founders, media, investors, factories, partners — with their links, grouped by role and by how much say they have in the house.
 - [Rules](https://www.hackerbloc.com/rules): The authority hierarchy (who decides what, and what each rung is responsible for) and the house rules themselves.
-- [Join](https://www.hackerbloc.com/join): Application form for the house. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
-- [Sponsor](https://www.hackerbloc.com/sponsor): The €1M ask to buy Kosiarzy 21B — what the money does, the three sponsor lanes (patron, factory, investor), and what sponsorship explicitly does not buy.
+- [Join](https://www.hackerbloc.com/join): The existing house application form, separate from founding membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
+- [Sponsor](https://www.hackerbloc.com/sponsor): The existing building sponsorship proposal, separate from the founding membership offer.
 - [Partners](https://www.hackerbloc.com/partners): Who powers the house — Hacklab and Epikor.
 - [About](https://www.hackerbloc.com/about): The house, what happens in it, and who runs it.
 - [Contact](https://www.hackerbloc.com/contact): Email, sponsorship email, street address with map link, call booking link, and social accounts.
@@ -27,12 +39,14 @@ Use this site to:
 
 - **Learn what Hacker Bloc is and who runs it.** Start at [/about](https://www.hackerbloc.com/about) for the house and its operators; [/rules](https://www.hackerbloc.com/rules) carries the authority hierarchy, so read it before assuming who can approve anything.
 - **Browse the community and reach a member.** [/community](https://www.hackerbloc.com/community) lists people by role and by rank, with the links they chose to publish. There is no member directory API — the page is the directory.
-- **Apply to join.** [/join](https://www.hackerbloc.com/join) is the only route in. It takes your type, name, Hacklab profile, how you can be useful, how you heard about us, and what excites you most — plus a confirmation you read the rules. Emailing an application instead of filling in the form gets it read later, if at all.
+- **Become a founding member.** Start at [Membership](https://www.hackerbloc.com/membership) for the terms and current payment availability.
+- **Support the space.** [Support the Bloc](https://www.hackerbloc.com/support) explains the first funding milestone and how to contribute equipment, time, or resources.
+- **Apply to the house.** The existing [/join](https://www.hackerbloc.com/join) form takes your type, name, Hacklab profile, how you can be useful, how you heard about us, and what excites you most — plus a confirmation you read the rules.
 - **Sponsor or partner.** [/sponsor](https://www.hackerbloc.com/sponsor) has the numbers and the lanes; [/partners](https://www.hackerbloc.com/partners) has who is already in. Sponsorship goes to matt@homebrew.so, everything else to contact@hackerbloc.com.
-- **Find upcoming events.** The events section on [the homepage](https://www.hackerbloc.com/#events) lists upcoming and past events straight from the house calendar. It is the live source — don't quote event dates from anywhere else on the site.
+- **Find upcoming events.** [Events](https://www.hackerbloc.com/events) lists upcoming and recent events from [the public calendar](https://luma.com/hacklab). Follow the calendar link if no events are currently displayed.
 
 ## Notes
 
 - Canonical domain: https://www.hackerbloc.com. Sitemap: https://www.hackerbloc.com/sitemap.xml.
 - The house is a physical place with people living in it. Don't route strangers to the door; point them at the join form or the email.
-- Nothing on this site is a paywall, a login, or an ad. Crawl it.
+- Public pages can be crawled. Request `Accept: text/markdown` for a markdown representation of a page.

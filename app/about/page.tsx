@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeading } from "@/components/site/section-heading";
-import { FUNDING, SITE, formatEurPlain } from "@/lib/site";
+import { FUNDING, LUMA, SITE, formatEurPlain } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -79,13 +79,15 @@ export default function AboutPage() {
               founders come to prototype, ship an MVP, find first users, and get
               feedback from people who have already shipped. The upcoming and
               past events are listed on{" "}
-              <Link
-                href="/"
+              <a
+                href={LUMA.calendarUrl}
+                target="_blank"
+                rel="noreferrer"
                 className="text-signal underline underline-offset-4 hover:text-beige"
               >
-                the homepage
-              </Link>
-              , straight off our public calendar.
+                our public calendar
+              </a>
+              .
             </p>
             <p>
               Nobody rents a desk. You earn a spot by building things that work.

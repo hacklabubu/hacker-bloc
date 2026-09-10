@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Anton, Orbitron, JetBrains_Mono } from "next/font/google";
+import { Anton, Orbitron, JetBrains_Mono, Kode_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteNav } from "@/components/site/nav";
 import { SITE } from "@/lib/site";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const display = Anton({
@@ -24,6 +25,12 @@ const mono = JetBrains_Mono({
   subsets: ["latin", "cyrillic"],
 });
 
+const terminal = Kode_Mono({
+  variable: "--font-terminal-system",
+  weight: ["400", "500"],
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
@@ -31,7 +38,7 @@ export const metadata: Metadata = {
     template: "%s // HACKER BLOC",
   },
   description:
-    "A brutalist hacker house in Warsaw. Eastern Bloc roots, Silicon Valley ambition. Weekly meetups, monthly hackathons, free for founders, forever.",
+    "A hackerspace in Warsaw for people who build. Become a founding member and help shape the space.",
   openGraph: {
     type: "website",
     siteName: "HACKER BLOC",
@@ -67,9 +74,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="dark"
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${display.variable} ${tech.variable} ${mono.variable} h-full antialiased`}
+      className={`${display.variable} ${tech.variable} ${mono.variable} ${terminal.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <SiteNav />
         {children}

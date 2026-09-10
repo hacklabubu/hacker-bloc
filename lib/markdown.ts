@@ -35,6 +35,7 @@ import {
   type Member,
 } from "@/lib/community";
 import { getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
+import { MEMBERSHIP, formatUsd, getMembershipPaymentUrl } from "@/lib/membership";
 import {
   getCommunityRoles,
   getHouseRoleLevels,
@@ -42,6 +43,7 @@ import {
   getMembers,
   getRules,
 } from "@/lib/notion";
+import { VIBE_STEPS, VIBE_TOOLS } from "@/lib/vibe";
 import {
   FUNDING,
   LUMA,
@@ -65,6 +67,9 @@ import {
  */
 const PAGES: Record<string, () => string | Promise<string>> = {
   "/": homeMarkdown,
+  "/events": eventsMarkdown,
+  "/membership": membershipMarkdown,
+  "/support": supportMarkdown,
   "/community": communityMarkdown,
   "/rules": rulesMarkdown,
   "/join": joinMarkdown,
@@ -73,6 +78,7 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/about": aboutMarkdown,
   "/contact": contactMarkdown,
   "/privacy": privacyMarkdown,
+  "/pati": patiMarkdown,
 };
 
 /*
@@ -151,125 +157,147 @@ function eventLine(event: LumaEvent): string {
 
 /* ── / ─────────────────────────────────────────────────────────── */
 
-/*
- * Floor copy mirrors the "before" side of FLOORS in
- * components/site/the-stack.tsx — the state the house is in today, which is
- * what the slider shows at rest. The "after" halves are the renovation pitch
- * and live on /sponsor instead.
- */
-const FLOORS = [
-  ["Dorms", "Sleeping floor. Bunks and dorm space for founders crashing during builds and hackathons."],
-  ["Office", "The social floor. Meetups, demos, long tables, and the room where the house actually gathers."],
-  ["Studio", "Hacklab office and studio. Day-to-day work floor — desks, recording, and shipping in progress."],
-  ["Garden", "Outdoor yard and BBQ. Soft entry into the bloc — grill smoke, whiteboards, stranger friends."],
-  ["Dungeons", "Hardware lab below street level, run with Epicor. Solder, CNC, GPUs."],
-] as const;
+/* Mirrors the overview in app/page.tsx. */
+function homeMarkdown(): string {
+  const body = [
+    "A space for people who build.",
+    "",
+    "Warsaw, Poland.",
+    "",
+    `We're bringing together the first ${MEMBERSHIP.limit} members to get our hackerspace off the ground. A place to work, meet, make things, and shape what comes next. Help build it with us.`,
+    "",
+    list([
+      `[Events](${url("/events")}) — Meet the people building here.`,
+      `[Membership](${url("/membership")}) — ${formatUsd(MEMBERSHIP.monthlyUsd)} USD/month + ${formatUsd(MEMBERSHIP.signupUsd)} signup. First ${MEMBERSHIP.limit} members.`,
+      `[Support the Bloc](${url("/support")}) — ${formatUsd(MEMBERSHIP.spaceGoalUsd)} gets Space 1.0 off the ground.`,
+    ]),
+  ].join("\n");
 
-/* components/site/first-wave.tsx */
-const MANIFESTO = [
-  "Warsaw has the talent. It never had the room. HACKER BLOC is the room — a brutalist block with Eastern Bloc roots and Silicon Valley ambition, wired for the people who build instead of pitching.",
-  "We are not coworking. We are not an incubator. We are not a theoretical nonprofit. We put our own money, weekends, and power tools into this building, and it shows.",
-  "The first wave is the founding crew: the ones who showed up when the dungeons were still dark, ran cable through concrete, hosted the first BBQs, and shipped the first hackathon before the paint dried.",
-  "Everything here is skin in the game. Sponsors power it, residents run it, and nobody rents a desk — you earn a spot by building things that work.",
-] as const;
+  return doc("/", "Home", body);
+}
 
-async function homeMarkdown(): Promise<string> {
-  const [upcomingAll, pastAll, rules] = await Promise.all([
-    getUpcomingEvents(),
-    getPastEvents(),
-    getRules(),
-  ]);
-  const upcoming = upcomingAll.slice(0, 6);
-  const past = pastAll.slice(0, 6);
+/* ── /events ──────────────────────────────────────────────────── */
 
-  const sections: string[] = [];
+/* Matches the calendar's event-local dates in app/events/page.tsx. */
+function calendarEventLine(event: LumaEvent): string {
+  const date = new Date(event.startAt);
+  let when = "Date to be announced";
 
-  sections.push(
-    [
-      "Eastern Bloc roots. Silicon Valley ambition.",
-      "",
-      `A hacker house at ${SITE.address} (${SITE.district}, ${SITE.city}).`,
-      "",
-      `[Join](${url("/join")}) · [Sponsor](${url("/sponsor")})`,
-    ].join("\n"),
-  );
+  if (!Number.isNaN(date.getTime())) {
+    let timezone = event.timezone || "UTC";
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    };
+    let formatter: Intl.DateTimeFormat;
 
-  sections.push(
-    [
-      "## What is it?",
-      "",
-      "- **Floors 0–2** — a hacker house in Warsaw where we live and build our startups: [Hacklab](https://hacklab.so) and [Epikor](https://epikor.eu).",
-      "- **Floor −1** — a mini hackerspace where Warsaw founders learn, prototype, and ship MVPs — get first users, early feedback, and learn from each other.",
-      `- **We're fucked.** We moved in July 1st and the landlord wants to sell the house. We need €${formatEurPlain(FUNDING.totalEur)}. €${formatEurPlain(FUNDING.buildingEur)} to buy it, €${formatEurPlain(FUNDING.setupEur)} to renovate and stand it up. If you care about making Poland Europe's tech epicenter, visit the [sponsor page](${url("/sponsor")}) or [book a meeting](${SITE.calendlyUrl}) with us directly.`,
-    ].join("\n"),
-  );
+    try {
+      formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
+    } catch {
+      timezone = "UTC";
+      formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
+    }
 
-  sections.push(
-    [
-      "## Floors",
-      "",
-      list(FLOORS.map(([name, body]) => `**${name}** — ${body}`)),
-    ].join("\n"),
-  );
-
-  /* Same condition the page renders under: no rules from the CRM, no section. */
-  if (rules.length > 0) {
-    sections.push(
-      [
-        "## House rules",
-        "",
-        ordered(rules),
-        "",
-        `The rules in full, plus who decides what: ${url("/rules")}`,
-      ].join("\n"),
-    );
+    when = `${formatter.format(date)} (${timezone})`;
   }
 
-  sections.push(
-    ["## Mission — The First Wave", "", MANIFESTO.map((p) => `> ${p}`).join("\n>\n")].join("\n"),
-  );
+  const where = event.address ? ` — ${event.address}` : "";
+  return `[${event.name}](${event.url}) — ${when}${where}`;
+}
 
-  sections.push(
-    [
-      "## Events",
-      "",
-      "Live from the house calendar — this list is the source of truth for dates.",
-      "",
-      "### Upcoming",
-      "",
-      upcoming.length > 0 ? list(upcoming.map(eventLine)) : "No upcoming events yet.",
-      "",
-      "### Past",
-      "",
-      past.length > 0 ? list(past.map(eventLine)) : "No past events yet.",
-      "",
-      `Full calendar: ${LUMA.calendarUrl}`,
-    ].join("\n"),
-  );
+async function eventsMarkdown(): Promise<string> {
+  const [upcoming, past] = await Promise.all([
+    getUpcomingEvents(),
+    getPastEvents(),
+  ]);
+  const sections = [
+    "Meetups, workshops, and hackathons at the bloc. Find your next event and RSVP on Luma.",
+    "",
+    `[Open the calendar](${LUMA.calendarUrl})`,
+    "",
+    "## Upcoming",
+    "",
+    upcoming.length > 0
+      ? list(upcoming.slice(0, 8).map(calendarEventLine))
+      : `No upcoming events to show here right now. Check the [calendar](${LUMA.calendarUrl}) for the latest.`,
+  ];
 
-  sections.push(
-    [
-      "## Proof of life",
-      "",
-      "A photo wall of the house as it actually is — events, builds, unfinished walls. Images only; nothing here reads as text.",
-      "",
-      "## Error 529",
-      "",
-      "The house vlog, on YouTube: https://youtube.com/@hacklabubu",
-    ].join("\n"),
-  );
+  if (past.length > 0) {
+    sections.push("", "## Recently at the bloc", "", list(past.slice(0, 5).map(calendarEventLine)));
+  }
 
-  sections.push(
-    [
-      "## Powered by",
-      "",
-      `A 100% private initiative by the founders of Hacklab and the founder of Epicor. ${PARTNERS.motto}.`,
-      "",
-      list(PARTNERS.wall.map((p) => `[${p.name}](${p.href}) — ${p.role}`)),
-    ].join("\n"),
-  );
+  return doc("/events", "Events", sections.join("\n"));
+}
 
-  return doc("/", "The Bloc", sections.join("\n\n"));
+/* ── /membership ──────────────────────────────────────────────── */
+
+/* Mirrors the founding membership offer in app/membership/page.tsx. */
+function membershipMarkdown(): string {
+  const paymentUrl = getMembershipPaymentUrl();
+  const body = [
+    "Become a Hacker Bloc founding member.",
+    "",
+    `A hackerspace in Warsaw, built by the people who use it. Founding membership is limited to the first ${MEMBERSHIP.limit} members.`,
+    "",
+    "## Membership",
+    "",
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.**`,
+    "",
+    list(MEMBERSHIP.benefits.map((benefit) => `**${benefit.title}** ${benefit.description}`)),
+    "",
+    paymentUrl
+      ? `[Join](${paymentUrl}) — pay directly.`
+      : "Payments open soon.",
+    "",
+    "## Where the money goes",
+    "",
+    "Membership money goes straight into making the space happen:",
+    "",
+    list([
+      `**${MEMBERSHIP.rentPercent}% goes to rent.**`,
+      `**${MEMBERSHIP.setupPercent}% goes to setting up the space.**`,
+    ]),
+    "",
+    `[Support the Bloc](${url("/support")}) — Space 1.0 and what comes next.`,
+  ].join("\n");
+
+  return doc("/membership", "Founding membership", body);
+}
+
+/* ── /support ─────────────────────────────────────────────────── */
+
+function supportMarkdown(): string {
+  const body = [
+    "Help build the Bloc.",
+    "",
+    "## The first milestone / Space 1.0",
+    "",
+    `${formatUsd(MEMBERSHIP.spaceGoalUsd)} USD gets Space 1.0 off the ground.`,
+    "",
+    "Membership money goes straight into making the space happen:",
+    "",
+    list([
+      `**${MEMBERSHIP.rentPercent}% goes to rent.**`,
+      `**${MEMBERSHIP.setupPercent}% goes to setting up the space.**`,
+    ]),
+    "",
+    `[Become a founding member](${url("/membership")}).`,
+    "",
+    "## Wishlist / roadmap",
+    "",
+    "Coming soon. The things we want to build and buy for the space, with a way to fund specific items.",
+    "",
+    "## Contribute",
+    "",
+    `Have equipment, time, or resources to contribute? [Get in touch](mailto:${SITE.email}).`,
+  ].join("\n");
+
+  return doc("/support", "Support the Bloc", body);
 }
 
 /* ── /rules ────────────────────────────────────────────────────── */
@@ -433,7 +461,7 @@ function joinMarkdown(): string {
   const body = [
     "Apply to the house. Ambitious founders only — we review every application.",
     "",
-    `The form at ${url("/join")} is the only route in. Emailing an application instead gets it read later, if at all.`,
+    `Use the form at ${url("/join")} to apply to the house. Emailing an application instead gets it read later, if at all.`,
     "",
     "## What the form asks",
     "",
@@ -479,7 +507,7 @@ function aboutMarkdown(): string {
     "",
     "## What happens here",
     "",
-    `Weekly meetups, demo nights, workshops, and hackathons — Warsaw founders come to prototype, ship an MVP, find first users, and get feedback from people who have already shipped. The upcoming and past events are listed on [the homepage](${url("/")}), straight off our public calendar.`,
+    `Weekly meetups, demo nights, workshops, and hackathons — Warsaw founders come to prototype, ship an MVP, find first users, and get feedback from people who have already shipped. Upcoming and past events are listed on [our public calendar](${LUMA.calendarUrl}).`,
     "",
     `Nobody rents a desk. You earn a spot by building things that work. The community is a ladder rather than a membership list: everyone around the bloc sits somewhere on it, and where you stand decides what you get a say in. The rungs and the responsibilities attached to them are written down on [the rules page](${url("/rules")}), and the people are on [the community page](${url("/community")}).`,
     "",
@@ -742,6 +770,33 @@ function privacyMarkdown(): string {
   return doc("/privacy", "Privacy", body);
 }
 
+/* ── /pati ─────────────────────────────────────────────────────── */
+
+/*
+ * Unlisted on purpose: a personal instruction page, so it is in the markdown
+ * registry (an agent that asked for it should get it) but not in the sitemap,
+ * llms.txt, or the 404 page's list of rooms.
+ */
+function patiMarkdown(): string {
+  const body = [
+    "How to vibe code. You describe what you want in plain words, an AI writes the code, you look at the result and complain until it is right. No syntax to learn first. The whole trick is talking clearly and starting small.",
+    "",
+    "## The steps",
+    "",
+    ordered(VIBE_STEPS.map((step) => `**${step.title}** ${step.body}`)),
+    "",
+    "## Tools",
+    "",
+    list(VIBE_TOOLS.map((tool) => `[${tool.name}](${tool.url}) — ${tool.note}`)),
+    "",
+    "---",
+    "",
+    `Stuck? Someone in the house has been stuck on the same thing. [Ask](${url("/contact")}).`,
+  ].join("\n");
+
+  return doc("/pati", "Pati", body);
+}
+
 /* ── 404 ───────────────────────────────────────────────────────── */
 
 /*
@@ -764,7 +819,10 @@ export function markdownNotFound(pathname: string): string {
     "## Try instead",
     "",
     list([
-      `[Home](${url("/")}) — the house, the floors, the house rules, the events, the funding ask`,
+      `[Home](${url("/")}) — a space for people who build`,
+      `[Events](${url("/events")}) — upcoming and recent events`,
+      `[Membership](${url("/membership")}) — founding membership, benefits, pricing, and payment availability`,
+      `[Support the Bloc](${url("/support")}) — Space 1.0, the funding split, and the wishlist placeholder`,
       `[Community](${url("/community")}) — everyone around the bloc`,
       `[Rules](${url("/rules")}) — who decides what, and the house rules`,
       `[Join](${url("/join")}) — apply to the house`,

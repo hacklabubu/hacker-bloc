@@ -5,16 +5,25 @@
 > Now shipping from [hacklabubu](https://github.com/hacklabubu).
 
 Site for **Hacker Bloc** (né Hacker Block), a brutalist hacker house in
-Warsaw for builders, dreamers, and digital misfits. Full site: home with the
-interactive Stack cross-section and First Wave manifesto, live events from
-[luma.com/hacklab](https://luma.com/hacklab), Alien Bazaar countdown,
-partners page, and a `/join` waitlist backed by Neon Postgres.
+Warsaw for builders, dreamers, and digital misfits. The main navbar links to
+four separate pages:
+
+- **Home** (`/`): the ASCII wordmark, an introduction, and links to the main pages.
+- **Events** (`/events`): upcoming and recent events from the public Luma calendar.
+- **Membership** (`/membership`): the founding offer for the first 100 members,
+  $100 USD/month plus a $1,000 USD signup fee, benefits, and payment availability.
+- **Support the Bloc** (`/support`): the $10,000 Space 1.0 goal, the 50/50 membership
+  funding split between rent and setup, contributions, and a wishlist/roadmap placeholder.
+
+The existing community, information, and application pages remain available
+at their URLs.
 
 ## Stack
 
 - [Next.js 16](https://nextjs.org) (App Router, Turbopack)
 - [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)
-- Fonts: Anton / Orbitron / JetBrains Mono via `next/font`
+- Fonts: Kode Mono on the four main pages; Anton / Orbitron / JetBrains Mono on
+  the existing pages, all via `next/font`
 
 ## Run it
 
@@ -25,19 +34,49 @@ npm run dev
 
 Then open the printed localhost URL.
 
+## Membership payment link
+
+Set `FOUNDING_MEMBERSHIP_PAYMENT_URL` in `.env.local` and in the deployment
+environment to the HTTPS checkout URL for the $1,000 USD one-time fee plus
+$100 USD/month subscription. Rebuild/redeploy after setting it. The Membership
+page links directly to that checkout; pricing and the 100-member limit must
+be configured in the payment provider. Until a valid link is set, the button
+is disabled and the page says “Payments open soon.”
+
 ## Brand system
 
-Palette and voice follow the HB brand kit v1.0.0:
+The interface and default Bloody ASCII wordmark use a black-and-white palette
+with grayscale supporting tones.
+
+The four main pages use a narrow terminal layout with Kode Mono, dashed borders,
+underlined links, and the supplied Hacker Bloc logo in the navbar. Home carries
+the ASCII wordmark.
+Use the theme button or press `D` to switch between light and dark. The choice
+is saved locally; keyboard shortcuts are ignored while typing in a form.
+
+The collection contains six ASCII variants. The homepage displays the first
+design, with no visible picker. Move a different design to the top to try it.
+The ANSI variant preserves the supplied characters with its color codes removed
+to match the monochrome themes.
+
+Add more designs in [`content/ascii-art.txt`](content/ascii-art.txt). Start each
+one with `=== A unique name ===` on its own line, then paste the artwork below,
+preserving spaces and line breaks. Save and refresh the local landing page;
+the first design in the collection is displayed automatically. Add `@color: apple` directly under a heading to
+use six horizontal rainbow bands, inspired by the [early Apple logo](https://www.robjanoff.com/applelogo).
+The first design uses the [Bloody font from TAAG](https://patorjk.com/software/taag/#p=display&f=Bloody&t=hacker%20bloc).
+Empty sections are ignored while you collect ideas. Deployed sites need a new
+deployment to pick up changes to the file.
 
 | Token | Hex |
 | --- | --- |
-| Signal green | `#00FF9A` |
-| Deep charcoal | `#0D0D0D` |
+| Signal white | `#FFFFFF` |
+| Deep charcoal | `#050505` |
 | Concrete | `#8A8A8A` |
-| Panel beige | `#CFC6B3` |
-| Steel | `#46535E` |
-| Asphalt | `#1A1A1A` |
-| Rust red | `#A63A2F` |
+| Primary text | `#E6E6E6` |
+| Steel | `#383838` |
+| Asphalt | `#0D0D0D` |
+| Muted emphasis | `#A3A3A3` |
 
 Usage: base 60% / support 30% / accent 10%. Text on dark. Signal over status.
 

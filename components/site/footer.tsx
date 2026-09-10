@@ -1,7 +1,11 @@
-import Link from "next/link";
-import { SITE, SOCIALS } from "@/lib/site";
+"use client";
 
-/* Deliberately footer-only — the nav stays four links and two buttons. */
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { SITE, SOCIALS } from "@/lib/site";
+import { isMainPage } from "@/lib/navigation";
+
+/* Secondary pages remain in the footer. */
 const PAGES = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -9,6 +13,20 @@ const PAGES = [
 ] as const;
 
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  if (isMainPage(pathname)) {
+    return (
+      <footer className="terminal-footer">
+        <p>Hacker Bloc / Warsaw, PL</p>
+        <div>
+          <a href={`mailto:${SITE.email}`}>Contact</a>
+          <Link href="/privacy">Privacy</Link>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between">
