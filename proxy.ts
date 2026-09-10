@@ -122,12 +122,12 @@ export async function proxy(request: NextRequest) {
  * one: without it a CDN that saw the markdown variant first would serve raw
  * markdown to the next browser that asked.
  *
- * Caveat, and the reason next.config.ts carries a `headers` entry for the same
- * nine paths: Next 16 overwrites `Vary` while rendering an App Router page
- * (`res.setHeader('Vary', …)` in next/dist/build/templates/app-page.js), which
- * lands after everything proxy sets. The append below is still correct and is
- * what actually ships the header on the markdown and 406 branches, where the
- * response never goes through a page render.
+ * Caveat, and the reason instrumentation.ts exists: Next 16 overwrites `Vary`
+ * while rendering an App Router page (`res.setHeader('Vary', …)` in
+ * next/dist/build/templates/app-page.js), which lands after everything proxy
+ * sets. The append below is still correct and is what ships the header on the
+ * markdown and 406 branches, where the response never goes through a page
+ * render; instrumentation.ts keeps `Accept` in the list on the HTML branch.
  */
 function passThrough() {
   const response = NextResponse.next();

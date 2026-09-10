@@ -91,8 +91,10 @@ function matches(entry: AcceptEntry, candidate: string): boolean {
  *      of q. That is what makes `text/html;q=0` followed by a catch-all at q=1
  *      reject HTML, instead of letting the wildcard resurrect it.
  *   2. `q=0` on the winning range means "never send me this" — skip it.
- *   3. Across candidates, highest q wins; ties break on the client's own order,
- *      so `Accept: text/markdown, text/html` picks markdown.
+ *   3. Across candidates, highest q wins. Ties break on how specifically the
+ *      client asked (RFC 9110 §12.5.1: `text/markdown` outranks the catch-all
+ *      range even when listed after it), then on the client's own order, so
+ *      `Accept: text/markdown, text/html` picks markdown.
  *
  * A missing or empty header is "no constraint", not "nothing works": serve the
  * default. Same for a header that is only the catch-all range, which lands on
@@ -105,6 +107,7 @@ export function preferredType(header: string | null | undefined): Producible | n
 
   let best: Producible | null = null;
   let bestQ = -1;
+  let bestSpecificity = -1;
   let bestPosition = Infinity;
 
   for (const candidate of PRODUCES) {
@@ -127,9 +130,15 @@ export function preferredType(header: string | null | undefined): Producible | n
     if (matched === null) continue;
     if (matched.q <= 0) continue;
 
-    if (matched.q > bestQ || (matched.q === bestQ && matchedPosition < bestPosition)) {
+    const wins =
+      matched.q > bestQ ||
+      (matched.q === bestQ &&
+        (matched.specificity > bestSpecificity ||
+          (matched.specificity === bestSpecificity && matchedPosition < bestPosition)));
+    if (wins) {
       best = candidate;
       bestQ = matched.q;
+      bestSpecificity = matched.specificity;
       bestPosition = matchedPosition;
     }
   }

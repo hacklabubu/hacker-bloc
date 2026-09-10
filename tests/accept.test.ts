@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { appendVaryAccept, preferredType } from "../lib/accept.ts";
+import { withAccept } from "../lib/vary-accept.ts";
 
 test("no Accept header means HTML", () => {
   assert.equal(preferredType(null), "text/html");
@@ -10,6 +11,12 @@ test("no Accept header means HTML", () => {
 test("Accept: text/markdown is honoured", () => {
   assert.equal(preferredType("text/markdown"), "text/markdown");
   assert.equal(preferredType("text/markdown, text/html;q=0.5"), "text/markdown");
+});
+
+test("a specific range beats the catch-all whatever the order", () => {
+  assert.equal(preferredType("*/*, text/markdown"), "text/markdown");
+  assert.equal(preferredType("text/*, text/markdown"), "text/markdown");
+  assert.equal(preferredType("*/*;q=1, text/markdown;q=0.5"), "text/html");
 });
 
 test("browser Accept headers stay on HTML", () => {
@@ -31,4 +38,11 @@ test("appendVaryAccept adds Accept once, keeping what was there", () => {
   const vary = headers.get("vary")!.toLowerCase();
   assert.match(vary, /accept-encoding/);
   assert.equal(vary.split(",").map((s) => s.trim()).filter((s) => s === "accept").length, 1);
+});
+
+test("withAccept keeps Next's own Vary list and adds Accept once", () => {
+  assert.equal(withAccept("rsc, next-router-state-tree"), "rsc, next-router-state-tree, Accept");
+  assert.equal(withAccept("Accept-Encoding, accept"), "Accept-Encoding, accept");
+  assert.equal(withAccept(["rsc", "Accept"]), "rsc, Accept");
+  assert.equal(withAccept(""), "Accept");
 });

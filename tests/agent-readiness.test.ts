@@ -53,15 +53,8 @@ test("Accept: text/markdown returns markdown with Vary: Accept", async () => {
   assert.match(body, /llms\.txt/);
 });
 
-/*
- * On Vercel the HTML variant's `Vary: Accept` comes from next.config.ts
- * `headers` at the routing layer, because Next overwrites Vary during the
- * page render (see the comment there). Under `next dev`/`next start` that
- * layer does not exist, so this check only applies to a deployed host.
- */
-const DEPLOYED = BASE.startsWith("https://");
-
-test("HTML variant also varies on Accept", { skip: !DEPLOYED && "only on a deployed host" }, async () => {
+/* Kept on the HTML branch by instrumentation.ts; see the comment there. */
+test("HTML variant also varies on Accept", async () => {
   const res = await get("/", "text/html");
   assert.match(res.headers.get("content-type") ?? "", /^text\/html/);
   assert.ok(hasVaryAccept(res), `Vary must include Accept, got ${res.headers.get("vary")}`);
