@@ -583,6 +583,83 @@ a.terminal-button:hover {
 .terminal-amount input[aria-invalid="true"] { text-decoration: underline wavy; }
 .terminal-amount input:disabled { color: var(--terminal-muted); }
 
+/* ── auth + members forms ───────────────────────────────── */
+
+.terminal-form {
+  display: grid;
+  gap: 20px;
+  max-width: 420px;
+  margin-top: 20px;
+}
+
+.terminal-field {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--terminal-strong-border);
+}
+
+.terminal-field > span {
+  font-size: 12px;
+  color: var(--terminal-muted);
+}
+
+.terminal-field input {
+  min-width: 0;
+  background: transparent;
+  color: var(--terminal-text);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.terminal-field input::placeholder { color: var(--terminal-dots); }
+.terminal-field input:focus-visible { outline: none; }
+.terminal-field:focus-within { border-bottom-style: solid; border-bottom-color: var(--terminal-text); }
+.terminal-field input:disabled { color: var(--terminal-muted); }
+
+.terminal-field textarea,
+.terminal-field select {
+  min-width: 0;
+  background: transparent;
+  color: var(--terminal-text);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1.3;
+  border: 0;
+  border-radius: 0;
+  resize: vertical;
+}
+.terminal-field textarea::placeholder { color: var(--terminal-dots); }
+.terminal-field textarea:focus-visible,
+.terminal-field select:focus-visible { outline: none; }
+.terminal-field select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+.terminal-field select option { background: var(--terminal-bg); color: var(--terminal-text); }
+
+.terminal-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+.terminal-check input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  border: 1px dashed var(--terminal-strong-border);
+  background: transparent;
+  cursor: pointer;
+}
+.terminal-check input:checked { background: var(--terminal-text); border-style: solid; }
+.terminal-check input:focus-visible { outline: 1px solid var(--terminal-text); outline-offset: 2px; }
+.terminal-check a { text-decoration: underline; text-underline-offset: 4px; }
+
+.terminal-form .terminal-muted { font-size: 12px; }
+.terminal-form a { text-decoration: underline; text-underline-offset: 4px; }
+
 /* ── homepage ───────────────────────────────────────────── */
 
 .terminal-actions {

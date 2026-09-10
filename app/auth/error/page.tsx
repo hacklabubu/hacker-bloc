@@ -1,26 +1,25 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Metadata } from "next";
+import Link from "next/link";
+import { AuthPage } from "@/components/site/auth-page";
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ error: string }> }) {
-  const params = await searchParams
+export const metadata: Metadata = {
+  title: "Sign-in error",
+  robots: { index: false, follow: false },
+};
 
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Sorry, something went wrong.</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {params?.error ? (
-                <p className="text-sm text-muted-foreground">Code error: {params.error}</p>
-              ) : (
-                <p className="text-sm text-muted-foreground">An unspecified error occurred.</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  )
+    <AuthPage title="That link did not work." legend="Sign-in error">
+      <p className="terminal-muted">{params.error ?? "The link may have expired."}</p>
+      <p>
+        <Link href="/auth/login" className="underline underline-offset-4">Sign in</Link> or{" "}
+        <Link href="/auth/forgot-password" className="underline underline-offset-4">request a new link</Link>.
+      </p>
+    </AuthPage>
+  );
 }
