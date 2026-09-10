@@ -309,6 +309,14 @@ max_frequency = "5s"
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
 # `twitter`, `x`, `slack`, `spotify`, `workos`, `zoom`.
+# GitHub sign-in for /auth/login and /auth/sign-up (components/site/github-button.tsx).
+# The OAuth app's callback URL is https://qnsakrikazjhdezararv.supabase.co/auth/v1/callback.
+# Set both env vars, then `supabase config push`.
+[auth.external.github]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET)"
+
 [auth.external.apple]
 enabled = false
 client_id = ""

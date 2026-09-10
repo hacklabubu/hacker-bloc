@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SignUpForm } from "@/components/sign-up-form";
+import { GitHubButton } from "@/components/site/github-button";
 import { AuthPage } from "@/components/site/auth-page";
 
 export const metadata: Metadata = {
@@ -10,9 +11,8 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <AuthPage title="Create your member account." legend="Create account">
-      <p className="terminal-muted">
-        Use the email you paid with so your membership shows up.
-      </p>
+      <GitHubButton label="Sign up with GitHub" />
+      <p className="terminal-muted">Or with email and password:</p>
       <SignUpForm />
     </AuthPage>
   );
