@@ -4,13 +4,21 @@ import Stripe from "stripe";
  * Server-only Stripe clients. Null when the key is unset, so every checkout
  * surface can render itself disabled ("Payments open soon.").
  *
- * Each checkout has its own key. Both only create Checkout Sessions, so a
- * restricted key (rk_…) with Checkout Sessions write access is enough.
+ * One key (STRIPE_SECRET_KEY) serves both checkouts. Both only create
+ * Checkout Sessions, so a restricted key (rk_…) with Checkout Sessions write
+ * access is enough. STRIPE_SECRET_KEY_MEMBERSHIP, if set, overrides it for the
+ * membership checkout so that key can be revoked on its own.
  */
 function client(name: string): Stripe | null {
   const key = process.env[name]?.trim();
   if (!key) return null;
   return new Stripe(key);
+}
+
+function membershipKeyName(): string {
+  return process.env.STRIPE_SECRET_KEY_MEMBERSHIP?.trim()
+    ? "STRIPE_SECRET_KEY_MEMBERSHIP"
+    : "STRIPE_SECRET_KEY";
 }
 
 /* Patron checkout (app/actions/patron.ts). */
@@ -24,7 +32,7 @@ export function patronCheckoutEnabled(): boolean {
 
 /* Membership checkout (app/actions/membership.ts). */
 export function getMembershipStripe(): Stripe | null {
-  return client("STRIPE_SECRET_KEY_MEMBERSHIP");
+  return client(membershipKeyName());
 }
 
 /*
@@ -42,7 +50,7 @@ export function getMembershipPrices(): { monthly: string; signup: string } | nul
 
 export function membershipCheckoutEnabled(): boolean {
   return (
-    Boolean(process.env.STRIPE_SECRET_KEY_MEMBERSHIP?.trim()) &&
+    Boolean(process.env[membershipKeyName()]?.trim()) &&
     getMembershipPrices() !== null
   );
 }
