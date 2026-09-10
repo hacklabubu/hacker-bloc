@@ -1,59 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { MemberForm } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
-import {
-  MEMBERSHIP,
-  RISK_NOTE,
-  formatUsd,
-  getMembershipPaymentUrl,
-} from "@/lib/membership";
-import { patronCheckoutEnabled } from "@/lib/stripe";
+import { MEMBERSHIP, RISK_NOTE } from "@/lib/membership";
+import { formatEur } from "@/lib/site";
+import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Membership",
-  description: `Become one of the first ${MEMBERSHIP.limit} members of Hacker Bloc for ${formatUsd(MEMBERSHIP.monthlyUsd)} USD/month, or become a patron with a one-time donation of any amount.`,
+  description: `Become one of the first ${MEMBERSHIP.limit} members of Hacker Bloc for ${formatEur(MEMBERSHIP.monthlyEur)} EUR/month, or become a patron with a one-time donation of any amount.`,
   alternates: { canonical: "/membership" },
 };
-
-function PayButton({
-  href,
-  label,
-  note,
-}: {
-  href: string | null;
-  label: string;
-  note?: string;
-}) {
-  const statusId = `${label.toLowerCase().replace(/\s+/g, "-")}-status`;
-  return (
-    <div className="terminal-checkout">
-      {href ? (
-        <a href={href} className="terminal-button">
-          {label} <span aria-hidden="true">↗</span>
-        </a>
-      ) : (
-        <button type="button" disabled aria-describedby={statusId} className="terminal-button">
-          {label} <span aria-hidden="true">↗</span>
-        </button>
-      )}
-      <p id={statusId} className="terminal-muted">
-        {href ? note : "Payments open soon."}
-      </p>
-    </div>
-  );
-}
 
 export default async function MembershipPage({
   searchParams,
 }: {
-  searchParams: Promise<{ patron?: string }>;
+  searchParams: Promise<{ member?: string; patron?: string }>;
 }) {
   await connection();
-  const memberUrl = getMembershipPaymentUrl();
+  const memberEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
-  /* Stripe sends a finished patron back here with ?patron=thanks. */
-  const thanks = (await searchParams).patron === "thanks";
+  /* Stripe sends a finished checkout back here with ?member=thanks or ?patron=thanks. */
+  const params = await searchParams;
+  const memberThanks = params.member === "thanks";
+  const thanks = params.patron === "thanks";
 
   return (
     <main id="top" className="terminal-page">
@@ -66,10 +37,10 @@ export default async function MembershipPage({
         <h2 id="member-heading" className="terminal-legend">Become a member</h2>
         <div className="terminal-section-content">
           <p className="terminal-price">
-            <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
+            <strong>{formatEur(MEMBERSHIP.monthlyEur)}</strong> EUR / month
           </p>
           <p className="terminal-signup">
-            + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
+            + {formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee
           </p>
           <ul className="terminal-perks" aria-label="Member benefits">
             {MEMBERSHIP.benefits.map((benefit) => (
@@ -79,10 +50,17 @@ export default async function MembershipPage({
               </li>
             ))}
           </ul>
-          <PayButton
-            href={memberUrl}
-            label="Become a member"
-            note="No refunds. Read the risk note below."
+          <MemberForm
+            enabled={memberEnabled}
+            thanks={memberThanks}
+            note={
+              <>
+                {formatEur(MEMBERSHIP.signupEur)} today, then {formatEur(MEMBERSHIP.monthlyEur)} a month from next month.
+                By paying you accept the{" "}
+                <Link href="/terms" className="underline underline-offset-4">terms</Link> and the{" "}
+                <Link href="/refunds" className="underline underline-offset-4">refund policy</Link>. Read the risk note below.
+              </>
+            }
           />
         </div>
       </section>
@@ -118,6 +96,9 @@ export default async function MembershipPage({
         <h2 id="risk-heading" className="terminal-legend">Risk</h2>
         <div className="terminal-section-content terminal-roadmap">
           <p>{RISK_NOTE}</p>
+          <p>
+            <Link href="/refunds" className="underline underline-offset-4">What is and isn&apos;t refunded →</Link>
+          </p>
         </div>
       </section>
     </main>

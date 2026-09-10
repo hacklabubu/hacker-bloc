@@ -39,10 +39,8 @@ import {
   MEMBERSHIP,
   RISK_NOTE,
   ROADMAP,
-  formatUsd,
-  getMembershipPaymentUrl,
 } from "@/lib/membership";
-import { patronCheckoutEnabled } from "@/lib/stripe";
+import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import {
   getCommunityRoles,
   getHouseRoleLevels,
@@ -50,10 +48,12 @@ import {
   getMembers,
   getRules,
 } from "@/lib/notion";
+import { REFUNDS, TERMS, type LegalDoc } from "@/lib/legal";
 import { VIBE_STEPS, VIBE_TOOLS } from "@/lib/vibe";
 import {
   FUNDING,
   LUMA,
+  OPERATOR,
   PARTNERS,
   SITE,
   SOCIALS,
@@ -85,6 +85,8 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/sponsor": sponsorMarkdown,
   "/about": aboutMarkdown,
   "/contact": contactMarkdown,
+  "/terms": () => legalMarkdown(TERMS),
+  "/refunds": () => legalMarkdown(REFUNDS),
   "/privacy": privacyMarkdown,
   "/pati": patiMarkdown,
 };
@@ -180,7 +182,7 @@ function homeMarkdown(): string {
     "",
     "## Become a member",
     "",
-    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. No refunds.`,
+    `**${formatEur(MEMBERSHIP.monthlyEur)} EUR per month + ${formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee.** First ${MEMBERSHIP.limit} members. No refunds.`,
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
@@ -256,19 +258,19 @@ async function eventsMarkdown(): Promise<string> {
 
 /* Mirrors app/membership/page.tsx: the two ways to pay, and the small print. */
 function membershipMarkdown(): string {
-  const memberUrl = getMembershipPaymentUrl();
+  const memberEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
   const body = [
     `Become one of the first ${MEMBERSHIP.limit} members of the Bloc.`,
     "",
     "## Become a member",
     "",
-    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.**`,
+    `**${formatEur(MEMBERSHIP.monthlyEur)} EUR per month + ${formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee.** ${formatEur(MEMBERSHIP.signupEur)} today, then ${formatEur(MEMBERSHIP.monthlyEur)} a month from next month.`,
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    memberUrl
-      ? `[Become a member](${memberUrl}) — pay directly. No refunds; read the risk note below.`
+    memberEnabled
+      ? `Press "Become a member" on [the membership page](${url("/membership")}#member); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
       : "Payments open soon.",
     "",
     "## Become a patron",
@@ -758,11 +760,40 @@ async function sponsorMarkdown(): Promise<string> {
   return doc("/sponsor", "Sponsor", sections.join("\n\n"));
 }
 
+/* ── /terms, /refunds ──────────────────────────────────────────── */
+
+/*
+ * Legal pages come from lib/legal.ts as data. Site-relative links become
+ * absolute; the two mailto actions ("cancel", "withdraw") become the plain
+ * address, since the pre-filled body only helps a human in a mail client.
+ */
+function legalMarkdown(legal: LegalDoc): string {
+  const rewrite = (text: string) =>
+    text.replace(/\]\(([^)]+)\)/g, (_, href: string) =>
+      href.startsWith("/")
+        ? `](${url(href)})`
+        : `](mailto:${OPERATOR.email})`
+    );
+  const body = [
+    `_Last updated ${legal.updated}._`,
+    "",
+    rewrite(legal.intro),
+    "",
+    ...legal.sections.flatMap((section) => [
+      `## ${section.heading}`,
+      "",
+      ...section.paragraphs.flatMap((paragraph) => [rewrite(paragraph), ""]),
+    ]),
+    `Questions go to ${OPERATOR.email}.`,
+  ].join("\n");
+  return doc(legal.path, legal.title, body);
+}
+
 /* ── /privacy ──────────────────────────────────────────────────── */
 
 function privacyMarkdown(): string {
   const body = [
-    "Short version: the only personal data we collect is what you type into the join form. We use it to read your application and to write back. We don't sell it, we don't track you around the web, and you can have it deleted by asking.",
+    "Short version: the only personal data we collect is what you type into the join form and, if you pay, what Stripe needs to take the payment. We use it to read your application, to write back, and to run your membership. We don't sell it, we don't track you around the web, and you can have it deleted by asking.",
     "",
     "## What we collect",
     "",
@@ -775,6 +806,12 @@ function privacyMarkdown(): string {
     "Submissions are written to our Notion workspace, which is the CRM we review applications in, and mirrored into a Neon Postgres database as a backup so a Notion outage can't lose your application. The site itself runs on Vercel, so requests pass through Vercel's infrastructure on the way there. All three act as processors on our instructions, and all three are US providers — the backup database currently runs in a US region — so your data is transferred outside the EEA under their standard contractual clauses.",
     "",
     "Access is limited to the people in the house who review applications. We do not sell your data, we do not rent it, and we do not hand it to sponsors, partners, or anyone else for their own marketing.",
+    "",
+    "## Payments",
+    "",
+    `If you become a member or a patron, the checkout is hosted by Stripe. Stripe collects your name, email, billing address, and card details; the card number never reaches us. Stripe is an independent controller for the payment itself, under [its own privacy policy](https://stripe.com/privacy). What we receive from Stripe, and keep in the Neon Postgres database, is your name, email, Stripe customer and subscription ids, subscription status, and a record of each invoice paid (amount, currency, date). We use it to know who is a member, to let you in, and to keep the books.`,
+    "",
+    "The legal basis is performance of the membership contract, and for the payment records our legal obligation to keep accounting documents. Payment records are kept for five years after the end of the tax year in which the payment was made, as Polish tax law requires, even if you ask us to delete the rest.",
     "",
     "## Why we're allowed to",
     "",
@@ -864,7 +901,9 @@ export function markdownNotFound(pathname: string): string {
       `[Partners](${url("/partners")}) — who powers the house`,
       `[About](${url("/about")}) — the house and who runs it`,
       `[Contact](${url("/contact")}) — email, address, calendar`,
-      `[Privacy](${url("/privacy")}) — what the join form collects`,
+      `[Terms](${url("/terms")}) — membership terms`,
+      `[Refunds](${url("/refunds")}) — cancellation, withdrawal, and refunds`,
+      `[Privacy](${url("/privacy")}) — what the join form and checkout collect`,
     ]),
     "",
     `Every page above serves this same markdown when asked with \`Accept: text/markdown\`.`,

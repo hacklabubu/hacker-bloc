@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { MemberForm } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
 import { TerminalWordmark } from "@/components/site/terminal-art";
-import { MEMBERSHIP, formatUsd, getMembershipPaymentUrl } from "@/lib/membership";
-import { SITE, SOCIALS } from "@/lib/site";
-import { patronCheckoutEnabled } from "@/lib/stripe";
+import { MEMBERSHIP } from "@/lib/membership";
+import { SITE, SOCIALS, formatEur } from "@/lib/site";
+import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import { getWordmarks } from "@/lib/wordmarks";
 
 const description =
@@ -35,7 +36,7 @@ export default async function Home() {
   // Read the collection on refresh so new artwork can be tried without a rebuild.
   await connection();
   const wordmarks = getWordmarks();
-  const memberUrl = getMembershipPaymentUrl();
+  const memberEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
 
   return (
@@ -78,10 +79,10 @@ export default async function Home() {
         <h2 id="member-heading" className="terminal-legend">Become a member</h2>
         <div className="terminal-section-content">
           <p className="terminal-price">
-            <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
+            <strong>{formatEur(MEMBERSHIP.monthlyEur)}</strong> EUR / month
           </p>
           <p className="terminal-signup">
-            + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
+            + {formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee
           </p>
           <ul className="terminal-perks" aria-label="Member benefits">
             {MEMBERSHIP.benefits.map((benefit) => (
@@ -91,21 +92,16 @@ export default async function Home() {
               </li>
             ))}
           </ul>
-          <div className="terminal-checkout">
-            {memberUrl ? (
-              <a href={memberUrl} className="terminal-button">
-                Become a member <span aria-hidden="true">↗</span>
-              </a>
-            ) : (
-              <Link href="/membership" className="terminal-button">
-                Become a member <span aria-hidden="true">→</span>
-              </Link>
-            )}
-            <p className="terminal-muted">
-              First {MEMBERSHIP.limit} members. No refunds.{" "}
-              <Link href="/membership#risk" className="underline underline-offset-4">Read the risk note →</Link>
-            </p>
-          </div>
+          <MemberForm
+            enabled={memberEnabled}
+            note={
+              <>
+                First {MEMBERSHIP.limit} members. No refunds.{" "}
+                <Link href="/membership#risk" className="underline underline-offset-4">Read the risk note →</Link>{" "}
+                <Link href="/terms" className="underline underline-offset-4">Terms →</Link>
+              </>
+            }
+          />
         </div>
       </section>
 

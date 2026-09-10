@@ -2,8 +2,8 @@ export const MEMBERSHIP = {
   limit: 100,
   /* Members who have paid so far. Hand-edited until the Stripe mirror in Neon can answer it. */
   taken: 0,
-  monthlyUsd: 100,
-  signupUsd: 1_000,
+  monthlyEur: 100,
+  signupEur: 1_000,
   rentPercent: 50,
   setupPercent: 50,
   benefits: [
@@ -23,33 +23,31 @@ export const MEMBERSHIP = {
   ],
 } as const;
 
+/* Membership is priced in euro (formatEur in lib/site.ts); patrons pay in dollars. */
+/*
+ * The same calendar day next month, clamped to that month's last day
+ * (Jan 31 → Feb 28/29), as unix seconds: the first monthly charge of a new
+ * membership (app/actions/membership.ts).
+ */
+export function nextMonthUnix(from: Date = new Date()): number {
+  const target = new Date(from);
+  const day = target.getUTCDate();
+  target.setUTCDate(1);
+  target.setUTCMonth(target.getUTCMonth() + 1);
+  const lastDay = new Date(
+    Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)
+  ).getUTCDate();
+  target.setUTCDate(Math.min(day, lastDay));
+  return Math.floor(target.getTime() / 1000);
+}
+
+/* Patron contributions stay in US dollars. */
 export function formatUsd(amount: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(amount);
-}
-
-/*
- * Payment links are read on the server; a button stays disabled until its URL
- * is set. Only https URLs are accepted, so a typo can't turn into a bad link.
- */
-function readPaymentUrl(name: string): string | null {
-  const value = process.env[name]?.trim();
-  if (!value) return null;
-
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" ? url.href : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Member checkout: the monthly subscription plus the one-time signup fee. */
-export function getMembershipPaymentUrl(): string | null {
-  return readPaymentUrl("FOUNDING_MEMBERSHIP_PAYMENT_URL");
 }
 
 /*

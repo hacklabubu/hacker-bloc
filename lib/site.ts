@@ -31,6 +31,22 @@ export const SITE = {
   calendlyUrl: "https://cal.com/mattbratos/30min",
 } as const;
 
+/*
+ * The party a member contracts with — printed on the terms, refund policy,
+ * and privacy page. TODO: replace with the registered legal name, legal form,
+ * and register numbers (KRS / NIP / REGON) of the entity that owns the Stripe
+ * account before taking live payments; every "Polish law requires" line on
+ * /terms assumes they are here.
+ */
+export const OPERATOR = {
+  legalName: "Hacklab",
+  address: SITE.address,
+  country: "Poland",
+  email: SITE.email,
+  /* e.g. "KRS 0000000000 · NIP 0000000000 · REGON 000000000"; null hides the line. */
+  registration: null as string | null,
+} as const;
+
 export const LUMA = {
   slug: "hacklab",
   calendarUrl: "https://luma.com/hacklab",

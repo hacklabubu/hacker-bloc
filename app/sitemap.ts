@@ -20,6 +20,8 @@ const ROUTES = [
   { path: "/sponsor", changeFrequency: "weekly", priority: 0.9 },
   { path: "/about", changeFrequency: "monthly", priority: 0.6 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/refunds", changeFrequency: "yearly", priority: 0.3 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
 ] as const satisfies ReadonlyArray<{
   path: string;
