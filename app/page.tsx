@@ -69,16 +69,6 @@ export default async function Home() {
           and shape what comes next. Help build it with us.
         </p>
       </section>
-      <ul className="terminal-directory" aria-label="Explore the Bloc">
-        {PAGES.map((page) => (
-          <li key={page.href}>
-            <Link href={page.href}>
-              <h2>{page.title}<span aria-hidden="true">↗</span></h2>
-              <p>{page.description}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
     </main>
   );
 }
