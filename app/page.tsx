@@ -61,8 +61,8 @@ export default async function Home() {
       />
       <section className="terminal-intro" aria-labelledby="home-heading">
         <TerminalWordmark wordmarks={wordmarks} />
-        <p className="terminal-location">Warsaw, Poland </p>
-        <h1 id="home-heading">A space for people who build.</h1>
+        <p className="terminal-location">A space for people who build the future.</p>
+        <h1 id="home-heading"></h1>
         <p>
           We&apos;re bringing together the first {MEMBERSHIP.limit} members to get
           our hackerspace off the ground. A place to work, meet, make things,
