@@ -38,8 +38,8 @@ export function getMembershipStripe(): Stripe | null {
 /*
  * The two prices behind a membership, created once in the Stripe dashboard on
  * the membership product (STRIPE_PRODUCT_ID_MEMBERSHIP, informational only):
- *   - monthly:  €100 EUR, recurring every month
- *   - signup:   €1,000 EUR, one-time
+ *   - monthly:  $100 USD, recurring every month
+ *   - signup:   $1,000 USD, one-time
  */
 export function getMembershipPrices(): { monthly: string; signup: string } | null {
   const monthly = process.env.STRIPE_PRICE_ID_MEMBERSHIP_100?.trim();

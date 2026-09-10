@@ -3,13 +3,12 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { MemberForm } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
-import { MEMBERSHIP, RISK_NOTE } from "@/lib/membership";
-import { formatEur } from "@/lib/site";
+import { MEMBERSHIP, RISK_NOTE, formatUsd } from "@/lib/membership";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Membership",
-  description: `Become one of the first ${MEMBERSHIP.limit} members of Hacker Bloc for ${formatEur(MEMBERSHIP.monthlyEur)} EUR/month, or become a patron with a one-time donation of any amount.`,
+  description: `Become one of the first ${MEMBERSHIP.limit} members of Hacker Bloc for ${formatUsd(MEMBERSHIP.monthlyUsd)} USD/month, or become a patron with a one-time donation of any amount.`,
   alternates: { canonical: "/membership" },
 };
 
@@ -37,10 +36,10 @@ export default async function MembershipPage({
         <h2 id="member-heading" className="terminal-legend">Become a member</h2>
         <div className="terminal-section-content">
           <p className="terminal-price">
-            <strong>{formatEur(MEMBERSHIP.monthlyEur)}</strong> EUR / month
+            <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
           </p>
           <p className="terminal-signup">
-            + {formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee
+            + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
           </p>
           <ul className="terminal-perks" aria-label="Member benefits">
             {MEMBERSHIP.benefits.map((benefit) => (
@@ -55,7 +54,7 @@ export default async function MembershipPage({
             thanks={memberThanks}
             note={
               <>
-                {formatEur(MEMBERSHIP.signupEur)} today, then {formatEur(MEMBERSHIP.monthlyEur)} a month from next month.
+                {formatUsd(MEMBERSHIP.signupUsd)} today, then {formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month.
                 By paying you accept the{" "}
                 <Link href="/terms" className="underline underline-offset-4">terms</Link> and the{" "}
                 <Link href="/refunds" className="underline underline-offset-4">refund policy</Link>. Read the risk note below.

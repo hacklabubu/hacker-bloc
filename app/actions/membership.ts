@@ -1,24 +1,23 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { MEMBERSHIP, nextMonthUnix } from "@/lib/membership";
+import { MEMBERSHIP, formatUsd, nextMonthUnix } from "@/lib/membership";
 import { requestOrigin } from "@/lib/request-origin";
-import { formatEur } from "@/lib/site";
 import { getMembershipPrices, getMembershipStripe } from "@/lib/stripe";
 
 export type MembershipState = { error: string | null };
 
 /*
- * Membership checkout: €1,000 today, then €100 a month starting a month from
+ * Membership checkout: $1,000 today, then $100 a month starting a month from
  * now. Stripe hosts the checkout; no card data touches this server.
  *
  * Both amounts live on one subscription so a member is one customer with one
- * subscription in Stripe. The €1,000 signup price is a one-time line on the
- * first invoice. The €100 recurring price does not bill until the billing
+ * subscription in Stripe. The $1,000 signup price is a one-time line on the
+ * first invoice. The $100 recurring price does not bill until the billing
  * cycle anchor a month out, and `proration_behavior: "none"` stops Stripe
  * from charging a prorated slice of the first month on top of the signup fee.
- * The first invoice is therefore exactly €1,000, the second (a month later)
- * €100, and every month after that €100.
+ * The first invoice is therefore exactly $1,000, the second (a month later)
+ * $100, and every month after that $100.
  *
  * Fulfillment is in app/api/stripe/webhook/route.ts, which mirrors the
  * customer, subscription, and invoices into Neon.
@@ -52,7 +51,7 @@ export async function startMembershipCheckout(): Promise<MembershipState> {
       },
       custom_text: {
         submit: {
-          message: `${formatEur(MEMBERSHIP.signupEur)} today. Then ${formatEur(MEMBERSHIP.monthlyEur)} a month, first on ${firstMonthly}. By paying you accept the membership terms and refund policy at ${origin}/terms and ${origin}/refunds, and ask us to start your membership immediately.`,
+          message: `${formatUsd(MEMBERSHIP.signupUsd)} today. Then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month, first on ${firstMonthly}. By paying you accept the membership terms and refund policy at ${origin}/terms and ${origin}/refunds, and ask us to start your membership immediately.`,
         },
       },
       metadata: { kind: "membership" },
@@ -61,7 +60,8 @@ export async function startMembershipCheckout(): Promise<MembershipState> {
       cancel_url: `${origin}/membership#member`,
     });
     checkoutUrl = session.url;
-  } catch {
+  } catch (error) {
+    console.error("membership checkout failed", error);
     return { error: "Checkout could not be started. Try again in a moment." };
   }
 

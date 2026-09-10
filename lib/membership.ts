@@ -2,8 +2,8 @@ export const MEMBERSHIP = {
   limit: 100,
   /* Members who have paid so far. Hand-edited until the Stripe mirror in Neon can answer it. */
   taken: 0,
-  monthlyEur: 100,
-  signupEur: 1_000,
+  monthlyUsd: 100,
+  signupUsd: 1_000,
   rentPercent: 50,
   setupPercent: 50,
   benefits: [
@@ -23,7 +23,7 @@ export const MEMBERSHIP = {
   ],
 } as const;
 
-/* Membership is priced in euro (formatEur in lib/site.ts); patrons pay in dollars. */
+/* Membership and patron contributions are both priced in US dollars (formatUsd below). */
 /*
  * The same calendar day next month, clamped to that month's last day
  * (Jan 31 → Feb 28/29), as unix seconds: the first monthly charge of a new
@@ -41,7 +41,6 @@ export function nextMonthUnix(from: Date = new Date()): number {
   return Math.floor(target.getTime() / 1000);
 }
 
-/* Patron contributions stay in US dollars. */
 export function formatUsd(amount: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -87,10 +86,13 @@ export const ROADMAP = [
   },
 ] as const;
 
-/* Patron contributions: whole dollars, one-time, bounded so a typo can't become a $1M charge. */
+/*
+ * Patron contributions: whole dollars, one-time. The ceiling is Stripe's own
+ * per-charge limit for USD ($999,999.99), so anything larger would be rejected.
+ */
 export const PATRON = {
-  minUsd: 5,
-  maxUsd: 100_000,
+  minUsd: 1,
+  maxUsd: 999_999,
 } as const;
 
 export const RISK_NOTE =

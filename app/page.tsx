@@ -4,8 +4,8 @@ import { connection } from "next/server";
 import { MemberForm } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
 import { TerminalWordmark } from "@/components/site/terminal-art";
-import { MEMBERSHIP } from "@/lib/membership";
-import { SITE, SOCIALS, formatEur } from "@/lib/site";
+import { MEMBERSHIP, formatUsd } from "@/lib/membership";
+import { SITE, SOCIALS } from "@/lib/site";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import { getWordmarks } from "@/lib/wordmarks";
 
@@ -79,10 +79,10 @@ export default async function Home() {
         <h2 id="member-heading" className="terminal-legend">Become a member</h2>
         <div className="terminal-section-content">
           <p className="terminal-price">
-            <strong>{formatEur(MEMBERSHIP.monthlyEur)}</strong> EUR / month
+            <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
           </p>
           <p className="terminal-signup">
-            + {formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee
+            + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee
           </p>
           <ul className="terminal-perks" aria-label="Member benefits">
             {MEMBERSHIP.benefits.map((benefit) => (

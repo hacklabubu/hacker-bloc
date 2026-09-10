@@ -53,7 +53,8 @@ export async function startPatronCheckout(
       cancel_url: `${origin}/membership#patron`,
     });
     checkoutUrl = session.url;
-  } catch {
+  } catch (error) {
+    console.error("patron checkout failed", error);
     return { error: "Checkout could not be started. Try again in a moment." };
   }
 

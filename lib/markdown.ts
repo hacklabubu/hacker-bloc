@@ -39,6 +39,7 @@ import {
   MEMBERSHIP,
   RISK_NOTE,
   ROADMAP,
+  formatUsd,
 } from "@/lib/membership";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import {
@@ -182,7 +183,7 @@ function homeMarkdown(): string {
     "",
     "## Become a member",
     "",
-    `**${formatEur(MEMBERSHIP.monthlyEur)} EUR per month + ${formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee.** First ${MEMBERSHIP.limit} members. No refunds.`,
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. No refunds.`,
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
@@ -265,7 +266,7 @@ function membershipMarkdown(): string {
     "",
     "## Become a member",
     "",
-    `**${formatEur(MEMBERSHIP.monthlyEur)} EUR per month + ${formatEur(MEMBERSHIP.signupEur)} EUR one-time signup fee.** ${formatEur(MEMBERSHIP.signupEur)} today, then ${formatEur(MEMBERSHIP.monthlyEur)} a month from next month.`,
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** ${formatUsd(MEMBERSHIP.signupUsd)} today, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month.`,
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",

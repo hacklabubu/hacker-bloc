@@ -18,8 +18,8 @@
  * Not legal advice. Have a Polish lawyer read it before live payments.
  */
 
-import { MEMBERSHIP } from "@/lib/membership";
-import { OPERATOR, SITE, formatEur } from "@/lib/site";
+import { MEMBERSHIP, formatUsd } from "@/lib/membership";
+import { OPERATOR, SITE } from "@/lib/site";
 
 export type LegalSection = { heading: string; paragraphs: readonly string[] };
 export type LegalDoc = {
@@ -31,8 +31,8 @@ export type LegalDoc = {
   sections: readonly LegalSection[];
 };
 
-const signup = formatEur(MEMBERSHIP.signupEur);
-const monthly = formatEur(MEMBERSHIP.monthlyEur);
+const signup = formatUsd(MEMBERSHIP.signupUsd);
+const monthly = formatUsd(MEMBERSHIP.monthlyUsd);
 const operator = OPERATOR.registration
   ? `${OPERATOR.legalName} (${OPERATOR.registration}), ${OPERATOR.address}, ${OPERATOR.country}`
   : `${OPERATOR.legalName}, ${OPERATOR.address}, ${OPERATOR.country}`;
@@ -87,7 +87,7 @@ export const TERMS: LegalDoc = {
     {
       heading: "Price and billing",
       paragraphs: [
-        `The price is ${signup} once, then ${monthly} per month. Amounts are in euro and include VAT where it applies. Payment is by card through Stripe, which hosts the checkout; we never see your card number.`,
+        `The price is ${signup} once, then ${monthly} per month. Amounts are in US dollars and include VAT where it applies. Payment is by card through Stripe, which hosts the checkout; we never see your card number.`,
         `At checkout you pay the ${signup} signup fee, and nothing else. Exactly one month after checkout your card is charged the first ${monthly}, and the same amount is charged automatically on the same day of every month after that, until the membership ends. Your receipts come from Stripe by email.`,
         "If a monthly charge fails, Stripe retries it over the following days and emails you to update the card. While a payment is overdue your access is paused. If the payment is still missing after Stripe's retries end, the membership is cancelled for non-payment.",
         "We may change the monthly price with at least 30 days' notice by email. A price change never applies to a period you have already paid for, and you can cancel before it takes effect.",
