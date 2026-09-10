@@ -64,9 +64,9 @@ export default async function Home() {
           We are not community builders. We are founders. We rented this house
           to build the next trillion-dollar company,{" "}
           <a href="https://hacklab.so" className="underline underline-offset-4">hacklab.so</a>,
-          and we live and work here 24/7. We&apos;re pre-seed, pre-revenue, pure
-          potential, so we figured a hackerspace would help us not die in the
-          initial grind.
+          and we live and work here 24/7. We&apos;re pre-seed, pre-revenue,{" "}
+          <a href="https://www.youtube.com/shorts/n5dAIvH2cQw" className="underline underline-offset-4">pure potential</a>,
+          so we figured a hackerspace would help us not die in the initial grind.
         </p>
         <p>
           If you want a place like this in Warsaw, and want to help Poland become

@@ -174,7 +174,7 @@ function homeMarkdown(): string {
     "",
     "We're building Palo Alto at home. We want the kind of space we saw in San Francisco: a house where startup founders meet, build, start their first Delaware C-corp, get their first check, find cofounders, and eventually build billion-dollar companies.",
     "",
-    "We are not community builders. We are founders. We rented this house to build the next trillion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, pure potential, so we figured a hackerspace would help us not die in the initial grind.",
+    "We are not community builders. We are founders. We rented this house to build the next trillion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, [pure potential](https://www.youtube.com/shorts/n5dAIvH2cQw), so we figured a hackerspace would help us not die in the initial grind.",
     "",
     "If you want a place like this in Warsaw, and want to help Poland become Europe's Silicon Valley, there are two ways in.",
     "",
