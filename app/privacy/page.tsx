@@ -6,7 +6,7 @@ import { SITE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Privacy",
   description:
-    "What Hacker Bloc collects when you apply, where it is stored, how long we keep it, and how to get it deleted.",
+    "What Hacker Bloc collects when you apply or pay, where it is stored, how long we keep it, and how to get it deleted.",
 };
 
 export default function PrivacyPage() {
@@ -18,9 +18,10 @@ export default function PrivacyPage() {
         </h1>
         <p className="mt-8 max-w-3xl text-lg leading-8 text-concrete sm:text-xl sm:leading-9">
           Short version: the only personal data we collect is what you type into
-          the join form. We use it to read your application and to write back.
-          We don&apos;t sell it, we don&apos;t track you around the web, and you
-          can have it deleted by asking.
+          the join form and, if you pay, what Stripe needs to take the payment.
+          We use it to read your application, to write back, and to run your
+          membership. We don&apos;t sell it, we don&apos;t track you around the
+          web, and you can have it deleted by asking.
         </p>
 
         <section className="mt-16 sm:mt-20">
@@ -67,6 +68,36 @@ export default function PrivacyPage() {
               applications. We do not sell your data, we do not rent it, and we
               do not hand it to sponsors, partners, or anyone else for their own
               marketing.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-16 sm:mt-20">
+          <SectionHeading>Payments</SectionHeading>
+          <div className="max-w-3xl space-y-6 text-base leading-8 text-concrete sm:text-lg sm:leading-9">
+            <p>
+              If you become a member or a patron, the checkout is hosted by
+              Stripe. Stripe collects your name, email, billing address, and
+              card details; the card number never reaches us. Stripe is an
+              independent controller for the payment itself, under{" "}
+              <a
+                href="https://stripe.com/privacy"
+                className="text-signal underline underline-offset-4 hover:text-beige"
+              >
+                its own privacy policy
+              </a>
+              . What we receive from Stripe, and keep in the Neon Postgres
+              database, is your name, email, Stripe customer and subscription
+              ids, subscription status, and a record of each invoice paid
+              (amount, currency, date). We use it to know who is a member, to
+              let you in, and to keep the books.
+            </p>
+            <p>
+              The legal basis is performance of the membership contract, and
+              for the payment records our legal obligation to keep accounting
+              documents. Payment records are kept for five years after the end
+              of the tax year in which the payment was made, as Polish tax law
+              requires, even if you ask us to delete the rest.
             </p>
           </div>
         </section>

@@ -9,6 +9,8 @@ import { isMainPage } from "@/lib/navigation";
 const PAGES = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/terms", label: "Terms" },
+  { href: "/refunds", label: "Refunds" },
   { href: "/privacy", label: "Privacy" },
 ] as const;
 
@@ -21,6 +23,8 @@ export function SiteFooter() {
         <p>Hacker Bloc / Warsaw, PL</p>
         <div>
           <a href={`mailto:${SITE.email}`}>Contact</a>
+          <Link href="/terms">Terms</Link>
+          <Link href="/refunds">Refunds</Link>
           <Link href="/privacy">Privacy</Link>
         </div>
       </footer>

@@ -4,8 +4,8 @@ import { getSql } from "@/lib/db";
 /*
  * Stripe → Neon membership ledger.
  *
- * Checkout happens on a Stripe Payment Link (FOUNDING_MEMBERSHIP_PAYMENT_URL),
- * so this route is the only place the site learns who paid. Stripe stays the
+ * Checkout is Stripe-hosted (app/actions/membership.ts), so this route is the
+ * only place the site learns who paid. Stripe stays the
  * system of record; the `members` / `member_payments` tables in Neon
  * (db/members.sql) are a mirror so the site can answer "who is a member,
  * since when, what have they paid" without an API round-trip.
@@ -14,8 +14,7 @@ import { getSql } from "@/lib/db";
  * events are recorded in `stripe_events` so Stripe's retries are no-ops.
  *
  * Only the signing secret is needed here: verifying a webhook does not call
- * the Stripe API, so there is no STRIPE_SECRET_KEY until the site needs one
- * (customer portal, member lookups, …).
+ * the Stripe API.
  *
  * Route Handler reference:
  * node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/route.md
@@ -120,9 +119,14 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
     ON CONFLICT (stripe_invoice_id) DO NOTHING
   `;
 
-  /* A paid invoice extends the membership to the end of its billing period. */
+  /* A paid invoice extends the membership to the end of its billing period.
+   * Only subscription lines carry a real period; the one-time signup fee on
+   * the first invoice has a zero-length one and must not shorten it. */
   const periodEnd = invoice.lines.data.reduce(
-    (max, line) => Math.max(max, line.period?.end ?? 0),
+    (max, line) =>
+      line.parent?.type === "subscription_item_details"
+        ? Math.max(max, line.period?.end ?? 0)
+        : max,
     0
   );
   await upsertMember({

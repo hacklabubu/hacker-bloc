@@ -1,25 +1,11 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { PATRON, formatUsd } from "@/lib/membership";
-import { SITE } from "@/lib/site";
+import { requestOrigin } from "@/lib/request-origin";
 import { getStripe } from "@/lib/stripe";
 
 export type PatronState = { error: string | null };
-
-/*
- * Success and cancel URLs must be absolute. Behind Vercel the public host and
- * scheme arrive in the forwarded headers; locally it's the dev server; and if
- * neither says anything useful, the canonical origin.
- */
-async function requestOrigin(): Promise<string> {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  if (!host) return SITE.url;
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
 /*
  * One-time patron contribution: the visitor names the amount, Stripe hosts the

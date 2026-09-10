@@ -41,17 +41,24 @@ Two ways in, both on the homepage and on the Membership page. Each stays
 disabled with “Payments open soon.” until its environment variable is set in
 `.env.local` and in the deployment environment.
 
-- `FOUNDING_MEMBERSHIP_PAYMENT_URL` — become a member: an HTTPS Stripe Payment
-  Link for the $1,000 USD one-time signup fee plus the $100 USD/month
-  subscription. Pricing and the 100-member cap are configured on the Stripe side.
+- `STRIPE_SECRET_KEY_MEMBERSHIP` + `STRIPE_PRICE_ID_MEMBERSHIP_1000` +
+  `STRIPE_PRICE_ID_MEMBERSHIP_100` — become a member: `app/actions/membership.ts`
+  creates a Stripe Checkout Session in subscription mode with both prices on
+  it. The €1,000 EUR one-time price lands on the first invoice; the €100
+  EUR/month price is anchored to the same day next month with prorations off,
+  so the first charge is exactly €1,000, the second (a month later) €100, and
+  then €100 monthly. Stripe sends the member back to `/membership?member=thanks`.
+  Amounts shown on the site come from `MEMBERSHIP` in `lib/membership.ts` and
+  must match the prices in Stripe.
 - `STRIPE_SECRET_KEY` — become a patron: the visitor types any whole amount
   (bounds in `PATRON` in `lib/membership.ts`) and `app/actions/patron.ts`
-  creates a Stripe Checkout Session for it. Use a restricted key with write
-  access to Checkout Sessions. Stripe sends the patron back to
-  `/membership?patron=thanks`.
+  creates a Stripe Checkout Session for it. A restricted key with write
+  access to Checkout Sessions is enough for either checkout. Stripe sends the
+  patron back to `/membership?patron=thanks`.
 - `STRIPE_WEBHOOK_SECRET` — the webhook that mirrors members into Neon; see
-  `app/api/stripe/webhook/route.ts`. Patron sessions carry
-  `metadata.kind = "patron"` and are skipped by the member upsert.
+  `app/api/stripe/webhook/route.ts`. Member sessions carry
+  `metadata.kind = "membership"`, patron sessions `metadata.kind = "patron"`;
+  patrons are skipped by the member upsert.
 
 `MEMBERSHIP.taken` in `lib/membership.ts` is the hand-edited count of paid
 members; the Spots section only appears once it is above zero.
