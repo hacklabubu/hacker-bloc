@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
-import { MemberForm } from "@/components/site/member-form";
+import { SIGNUP_FOR_MEMBERSHIP } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
 import { TerminalWordmark } from "@/components/site/terminal-art";
 import { MEMBERSHIP, formatUsd } from "@/lib/membership";
 import { SITE, SOCIALS } from "@/lib/site";
-import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
+import { patronCheckoutEnabled } from "@/lib/stripe";
 import { getWordmarks } from "@/lib/wordmarks";
 
 const description =
@@ -36,7 +36,6 @@ export default async function Home() {
   // Read the collection on refresh so new artwork can be tried without a rebuild.
   await connection();
   const wordmarks = getWordmarks();
-  const memberEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
 
   return (
@@ -92,16 +91,18 @@ export default async function Home() {
               </li>
             ))}
           </ul>
-          <MemberForm
-            enabled={memberEnabled}
-            note={
-              <>
-                First {MEMBERSHIP.limit} members. No refunds.{" "}
-                <Link href="/membership#risk" className="underline underline-offset-4">Read the risk note →</Link>{" "}
-                <Link href="/terms" className="underline underline-offset-4">Terms →</Link>
-              </>
-            }
-          />
+          <div className="terminal-checkout">
+            <Link href={SIGNUP_FOR_MEMBERSHIP} className="terminal-button">
+              Create an account <span aria-hidden="true">↗</span>
+            </Link>
+            <p className="terminal-muted">
+              Step one is an account, step two is the payment on the{" "}
+              <Link href="/membership#member" className="underline underline-offset-4">membership page</Link>.
+              First {MEMBERSHIP.limit} members. No refunds.{" "}
+              <Link href="/membership#risk" className="underline underline-offset-4">Read the risk note →</Link>{" "}
+              <Link href="/terms" className="underline underline-offset-4">Terms →</Link>
+            </p>
+          </div>
         </div>
       </section>
 

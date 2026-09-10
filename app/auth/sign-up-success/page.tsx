@@ -11,8 +11,9 @@ export default function Page() {
   return (
     <AuthPage title="Check your email." legend="One more step">
       <p>
-        We sent a confirmation link. Open it, and you land in the members
-        area. Then <Link href="/auth/login" className="underline underline-offset-4">sign in</Link> any time.
+        We sent a confirmation link. Open it and you are signed in; if you came
+        from the membership page, it takes you straight back there to pay.
+        Later, <Link href="/auth/login" className="underline underline-offset-4">sign in</Link> any time.
       </p>
     </AuthPage>
   );

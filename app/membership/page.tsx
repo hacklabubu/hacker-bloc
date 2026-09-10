@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { MemberForm } from "@/components/site/member-form";
+import { authConfigured, getSessionUser } from "@/lib/auth";
 import { PatronForm } from "@/components/site/patron-form";
 import { MEMBERSHIP, RISK_NOTE, formatUsd } from "@/lib/membership";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
@@ -18,8 +19,9 @@ export default async function MembershipPage({
   searchParams: Promise<{ member?: string; patron?: string }>;
 }) {
   await connection();
-  const memberEnabled = membershipCheckoutEnabled();
+  const memberEnabled = membershipCheckoutEnabled() && authConfigured();
   const patronEnabled = patronCheckoutEnabled();
+  const user = memberEnabled ? await getSessionUser() : null;
   /* Stripe sends a finished checkout back here with ?member=thanks or ?patron=thanks. */
   const params = await searchParams;
   const memberThanks = params.member === "thanks";
@@ -51,6 +53,7 @@ export default async function MembershipPage({
           </ul>
           <MemberForm
             enabled={memberEnabled}
+            signedIn={user !== null}
             thanks={memberThanks}
             note={
               <>

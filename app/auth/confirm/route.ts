@@ -1,32 +1,37 @@
-import { type EmailOtpType } from '@supabase/supabase-js'
-import { redirect } from 'next/navigation'
-import { type NextRequest } from 'next/server'
+import { type EmailOtpType } from "@supabase/supabase-js";
+import { redirect } from "next/navigation";
+import { type NextRequest } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
-import { createClient } from '@/lib/supabase/server'
-
+/*
+ * Where every Supabase email link lands. Two shapes arrive here:
+ *   - `?token_hash=…&type=…` when the email template links straight to this
+ *     route (Supabase's recommended server-side template), and
+ *   - `?code=…` when the default template is left as is: Supabase verifies
+ *     the token itself and forwards to `emailRedirectTo` with a PKCE code.
+ * Both end in a session cookie and a redirect to `next` (same-origin only).
+ */
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const token_hash = searchParams.get('token_hash')
-  const type = searchParams.get('type') as EmailOtpType | null
-  const _next = searchParams.get('next')
-  const next = _next?.startsWith('/') ? _next : '/'
+  const { searchParams } = new URL(request.url);
+  const tokenHash = searchParams.get("token_hash");
+  const type = searchParams.get("type") as EmailOtpType | null;
+  const code = searchParams.get("code");
+  const rawNext = searchParams.get("next");
+  const next = rawNext?.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/members";
 
-  if (token_hash && type) {
-    const supabase = await createClient()
+  const supabase = await createClient();
 
-    const { error } = await supabase.auth.verifyOtp({
-      type,
-      token_hash,
-    })
-    if (!error) {
-      // redirect user to specified redirect URL or root of app
-      redirect(next)
-    } else {
-      // redirect the user to an error page with some instructions
-      redirect(`/auth/error?error=${error?.message}`)
-    }
+  if (tokenHash && type) {
+    const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
+    if (!error) redirect(next);
+    redirect(`/auth/error?error=${encodeURIComponent(error.message)}`);
   }
 
-  // redirect the user to an error page with some instructions
-  redirect(`/auth/error?error=No token hash or type`)
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) redirect(next);
+    redirect(`/auth/error?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/auth/error?error=Missing%20confirmation%20token");
 }

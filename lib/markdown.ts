@@ -271,7 +271,7 @@ function membershipMarkdown(): string {
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
     memberEnabled
-      ? `Press "Become a member" on [the membership page](${url("/membership")}#member); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
+      ? `Step one: [create an account](${url("/auth/sign-up")}). Step two: press "Become a member" on [the membership page](${url("/membership")}#member); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
       : "Payments open soon.",
     "",
     "## Become a patron",
