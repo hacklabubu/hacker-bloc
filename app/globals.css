@@ -636,6 +636,56 @@ a.terminal-button:hover {
 
 .terminal-ladder .terminal-muted { font-size: 12px; }
 
+/* ── /space: signed-in area with a sidebar ───────────────── */
+
+.space {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .space { grid-template-columns: 148px 1fr; }
+}
+
+.space-side {
+  padding: 28px 24px;
+  border-bottom: 1px dashed var(--terminal-border);
+}
+
+@media (min-width: 640px) {
+  .space-side { border-right: 1px dashed var(--terminal-border); border-bottom: 0; }
+}
+
+.space-side nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+@media (min-width: 640px) {
+  .space-side nav { flex-direction: column; gap: 10px; }
+}
+
+.space-side a {
+  color: var(--terminal-muted);
+  text-decoration: none;
+}
+
+.space-side a::before { content: "  "; white-space: pre; }
+.space-side a[aria-current="page"] { color: var(--terminal-text); }
+.space-side a[aria-current="page"]::before { content: "> "; }
+.space-side a:hover { color: var(--terminal-text); }
+
+.space-side .terminal-muted {
+  margin-top: 20px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.space-main { min-width: 0; }
+.space-main .terminal-section:first-child { border-top: 0; }
+.space-main .terminal-section:first-child .terminal-legend { margin-top: 24px; }
+
 /* ── auth + members forms ───────────────────────────────── */
 
 .terminal-form {

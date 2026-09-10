@@ -68,6 +68,8 @@ const nextConfig: NextConfig = {
   /* Support the Bloc became the wishlist; old links keep working. */
   redirects: async () => [
     { source: "/support", destination: "/wishlist", permanent: true },
+    /* The signed-in area moved from /members to /space. */
+    { source: "/members", destination: "/space", permanent: true },
   ],
   headers: async () =>
     NEGOTIATED_PAGES.map((source) => ({

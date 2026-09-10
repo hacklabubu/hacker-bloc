@@ -22,7 +22,7 @@ export function LoginForm() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       const next = new URLSearchParams(window.location.search).get("next");
-      router.push(safeNextPath(next, "/members"));
+      router.push(safeNextPath(next, "/space"));
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Something went wrong.");
     } finally {

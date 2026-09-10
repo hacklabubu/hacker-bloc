@@ -18,7 +18,7 @@ export async function openBillingPortal(): Promise<BillingState> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const email = typeof data?.claims?.email === "string" ? data.claims.email : "";
-  if (!email) redirect("/auth/login?next=/members");
+  if (!email) redirect("/auth/login?next=%2Fspace%2Fbilling");
 
   const member = await getMemberByEmail(email);
   if (!member) {
@@ -33,7 +33,7 @@ export async function openBillingPortal(): Promise<BillingState> {
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer: member.stripeCustomerId,
-      return_url: `${origin}/members`,
+      return_url: `${origin}/space/billing`,
     });
     portalUrl = session.url;
   } catch (error) {

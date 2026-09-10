@@ -26,7 +26,7 @@ Contact: matt@hacklab.so.
 
 - [Rules](https://www.hackerbloc.com/rules): The authority hierarchy (who decides what, and what each rung is responsible for) and the house rules themselves.
 - [Join](https://www.hackerbloc.com/join): The existing house application form, separate from founding membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
-- [Members](https://www.hackerbloc.com/members): Sign in to see your membership and manage billing (account required; create one at /auth/sign-up before paying).
+- [Space](https://www.hackerbloc.com/space): Sign in to see your membership, billing and account (account required; create one at /auth/sign-up before paying).
 - [Privacy](https://www.hackerbloc.com/privacy): What the join form collects, where it is stored, how long it is kept, and how to get it deleted.
 
 ## When to use

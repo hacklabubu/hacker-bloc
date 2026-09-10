@@ -30,14 +30,14 @@ import { updateSession } from "@/lib/supabase/middleware";
 const MARKDOWN_ROUTE = "/api/markdown";
 
 /*
- * The Supabase auth pages and the members area (app/auth, app/members) need their session
+ * The Supabase auth pages and the signed-in area (app/auth, app/space) need their session
  * cookies refreshed on every request to those routes, and sends visitors
  * without a session to the login page. That must never touch the public site:
  * a hackerspace homepage that redirects strangers to /auth/login is broken.
  * So only these prefixes go through updateSession; every other path is a
  * public page and gets content negotiation as before.
  */
-const AUTH_PREFIXES = ["/auth", "/members"];
+const AUTH_PREFIXES = ["/auth", "/space"];
 
 function needsSession(pathname: string) {
   return AUTH_PREFIXES.some(

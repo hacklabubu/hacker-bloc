@@ -81,7 +81,7 @@ export function MemberForm({
     status = (
       <>
         Welcome in. Your membership is active; the receipt is in your inbox. Manage it in{" "}
-        <Link href="/members" className="underline underline-offset-4">Members</Link>.
+        <Link href="/space" className="underline underline-offset-4">your space</Link>.
       </>
     );
 

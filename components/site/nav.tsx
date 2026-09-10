@@ -30,7 +30,7 @@ export function SiteNav() {
   /* The one call to action in the nav: create an account, or, once signed
    * in, the members area. Accounts are step one; payment comes after. */
   const account = signedIn
-    ? { href: "/members", label: "Members" }
+    ? { href: "/space", label: "Space" }
     : { href: "/auth/sign-up", label: "Join" };
 
   return (

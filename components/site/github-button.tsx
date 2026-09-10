@@ -16,7 +16,7 @@ export function GitHubButton({ label = "Continue with GitHub" }: { label?: strin
   const signIn = async () => {
     setPending(true);
     setError(null);
-    const next = safeNextPath(new URLSearchParams(window.location.search).get("next"), "/members");
+    const next = safeNextPath(new URLSearchParams(window.location.search).get("next"), "/space");
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",

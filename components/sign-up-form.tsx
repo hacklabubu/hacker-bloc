@@ -25,7 +25,7 @@ export function SignUpForm() {
     setError(null);
     try {
       /* Where the confirmation link lands, e.g. back on the membership page. */
-      const next = safeNextPath(new URLSearchParams(window.location.search).get("next"), "/members");
+      const next = safeNextPath(new URLSearchParams(window.location.search).get("next"), "/space");
       const { error } = await supabase.auth.signUp({
         email,
         password,

@@ -5,7 +5,7 @@ import { openBillingPortal, type BillingState } from "@/app/actions/billing";
 
 const initial: BillingState = { error: null };
 
-/* The "Manage billing" button on /members; opens Stripe's Customer Portal. */
+/* The "Manage billing" button on /space/billing; opens Stripe's Customer Portal. */
 export function BillingForm() {
   const [state, action, pending] = useActionState<BillingState, FormData>(
     openBillingPortal,
