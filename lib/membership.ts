@@ -4,7 +4,6 @@ export const MEMBERSHIP = {
   taken: 0,
   monthlyUsd: 100,
   signupUsd: 1_000,
-  spaceGoalUsd: 10_000,
   rentPercent: 50,
   setupPercent: 50,
   benefits: [
@@ -54,13 +53,13 @@ export function getMembershipPaymentUrl(): string | null {
 }
 
 /*
- * Space milestones. Each version is what the next chunk of money buys.
+ * Space milestones. Each version unlocks when that many hackers have joined.
  * Order matters: it is the roadmap.
  */
 export const ROADMAP = [
   {
     version: "1.0",
-    goalUsd: MEMBERSHIP.spaceGoalUsd,
+    hackers: 10,
     summary: "The hackerspace starts working.",
     items: [
       "Bathroom",
@@ -72,14 +71,14 @@ export const ROADMAP = [
   },
   {
     version: "2.0",
-    goalUsd: 20_000,
+    hackers: 20,
     summary: "Tools on the benches.",
     // TODO: fourth item still undecided
     items: ["Monitors", "3D printers", "Soldering station", "???"],
   },
   {
     version: "3.0",
-    goalUsd: 30_000,
+    hackers: 30,
     summary: "The space pays for itself.",
     items: [
       "Sauna in the garden",
