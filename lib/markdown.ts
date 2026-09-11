@@ -372,7 +372,11 @@ function wishlistMarkdown(): string {
 async function membersMarkdown(): Promise<string> {
   const people = await getPeople();
   const body = [
-    `Everyone with a key to the Bloc, by role: ${ROLES.map((role) => role.label.toLowerCase()).join(", ")}. What each role means is on ${url("/roles")}. Only GitHub usernames are shown.`,
+    "Everyone with a key to the Bloc. Only GitHub usernames are shown.",
+    "",
+    list(ROLES.map((role) => `${(people ?? []).filter((p) => p.status === role.id).length} ${role.plural}`)),
+    "",
+    `What each role means is on ${url("/roles")}.`,
     "",
     "## The list",
     "",
@@ -386,7 +390,7 @@ async function membersMarkdown(): Promise<string> {
             ),
           ),
     "",
-    `Get on the list: ${url("/auth/sign-up")} · Become a member: ${url("/membership")}#member`,
+    `Join: sign in or create an account at ${url("/auth/login")}; with an account, become a member at ${url("/membership")}#member.`,
   ].join("\n");
   return doc("/members", "Members", body);
 }

@@ -114,6 +114,33 @@ export type AdminPerson = {
   patronPayments: number;
 };
 
+/* The role one account holds, by its email; null when it has no profile yet. */
+export async function getStatusByEmail(email: string): Promise<PersonStatus | null> {
+  if (!process.env.DATABASE_URL || !email) return null;
+  try {
+    const sql = getSql();
+    const rows = (await sql`
+      SELECT
+        p.role_override AS override,
+        EXISTS (
+          SELECT 1 FROM members m
+          WHERE lower(m.email) = lower(p.email)
+            AND (m.signup_paid_at IS NOT NULL OR m.status IN ('active', 'trialing'))
+        ) AS is_member,
+        EXISTS (SELECT 1 FROM patron_payments pp WHERE lower(pp.email) = lower(p.email)) AS is_patron
+      FROM profiles p
+      WHERE lower(p.email) = lower(${email})
+      LIMIT 1
+    `) as { override: string | null; is_member: boolean; is_patron: boolean }[];
+    const row = rows[0];
+    if (!row) return computed(email, false, false);
+    return isStatus(row.override) ? row.override : computed(email, row.is_member, row.is_patron);
+  } catch (error) {
+    console.error("getStatusByEmail failed", error);
+    return null;
+  }
+}
+
 export async function getAdminPeople(): Promise<AdminPerson[] | null> {
   if (!process.env.DATABASE_URL) return null;
   try {
