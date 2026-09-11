@@ -716,6 +716,38 @@ a.terminal-button:hover {
 .space-main .terminal-section:first-child { border-top: 0; }
 .space-main .terminal-section:first-child .terminal-legend { margin-top: 0; }
 
+/* ── admin table ─────────────────────────────────────────── */
+
+.terminal-table-wrap { overflow-x: auto; margin-top: 16px; }
+
+.terminal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.terminal-table th,
+.terminal-table td {
+  padding: 8px 12px 8px 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px dashed var(--terminal-border);
+}
+
+.terminal-table th { color: var(--terminal-muted); font-weight: 400; }
+.terminal-table a { text-decoration: underline; text-underline-offset: 4px; }
+
+.terminal-inline-form { display: flex; gap: 8px; align-items: center; }
+.terminal-inline-form select {
+  background: transparent;
+  color: var(--terminal-text);
+  font: inherit;
+  border: 0;
+  border-bottom: 1px dashed var(--terminal-strong-border);
+  padding: 4px 0;
+}
+.terminal-inline-form .terminal-button { min-height: 32px; padding: 4px 10px; gap: 8px; }
+
 /* ── auth + members forms ───────────────────────────────── */
 
 .terminal-form {

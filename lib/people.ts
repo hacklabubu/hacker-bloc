@@ -8,6 +8,75 @@ import { getSql } from "@/lib/db";
  */
 export type PersonStatus = "member" | "patron" | "lurker";
 
+export const STATUSES: readonly PersonStatus[] = ["member", "patron", "lurker"];
+
+export function isStatus(value: unknown): value is PersonStatus {
+  return typeof value === "string" && (STATUSES as readonly string[]).includes(value);
+}
+
+function computed(isMember: boolean, isPatron: boolean): PersonStatus {
+  return isMember ? "member" : isPatron ? "patron" : "lurker";
+}
+
+/* One account as the founders see it on /space/admin. */
+export type AdminPerson = {
+  id: string;
+  email: string;
+  github: string | null;
+  since: string;
+  computed: PersonStatus;
+  override: PersonStatus | null;
+  status: PersonStatus;
+  membershipStatus: string | null;
+  patronPayments: number;
+};
+
+export async function getAdminPeople(): Promise<AdminPerson[] | null> {
+  if (!process.env.DATABASE_URL) return null;
+  try {
+    const sql = getSql();
+    const rows = (await sql`
+      SELECT
+        p.supabase_user_id AS id,
+        p.email,
+        p.github_username AS github,
+        p.created_at AS since,
+        p.role_override AS override,
+        m.status AS membership_status,
+        (m.signup_paid_at IS NOT NULL OR m.status IN ('active', 'trialing')) AS is_member,
+        (SELECT count(*)::int FROM patron_payments pp WHERE lower(pp.email) = lower(p.email)) AS patron_payments
+      FROM profiles p
+      LEFT JOIN LATERAL (
+        SELECT status, signup_paid_at FROM members mm
+        WHERE lower(mm.email) = lower(p.email)
+        ORDER BY mm.created_at DESC LIMIT 1
+      ) m ON true
+      ORDER BY p.created_at
+    `) as {
+      id: string; email: string; github: string | null; since: string; override: string | null;
+      membership_status: string | null; is_member: boolean | null; patron_payments: number;
+    }[];
+    return rows.map((row) => {
+      const auto = computed(Boolean(row.is_member), row.patron_payments > 0);
+      const override = isStatus(row.override) ? row.override : null;
+      return {
+        id: row.id,
+        email: row.email,
+        github: row.github,
+        since: row.since,
+        computed: auto,
+        override,
+        status: override ?? auto,
+        membershipStatus: row.membership_status,
+        patronPayments: row.patron_payments,
+      };
+    });
+  } catch (error) {
+    console.error("getAdminPeople failed", error);
+    return null;
+  }
+}
+
 export type Person = {
   github: string | null;
   status: PersonStatus;
@@ -24,6 +93,7 @@ export async function getPeople(): Promise<Person[] | null> {
       SELECT
         p.github_username AS github,
         p.created_at AS since,
+        p.role_override AS override,
         EXISTS (
           SELECT 1 FROM members m
           WHERE lower(m.email) = lower(p.email)
@@ -34,7 +104,7 @@ export async function getPeople(): Promise<Person[] | null> {
         ) AS is_patron
       FROM profiles p
       ORDER BY p.created_at
-    `) as { github: string | null; since: string; is_member: boolean; is_patron: boolean }[];
+    `) as { github: string | null; since: string; override: string | null; is_member: boolean; is_patron: boolean }[];
 
     /* Patrons who paid without ever making an account still count. */
     const anonymousPatrons = (await sql`
@@ -48,7 +118,8 @@ export async function getPeople(): Promise<Person[] | null> {
     const people: Person[] = [
       ...rows.map((row) => ({
         github: row.github,
-        status: (row.is_member ? "member" : row.is_patron ? "patron" : "lurker") as PersonStatus,
+        /* A founder's override (/space/admin) beats what the payments say. */
+        status: isStatus(row.override) ? row.override : computed(row.is_member, row.is_patron),
         since: row.since,
       })),
       ...anonymousPatrons.map((row) => ({ github: null, status: "patron" as PersonStatus, since: row.since })),

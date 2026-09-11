@@ -10,12 +10,13 @@ const LINKS = [
 ] as const;
 
 /* The sidebar of /space: two links, the current one marked with ">". */
-export function SpaceNav({ email }: { email: string }) {
+export function SpaceNav({ email, founder = false }: { email: string; founder?: boolean }) {
   const pathname = usePathname();
+  const links = founder ? [...LINKS, { href: "/space/admin", label: "Admin" }] : [...LINKS];
   return (
     <>
       <nav aria-label="Space">
-        {LINKS.map((link) => (
+        {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}

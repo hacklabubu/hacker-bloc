@@ -5,6 +5,7 @@ import { BrandLogo } from "@/components/site/brand-logo";
 import { SpaceNav } from "@/components/site/space-nav";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { authConfigured, getSessionUser } from "@/lib/auth";
+import { isFounder } from "@/lib/founders";
 import { rememberProfile } from "@/lib/profile";
 
 /* Reads the session cookie on every request; never prerender. */
@@ -44,7 +45,7 @@ export default async function SpaceLayout({ children }: { children: React.ReactN
         <Link href="/" className="terminal-home space-home" aria-label="Hacker Bloc — home">
           <BrandLogo />
         </Link>
-        <SpaceNav email={user.email} />
+        <SpaceNav email={user.email} founder={isFounder(user.email)} />
         <div className="space-side-foot">
           <Link href="/">← hackerbloc.com</Link>
           <ThemeToggle />

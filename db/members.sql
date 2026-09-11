@@ -51,6 +51,9 @@ create table if not exists profiles (
   updated_at timestamptz not null default now()
 );
 create index if not exists profiles_email_idx on profiles (lower(email));
+-- Founders can pin a status from /space/admin; null means "computed from payments".
+alter table profiles add column if not exists role_override text
+  check (role_override in ('member', 'patron', 'lurker'));
 
 -- One-time patron contributions (app/actions/patron.ts), written by the
 -- webhook from checkout.session.completed.
