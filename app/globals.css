@@ -237,8 +237,8 @@ body:has(.terminal-page)::after {
 
 .terminal-theme-toggle {
   flex: none;
-  min-height: 44px;
-  padding: 8px 0;
+  min-height: 0;
+  padding: 0;
   background: transparent;
   color: var(--terminal-muted);
   font: inherit;

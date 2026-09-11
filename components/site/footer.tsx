@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 import { SITE } from "@/lib/site";
 
 export function SiteFooter() {
   return (
     <footer className="terminal-footer">
-      <p>Hacker Bloc / Warsaw, PL</p>
+      <ThemeToggle />
       <div>
         <a href={`mailto:${SITE.email}`}>Contact <span aria-hidden="true">↗</span></a>
         <Link href="/rules">Rules</Link>

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BrandLogo } from "@/components/site/brand-logo";
-import { ThemeToggle } from "@/components/site/theme-toggle";
 import { MAIN_NAV_LINKS } from "@/lib/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -57,7 +56,6 @@ export function SiteNav() {
         >
           {account.label}
         </Link>
-        <ThemeToggle />
       </div>
     </header>
   );
