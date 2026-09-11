@@ -55,7 +55,7 @@ create index if not exists profiles_email_idx on profiles (lower(email));
 alter table profiles add column if not exists role_override text;
 alter table profiles drop constraint if exists profiles_role_override_check;
 alter table profiles add constraint profiles_role_override_check
-  check (role_override in ('founder', 'resident', 'member', 'patron', 'lurker'));
+  check (role_override in ('founder', 'resident', 'hacklab_team', 'founding_member', 'member', 'patron', 'lurker'));
 
 -- One-time patron contributions (app/actions/patron.ts), written by the
 -- webhook from checkout.session.completed.

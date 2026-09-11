@@ -1,39 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
-import { getPeople, type PersonStatus } from "@/lib/people";
-
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
-
-const SINCE = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric", timeZone: "Europe/Warsaw" });
+import { ROLES, getPeople, roleOf, type PersonStatus } from "@/lib/people";
 
 export const metadata: Metadata = {
   title: "Members",
-  description: "Everyone with an account at Hacker Bloc: members, patrons, and lurkers.",
+  description: "Everyone with an account at Hacker Bloc, by role: founders, residents, Hacklab team, founding members, members, patrons, and lurkers.",
   alternates: { canonical: "/members" },
 };
 
-const LABEL: Record<PersonStatus, string> = {
-  founder: "founder",
-  resident: "resident",
-  member: "member",
-  patron: "patron",
-  lurker: "lurker",
-};
-
-const MARK: Record<PersonStatus, string> = {
-  founder: "[*]",
-  resident: "[#]",
-  member: "[+]",
-  patron: "[$]",
-  lurker: "[ ]",
-};
+const SINCE = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric", timeZone: "Europe/Warsaw" });
 
 /* Mirrored in lib/markdown.ts (membersMarkdown); change both. */
 export default async function MembersPage() {
   await connection();
   const people = await getPeople();
-  const counts = { founder: 0, resident: 0, member: 0, patron: 0, lurker: 0 };
+  const counts = Object.fromEntries(ROLES.map((role) => [role.id, 0])) as Record<PersonStatus, number>;
   for (const person of people ?? []) counts[person.status] += 1;
 
   return (
@@ -42,11 +24,8 @@ export default async function MembersPage() {
         <p className="terminal-location">Members</p>
         <h1 id="members-heading">Everyone with a key to the Bloc.</h1>
         <p className="terminal-muted">
-          {plural(counts.founder, "founder")} · {plural(counts.resident, "resident")} ·{" "}
-          {plural(counts.member, "member")} · {plural(counts.patron, "patron")} · {plural(counts.lurker, "lurker")}.
-          Founders run the house, residents live in it, members pay the
-          membership, patrons put money in once, lurkers made an account and are
-          thinking about it.
+          {ROLES.map((role) => `${counts[role.id]} ${role.plural}`).join(" · ")}. What each
+          role means is on <Link href="/rules" className="underline underline-offset-4">the rules page</Link>.
         </p>
       </section>
 
@@ -59,20 +38,23 @@ export default async function MembersPage() {
             <p className="terminal-muted">Nobody yet. Be the first.</p>
           ) : (
             <ul className="terminal-list" aria-label="People">
-              {people.map((person, i) => (
-                <li key={`${person.github ?? "anon"}-${i}`}>
-                  <span aria-hidden="true">{MARK[person.status]}</span>
-                  <span>
-                    {person.github ? (
-                      <a href={`https://github.com/${person.github}`}>{person.github}</a>
-                    ) : (
-                      "anonymous"
-                    )}{" "}
-                    <span className="terminal-muted">{LABEL[person.status]}</span>
-                  </span>
-                  <time dateTime={person.since}>{SINCE.format(new Date(person.since))}</time>
-                </li>
-              ))}
+              {people.map((person, i) => {
+                const role = roleOf(person.status);
+                return (
+                  <li key={`${person.github ?? "anon"}-${i}`}>
+                    <span aria-hidden="true">{role.mark}</span>
+                    <span>
+                      {person.github ? (
+                        <a href={`https://github.com/${person.github}`}>{person.github}</a>
+                      ) : (
+                        "anonymous"
+                      )}{" "}
+                      <span className="terminal-muted">{role.label.toLowerCase()}</span>
+                    </span>
+                    <time dateTime={person.since}>{SINCE.format(new Date(person.since))}</time>
+                  </li>
+                );
+              })}
             </ul>
           )}
           <div className="terminal-actions">

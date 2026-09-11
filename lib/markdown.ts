@@ -22,7 +22,7 @@
  * module must never be imported from a "use client" component.
  */
 
-import { JOIN_TYPES, authorityLadder } from "@/lib/community";
+import { JOIN_TYPES } from "@/lib/community";
 import { getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
 import {
   MEMBERSHIP,
@@ -32,8 +32,8 @@ import {
 } from "@/lib/membership";
 import { authConfigured } from "@/lib/auth";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
-import { getHouseRoles, getMembers, getRules } from "@/lib/notion";
-import { getPeople } from "@/lib/people";
+import { ROLES, getPeople, roleOf } from "@/lib/people";
+import { HACKERSPACE_RULES } from "@/lib/rules";
 import { STEPS } from "@/app/(site)/how-it-works/page";
 import { REFUNDS, TERMS, type LegalDoc } from "@/lib/legal";
 import { LUMA, OPERATOR, SITE } from "@/lib/site";
@@ -345,7 +345,7 @@ function wishlistMarkdown(): string {
 async function membersMarkdown(): Promise<string> {
   const people = await getPeople();
   const body = [
-    "Everyone with a key to the Bloc. Founders run the house, residents live in it, members pay the membership, patrons put money in once, lurkers made an account and are thinking about it. Only GitHub usernames are shown.",
+    `Everyone with a key to the Bloc, by role: ${ROLES.map((role) => role.label.toLowerCase()).join(", ")}. What each role means is on ${url("/rules")}. Only GitHub usernames are shown.`,
     "",
     "## The list",
     "",
@@ -355,7 +355,7 @@ async function membersMarkdown(): Promise<string> {
         ? "Nobody yet."
         : list(
             people.map((person) =>
-              `${person.github ? `[${person.github}](https://github.com/${person.github})` : "anonymous"} — ${person.status}`,
+              `${person.github ? `[${person.github}](https://github.com/${person.github})` : "anonymous"} — ${roleOf(person.status).label.toLowerCase()}`,
             ),
           ),
     "",
@@ -367,53 +367,27 @@ async function membersMarkdown(): Promise<string> {
 /* ── /rules ────────────────────────────────────────────────────── */
 
 async function rulesMarkdown(): Promise<string> {
-  const [rules, houseRoles, members] = await Promise.all([
-    getRules(),
-    getHouseRoles(),
-    getMembers(),
-  ]);
-  const ladder = authorityLadder(houseRoles, members);
+  const people = (await getPeople()) ?? [];
 
   const sections: string[] = [
     "Read them before you show up. We are not a hostel, not a coworking, not a party flat — we are laser focused on building Hacklab.",
+    [
+      "## The hierarchy",
+      "",
+      "Who decides, before what is decided. Highest rung first.",
+      "",
+      ROLES.map((role, index) => {
+        const names = people.filter((p) => p.status === role.id && p.github).map((p) => p.github);
+        const lines = [`### ${role.label} — level ${ROLES.length - 1 - index}`, "", role.responsibilities];
+        if (names.length > 0) lines.push("", `On this rung: ${names.join(", ")}.`);
+        return lines.join("\n");
+      }).join("\n\n"),
+    ].join("\n"),
+    ["## The rules", "", ordered(HACKERSPACE_RULES)].join("\n"),
+    `Applying means confirming you read this page: ${url("/join")}.`,
   ];
 
-  if (ladder.length > 0) {
-    sections.push(
-      [
-        "## The hierarchy",
-        "",
-        "Who decides, before what is decided — the rules below read differently once you know which rung you are standing on. Highest rung first.",
-        "",
-        ladder
-          .map((step) => {
-            const lines = [`### ${step.names.join(" / ")} — level ${step.level}`];
-            if (step.responsibilities) lines.push("", step.responsibilities);
-            if (step.members.length > 0) {
-              lines.push("", `On this rung: ${step.members.join(", ")}.`);
-            }
-            return lines.join("\n");
-          })
-          .join("\n\n"),
-      ].join("\n"),
-    );
-  }
-
-  sections.push(
-    [
-      "## The rules",
-      "",
-      rules.length > 0
-        ? ordered(rules)
-        : "Rules are being written — ask hacker daddy.",
-    ].join("\n"),
-  );
-
-  sections.push(
-    `Applying means confirming you read this page: ${url("/join")}.`,
-  );
-
-  return doc("/rules", "House rules", sections.join("\n\n"));
+  return doc("/rules", "Rules", sections.join("\n\n"));
 }
 
 /* ── /join ─────────────────────────────────────────────────────── */

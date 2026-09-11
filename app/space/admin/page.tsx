@@ -3,7 +3,7 @@ import { setRoleOverride } from "@/app/actions/admin";
 import { formatDate } from "@/components/site/space-membership";
 import { getSessionUser } from "@/lib/auth";
 import { isFounder } from "@/lib/founders";
-import { STATUSES, getAdminPeople } from "@/lib/people";
+import { ROLES, getAdminPeople, roleOf } from "@/lib/people";
 
 /* Founders only; everyone else gets the 404 so the page does not exist for them. */
 export default async function SpaceAdminPage() {
@@ -17,9 +17,9 @@ export default async function SpaceAdminPage() {
         <h2 id="admin-heading" className="terminal-legend">Accounts</h2>
         <div className="terminal-section-content">
           <p className="terminal-muted">
-            Everyone with an account. Status is computed from payments and the
-            founders list; pin founder, resident, member, patron or lurker, or
-            leave &quot;auto&quot;.
+            Everyone with an account. The role is computed from the founders
+            list and the payments (a paid membership is a founding membership);
+            pin any role, or leave &quot;auto&quot;.
           </p>
           {people === null ? (
             <p className="terminal-muted">The database is offline right now.</p>
@@ -34,7 +34,8 @@ export default async function SpaceAdminPage() {
                     <th>GitHub</th>
                     <th>Since</th>
                     <th>Paid</th>
-                    <th>Status</th>
+                    <th>Role</th>
+                    <th>Pin</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -54,12 +55,21 @@ export default async function SpaceAdminPage() {
                         {person.patronPayments > 0 ? ` · ${person.patronPayments} patron` : ""}
                       </td>
                       <td>
-                        <form action={setRoleOverride} className="terminal-inline-form">
+                        {roleOf(person.status).label.toLowerCase()}
+                        {person.override ? <span className="terminal-muted"> (pinned)</span> : <span className="terminal-muted"> (auto)</span>}
+                      </td>
+                      <td>
+                        {/* Keyed on the stored value so the select re-mounts after a save. */}
+                        <form
+                          key={`${person.id}-${person.override ?? "auto"}`}
+                          action={setRoleOverride}
+                          className="terminal-inline-form"
+                        >
                           <input type="hidden" name="id" value={person.id} />
                           <select name="role" defaultValue={person.override ?? ""} aria-label={`Status for ${person.email}`}>
-                            <option value="">auto ({person.computed})</option>
-                            {STATUSES.map((status) => (
-                              <option key={status} value={status}>{status}</option>
+                            <option value="">auto ({roleOf(person.computed).label.toLowerCase()})</option>
+                            {ROLES.map((role) => (
+                              <option key={role.id} value={role.id}>{role.label.toLowerCase()}</option>
                             ))}
                           </select>
                           <button type="submit" className="terminal-button">Save</button>

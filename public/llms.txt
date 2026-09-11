@@ -21,12 +21,12 @@ Contact: matt@hacklab.so.
 - [Events](https://www.hackerbloc.com/events): Upcoming and recent events, with RSVP links and the public calendar.
 - [Membership](https://www.hackerbloc.com/membership): Two ways to pay. Become a member ($100 USD/month plus a $1,000 USD signup fee, first 100 people) or become a patron (a one-time donation of any amount). Benefits, where the money goes, and the risk note.
 - [Roadmap](https://www.hackerbloc.com/roadmap): The space, one version at a time. Hacker Bloc 1.0 (10 hackers) gets it working: bathroom, kitchen, lighting, Wi-Fi, lockers, member door lock. 2.0 (20 hackers) adds tools (monitors, 3D printers, welding station). 3.0 (30 hackers) adds a garden sauna and jacuzzi, graffiti, and rent fully covered by the hackerspace.
-- [Members](https://www.hackerbloc.com/members): Everyone with an account, labelled founder (runs the house), resident (lives in it), member (paid), patron (one-time contribution) or lurker (account only). GitHub usernames only.
+- [Members](https://www.hackerbloc.com/members): Everyone with an account, by role: founder (runs the house), resident (lives in it), hacklab team (builds Hacklab here), founding member (one of the first 100 who paid), member (approved by the founders), patron (one-time contribution) or lurker (account only). GitHub usernames only.
 - [Wishlist](https://www.hackerbloc.com/wishlist): The things the space needs next, with a way to fund specific items (coming soon), and how to contribute equipment, time, or resources.
 
 ## Additional existing pages
 
-- [Rules](https://www.hackerbloc.com/rules): The authority hierarchy (who decides what, and what each rung is responsible for) and the house rules themselves.
+- [Rules](https://www.hackerbloc.com/rules): The hierarchy of roles (founder down to lurker, who is on each rung) and the hackerspace rules.
 - [Join](https://www.hackerbloc.com/join): The existing house application form, separate from founding membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
 - [Space](https://www.hackerbloc.com/space): Sign in to see your membership, billing and account (account required; create one at /auth/sign-up before paying).
 - [Privacy](https://www.hackerbloc.com/privacy): What the join form collects, where it is stored, how long it is kept, and how to get it deleted.
