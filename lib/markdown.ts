@@ -59,6 +59,7 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/wishlist": wishlistMarkdown,
   "/members": membersMarkdown,
   "/rules": rulesMarkdown,
+  "/roles": rolesMarkdown,
   "/join": joinMarkdown,
   "/terms": () => legalMarkdown(TERMS),
   "/refunds": () => legalMarkdown(REFUNDS),
@@ -262,7 +263,8 @@ function howItWorksMarkdown(): string {
     "## Read next",
     "",
     list([
-      `[House rules and the hierarchy](${url("/rules")})`,
+      `[Rules](${url("/rules")})`,
+      `[Roles](${url("/roles")})`,
       `[Roadmap](${url("/roadmap")})`,
       `[Wishlist](${url("/wishlist")})`,
       `[Who is in](${url("/members")})`,
@@ -363,7 +365,7 @@ function wishlistMarkdown(): string {
 async function membersMarkdown(): Promise<string> {
   const people = await getPeople();
   const body = [
-    `Everyone with a key to the Bloc, by role: ${ROLES.map((role) => role.label.toLowerCase()).join(", ")}. What each role means is on ${url("/rules")}. Only GitHub usernames are shown.`,
+    `Everyone with a key to the Bloc, by role: ${ROLES.map((role) => role.label.toLowerCase()).join(", ")}. What each role means is on ${url("/roles")}. Only GitHub usernames are shown.`,
     "",
     "## The list",
     "",
@@ -382,30 +384,40 @@ async function membersMarkdown(): Promise<string> {
   return doc("/members", "Members", body);
 }
 
-/* ── /rules ────────────────────────────────────────────────────── */
+/* ── /rules ───────────────────────────────────────────────────── */
 
-async function rulesMarkdown(): Promise<string> {
-  const people = (await getPeople()) ?? [];
-
-  const sections: string[] = [
-    "Read them before you show up. We are not a hostel, not a coworking, not a party flat — we are laser focused on building Hacklab.",
-    [
-      "## The hierarchy",
-      "",
-      "Who decides, before what is decided. Highest rung first.",
-      "",
-      ROLES.map((role, index) => {
-        const names = people.filter((p) => p.status === role.id && p.github).map((p) => p.github);
-        const lines = [`### ${role.label} — level ${ROLES.length - 1 - index}`, "", role.responsibilities];
-        if (names.length > 0) lines.push("", `On this rung: ${names.join(", ")}.`);
-        return lines.join("\n");
-      }).join("\n\n"),
-    ].join("\n"),
-    ["## The rules", "", ordered(HACKERSPACE_RULES)].join("\n"),
+/* Mirrors app/(site)/rules/page.tsx. */
+function rulesMarkdown(): string {
+  const body = [
+    `Read them before you show up. We are not a hostel, not a coworking, not a party flat — we are laser focused on building Hacklab. Who decides what: ${url("/roles")}`,
+    "",
+    "## The rules",
+    "",
+    ordered(HACKERSPACE_RULES),
+    "",
     `Applying means confirming you read this page: ${url("/join")}.`,
-  ];
+  ].join("\n");
+  return doc("/rules", "Rules", body);
+}
 
-  return doc("/rules", "Rules", sections.join("\n\n"));
+/* ── /roles ───────────────────────────────────────────────────── */
+
+/* Mirrors app/(site)/roles/page.tsx. */
+async function rolesMarkdown(): Promise<string> {
+  const people = (await getPeople()) ?? [];
+  const body = [
+    `Who decides what. Every account holds one role; highest rung first, and the rung decides what you get a say in. The rules everyone follows: ${url("/rules")}`,
+    "",
+    "## The hierarchy",
+    "",
+    ROLES.map((role, index) => {
+      const names = people.filter((p) => p.status === role.id && p.github).map((p) => p.github);
+      const lines = [`### ${role.label} — level ${ROLES.length - 1 - index}`, "", role.responsibilities];
+      if (names.length > 0) lines.push("", `On this rung: ${names.join(", ")}.`);
+      return lines.join("\n");
+    }).join("\n\n"),
+  ].join("\n");
+  return doc("/roles", "Roles", body);
 }
 
 /* ── /join ─────────────────────────────────────────────────────── */
@@ -440,7 +452,8 @@ function joinMarkdown(): string {
     "## Before you apply",
     "",
     list([
-      `The house rules and the authority hierarchy: ${url("/rules")}`,
+      `The rules: ${url("/rules")}`,
+      `The roles and who decides what: ${url("/roles")}`,
       `Questions that are not an application: ${SITE.email}`,
     ]),
   ].join("\n");
@@ -557,7 +570,8 @@ export function markdownNotFound(pathname: string): string {
       `[Membership](${url("/membership")}) — founding membership, benefits, pricing, and payment availability`,
       `[Wishlist](${url("/wishlist")}) — what the space needs next, and how to give equipment or time`,
       `[Members](${url("/members")}) — everyone with an account: members, patrons, lurkers`,
-      `[Rules](${url("/rules")}) — who decides what, and the house rules`,
+      `[Rules](${url("/rules")}) — the hackerspace rules`,
+      `[Roles](${url("/roles")}) — the hierarchy, who decides what`,
       `[Join](${url("/join")}) — apply to the house`,
       `[Terms](${url("/terms")}) — membership terms`,
       `[Refunds](${url("/refunds")}) — cancellation, withdrawal, and refunds`,

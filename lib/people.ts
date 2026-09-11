@@ -3,7 +3,7 @@ import { isFounder } from "@/lib/founders";
 
 /*
  * The roles of the house, top rung first. They are what /members shows,
- * what /rules lists as the hierarchy, and what a founder can pin on
+ * what /roles lists as the hierarchy, and what a founder can pin on
  * /space/admin. Every account (Supabase Auth, mirrored in `profiles`) holds
  * exactly one: computed from the founders list and the payment tables, or
  * pinned. Only the GitHub username is ever shown; accounts without one appear

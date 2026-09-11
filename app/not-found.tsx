@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 const EXITS = [
   { href: "/", label: "The Bloc", note: "the manifesto, membership, and patrons" },
   { href: "/events", label: "Events", note: "what is on at the house" },
-  { href: "/rules", label: "Rules", note: "who decides what, and why" },
+  { href: "/rules", label: "Rules", note: "the hackerspace rules" },
+  { href: "/roles", label: "Roles", note: "who decides what, and why" },
   { href: "/join", label: "Join", note: "apply to the house" },
 ] as const;
 

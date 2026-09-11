@@ -12,6 +12,7 @@ export function SiteFooter() {
         <Link href="/roadmap">Roadmap</Link>
         <Link href="/wishlist">Wishlist</Link>
         <Link href="/rules">Rules</Link>
+        <Link href="/roles">Roles</Link>
         <Link href="/join">Apply</Link>
         <Link href="/terms">Terms</Link>
         <Link href="/refunds">Refunds</Link>

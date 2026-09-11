@@ -23,7 +23,7 @@ export const STEPS = [
   },
   {
     title: "Get the key",
-    body: "Members get into every event and have round-the-clock access to the hackerspace at " + SITE.postal.streetAddress + ". Read the house rules first; the hierarchy on that page decides who can say yes to what.",
+    body: "Members get into every event and have round-the-clock access to the hackerspace at " + SITE.postal.streetAddress + ". Read the rules first; the roles page says who can say yes to what.",
   },
   {
     title: "Build the space with us",
@@ -88,7 +88,8 @@ export default function HowItWorksPage() {
         <h2 id="read-heading" className="terminal-legend">Read next</h2>
         <div className="terminal-section-content terminal-prose">
           <p>
-            <Link href="/rules">House rules and the hierarchy →</Link>{" "}
+            <Link href="/rules">Rules →</Link>{" "}
+            <Link href="/roles">Roles →</Link>{" "}
             <Link href="/roadmap">Roadmap →</Link>{" "}
             <Link href="/wishlist">Wishlist →</Link>{" "}
             <Link href="/members">Who is in →</Link>

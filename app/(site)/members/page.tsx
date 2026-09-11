@@ -25,7 +25,7 @@ export default async function MembersPage() {
         <h1 id="members-heading">Everyone with a key to the Bloc.</h1>
         <p className="terminal-muted">
           {ROLES.map((role) => `${counts[role.id]} ${role.plural}`).join(" · ")}. What each
-          role means is on <Link href="/rules" className="underline underline-offset-4">the rules page</Link>.
+          role means is on <Link href="/roles" className="underline underline-offset-4">the roles page</Link>.
         </p>
       </section>
 

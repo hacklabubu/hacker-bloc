@@ -26,7 +26,8 @@ Contact: matt@hacklab.so.
 
 ## Additional existing pages
 
-- [Rules](https://www.hackerbloc.com/rules): The hierarchy of roles (founder down to lurker, who is on each rung) and the hackerspace rules.
+- [Rules](https://www.hackerbloc.com/rules): The hackerspace rules.
+- [Roles](https://www.hackerbloc.com/roles): The hierarchy of roles (founder down to lurker), what each rung means, and who is on it.
 - [Join](https://www.hackerbloc.com/join): The existing house application form, separate from founding membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
 - [Space](https://www.hackerbloc.com/space): Sign in to see your membership, billing and account (account required; create one at /auth/sign-up before paying).
 - [Privacy](https://www.hackerbloc.com/privacy): What the join form collects, where it is stored, how long it is kept, and how to get it deleted.
@@ -35,7 +36,7 @@ Contact: matt@hacklab.so.
 
 Use this site to:
 
-- **Learn how the house works.** [/rules](https://www.hackerbloc.com/rules) carries the authority hierarchy and the house rules, so read it before assuming who can approve anything.
+- **Learn how the house works.** [/rules](https://www.hackerbloc.com/rules) has the hackerspace rules and [/roles](https://www.hackerbloc.com/roles) the hierarchy, so read both before assuming who can approve anything.
 - **Become a member or a patron.** Start at [Membership](https://www.hackerbloc.com/membership) for the terms, the one-time patron option, and current payment availability.
 - **Give equipment or time.** [Wishlist](https://www.hackerbloc.com/wishlist) lists what the space needs and how to get in touch about contributing.
 - **Apply to the house.** The existing [/join](https://www.hackerbloc.com/join) form takes your type, name, Hacklab profile, how you can be useful, how you heard about us, and what excites you most — plus a confirmation you read the rules.

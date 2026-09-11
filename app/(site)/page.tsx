@@ -210,6 +210,7 @@ export default async function Home() {
           <p>
             <Link href="/how-it-works" className="underline underline-offset-4">The whole model →</Link>{" "}
             <Link href="/rules" className="underline underline-offset-4">Rules →</Link>{" "}
+            <Link href="/roles" className="underline underline-offset-4">Roles →</Link>{" "}
             <Link href="/roadmap" className="underline underline-offset-4">Roadmap →</Link>
           </p>
         </div>
