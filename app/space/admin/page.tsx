@@ -17,8 +17,9 @@ export default async function SpaceAdminPage() {
         <h2 id="admin-heading" className="terminal-legend">Accounts</h2>
         <div className="terminal-section-content">
           <p className="terminal-muted">
-            Everyone with an account. Status is computed from payments; pick one
-            to pin it, or &quot;auto&quot; to let the payments decide.
+            Everyone with an account. Status is computed from payments and the
+            founders list; pin founder, resident, member, patron or lurker, or
+            leave &quot;auto&quot;.
           </p>
           {people === null ? (
             <p className="terminal-muted">The database is offline right now.</p>

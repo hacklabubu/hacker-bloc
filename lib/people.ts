@@ -1,20 +1,24 @@
 import { getSql } from "@/lib/db";
+import { isFounder } from "@/lib/founders";
 
 /*
  * The public members list (/members): every account, labelled by what they
- * have put in. "member" is a paid membership, "patron" a one-time
- * contribution, "lurker" an account and nothing else. Only the GitHub
- * username is ever shown; accounts without one appear as anonymous.
+ * are to the house. "founder" runs it (lib/founders.ts, or pinned),
+ * "resident" lives in it (pinned by a founder), "member" is a paid
+ * membership, "patron" a one-time contribution, "lurker" an account and
+ * nothing else. Only the GitHub username is ever shown; accounts without one
+ * appear as anonymous.
  */
-export type PersonStatus = "member" | "patron" | "lurker";
+export type PersonStatus = "founder" | "resident" | "member" | "patron" | "lurker";
 
-export const STATUSES: readonly PersonStatus[] = ["member", "patron", "lurker"];
+export const STATUSES: readonly PersonStatus[] = ["founder", "resident", "member", "patron", "lurker"];
 
 export function isStatus(value: unknown): value is PersonStatus {
   return typeof value === "string" && (STATUSES as readonly string[]).includes(value);
 }
 
-function computed(isMember: boolean, isPatron: boolean): PersonStatus {
+function computed(email: string, isMember: boolean, isPatron: boolean): PersonStatus {
+  if (isFounder(email)) return "founder";
   return isMember ? "member" : isPatron ? "patron" : "lurker";
 }
 
@@ -57,7 +61,7 @@ export async function getAdminPeople(): Promise<AdminPerson[] | null> {
       membership_status: string | null; is_member: boolean | null; patron_payments: number;
     }[];
     return rows.map((row) => {
-      const auto = computed(Boolean(row.is_member), row.patron_payments > 0);
+      const auto = computed(row.email, Boolean(row.is_member), row.patron_payments > 0);
       const override = isStatus(row.override) ? row.override : null;
       return {
         id: row.id,
@@ -83,7 +87,7 @@ export type Person = {
   since: string;
 };
 
-const ORDER: Record<PersonStatus, number> = { member: 0, patron: 1, lurker: 2 };
+const ORDER: Record<PersonStatus, number> = { founder: 0, resident: 1, member: 2, patron: 3, lurker: 4 };
 
 export async function getPeople(): Promise<Person[] | null> {
   if (!process.env.DATABASE_URL) return null;
@@ -91,6 +95,7 @@ export async function getPeople(): Promise<Person[] | null> {
     const sql = getSql();
     const rows = (await sql`
       SELECT
+        p.email,
         p.github_username AS github,
         p.created_at AS since,
         p.role_override AS override,
@@ -104,7 +109,7 @@ export async function getPeople(): Promise<Person[] | null> {
         ) AS is_patron
       FROM profiles p
       ORDER BY p.created_at
-    `) as { github: string | null; since: string; override: string | null; is_member: boolean; is_patron: boolean }[];
+    `) as { email: string; github: string | null; since: string; override: string | null; is_member: boolean; is_patron: boolean }[];
 
     /* Patrons who paid without ever making an account still count. */
     const anonymousPatrons = (await sql`
@@ -119,7 +124,7 @@ export async function getPeople(): Promise<Person[] | null> {
       ...rows.map((row) => ({
         github: row.github,
         /* A founder's override (/space/admin) beats what the payments say. */
-        status: isStatus(row.override) ? row.override : computed(row.is_member, row.is_patron),
+        status: isStatus(row.override) ? row.override : computed(row.email, row.is_member, row.is_patron),
         since: row.since,
       })),
       ...anonymousPatrons.map((row) => ({ github: null, status: "patron" as PersonStatus, since: row.since })),

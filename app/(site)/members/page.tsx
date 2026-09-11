@@ -14,12 +14,16 @@ export const metadata: Metadata = {
 };
 
 const LABEL: Record<PersonStatus, string> = {
+  founder: "founder",
+  resident: "resident",
   member: "member",
   patron: "patron",
   lurker: "lurker",
 };
 
 const MARK: Record<PersonStatus, string> = {
+  founder: "[*]",
+  resident: "[#]",
   member: "[+]",
   patron: "[$]",
   lurker: "[ ]",
@@ -29,7 +33,7 @@ const MARK: Record<PersonStatus, string> = {
 export default async function MembersPage() {
   await connection();
   const people = await getPeople();
-  const counts = { member: 0, patron: 0, lurker: 0 };
+  const counts = { founder: 0, resident: 0, member: 0, patron: 0, lurker: 0 };
   for (const person of people ?? []) counts[person.status] += 1;
 
   return (
@@ -38,9 +42,11 @@ export default async function MembersPage() {
         <p className="terminal-location">Members</p>
         <h1 id="members-heading">Everyone with a key to the Bloc.</h1>
         <p className="terminal-muted">
+          {plural(counts.founder, "founder")} · {plural(counts.resident, "resident")} ·{" "}
           {plural(counts.member, "member")} · {plural(counts.patron, "patron")} · {plural(counts.lurker, "lurker")}.
-          Members pay the membership, patrons put money in once, lurkers made an
-          account and are thinking about it.
+          Founders run the house, residents live in it, members pay the
+          membership, patrons put money in once, lurkers made an account and are
+          thinking about it.
         </p>
       </section>
 

@@ -314,7 +314,7 @@ function wishlistMarkdown(): string {
 async function membersMarkdown(): Promise<string> {
   const people = await getPeople();
   const body = [
-    "Everyone with a key to the Bloc. Members pay the membership, patrons put money in once, lurkers made an account and are thinking about it. Only GitHub usernames are shown.",
+    "Everyone with a key to the Bloc. Founders run the house, residents live in it, members pay the membership, patrons put money in once, lurkers made an account and are thinking about it. Only GitHub usernames are shown.",
     "",
     "## The list",
     "",
