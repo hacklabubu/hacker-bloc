@@ -18,7 +18,7 @@ export default async function SpaceAdminPage() {
         <div className="terminal-section-content">
           <p className="terminal-muted">
             Everyone with an account. The role is computed from the founders
-            list and the payments (a paid membership is a founding membership);
+            list and the payments (a paid membership makes a member);
             pin any role, or leave &quot;auto&quot;.
           </p>
           {people === null ? (

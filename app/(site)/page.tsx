@@ -4,6 +4,8 @@ import { connection } from "next/server";
 import { SIGNUP_FOR_MEMBERSHIP } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
 import { formatEventDate } from "@/lib/luma";
+import { EXPERIMENT_NOTE } from "@/lib/copy";
+import { FeeNote } from "@/components/site/fee-note";
 import { HOME_PHOTOS, getHomeData } from "@/lib/home";
 import { MEMBERSHIP, formatUsd } from "@/lib/membership";
 import { roleOf } from "@/lib/people";
@@ -95,27 +97,10 @@ export default async function Home() {
           <a href="https://www.youtube.com/shorts/n5dAIvH2cQw" className="underline underline-offset-4">pure potential</a>,
           so we figured a hackerspace would help us not die in the initial grind.
         </p>
+        <p>{EXPERIMENT_NOTE}</p>
       </section>
 
-      <section id="house" className="terminal-section" aria-labelledby="house-heading">
-        <h2 id="house-heading" className="terminal-legend">The house</h2>
-        <div className="terminal-section-content">
-          <ul className="terminal-photos" aria-label="Photos of the house">
-            {HOME_PHOTOS.map((photo) => (
-              <li key={photo.label}>
-                {photo.src ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={photo.src} alt={photo.alt} loading="lazy" />
-                ) : (
-                  <div className="terminal-photo-slot" role="img" aria-label={`${photo.alt} (photo coming)`}>
-                    <span aria-hidden="true">[ {photo.label} ]</span>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+
 
       {hasSignals ? (
         <section id="now" className="terminal-section" aria-labelledby="now-heading">
@@ -185,58 +170,12 @@ export default async function Home() {
               <Link href="/terms" className="underline underline-offset-4">Terms →</Link>
             </p>
           </div>
+          <FeeNote />
         </div>
       </section>
 
-      {faces.length > 0 ? (
-        <section id="who" className="terminal-section" aria-labelledby="who-heading">
-          <h2 id="who-heading" className="terminal-legend">Who is in</h2>
-          <div className="terminal-section-content">
-            <ul className="terminal-people" aria-label="People on the list">
-              {faces.map((person) => {
-                const role = roleOf(person.status);
-                return (
-                  <li key={person.github}>
-                    <span aria-hidden="true">{role.mark}</span>{" "}
-                    <a href={`https://github.com/${person.github}`}>{person.github}</a>{" "}
-                    <span className="terminal-muted">{role.label.toLowerCase()}</span>
-                  </li>
-                );
-              })}
-            </ul>
-            <p>
-              <Link href="/members" className="underline underline-offset-4">Everyone with a key →</Link>
-            </p>
-          </div>
-        </section>
-      ) : null}
 
 
-      <section id="on" className="terminal-section" aria-labelledby="on-heading">
-        <h2 id="on-heading" className="terminal-legend">What is on</h2>
-        <div className="terminal-section-content">
-          {nextEvents.length > 0 ? (
-            <ul className="terminal-upcoming" aria-label="Upcoming events">
-              {nextEvents.map((event) => {
-                const when = formatEventDate(event);
-                return (
-                  <li key={event.url}>
-                    <span aria-hidden="true">[{when ? when.label.slice(0, 6) : "soon"}]</span>
-                    <a href={event.url}>{event.name}</a>
-                    {when ? <span className="terminal-muted">{when.label}</span> : null}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="terminal-muted">Nothing scheduled right now. The calendar fills up fast.</p>
-          )}
-          <p>
-            <Link href="/events" className="underline underline-offset-4">All events →</Link>{" "}
-            <a href={LUMA.calendarUrl} className="underline underline-offset-4">Calendar ↗</a>
-          </p>
-        </div>
-      </section>
 
       <section id="patron" className="terminal-section" aria-labelledby="patron-heading">
         <h2 id="patron-heading" className="terminal-legend">Become a patron</h2>

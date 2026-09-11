@@ -1,14 +1,14 @@
 # Hacker Bloc
 
-> Hacker Bloc is a hackerspace in Warsaw, Poland, built by the people who use it. The menu has three pages: Home, How it works, and Members; Events, Membership, Roadmap, Wishlist and the legal pages are linked from the footer.
+> Hacker Bloc is a hackerspace in Warsaw, Poland, built by the people who use it. The house calls itself an experiment and asks for feedback, ideas and suggestions. The menu has three pages: Home, How it works, and Members; Events, Membership, Roadmap, Wishlist and the legal pages are linked from the footer.
 
-Founding membership costs $100 USD per month plus a $1,000 USD one-time signup
-fee. Members get access to every event in the Bloc, 24/7 access to the
+Membership costs $100 USD per month plus a $1,000 USD one-time signup
+fee. The fee is a filter, not a fundraiser: it is meant for people who already build serious things and have serious experience. There are no exceptions; only the house residents do not pay it. Members get access to every event in the Bloc, 24/7 access to the
 hackerspace, and a say in shaping the space. Half of the money goes to rent;
 the other half goes to setting up the space. Ten members unlock Hacker Bloc 1.0. The roadmap is published; the wishlist is a coming-soon placeholder.
 
 The Membership page shows payment availability and links directly to checkout when
-payments open. The offer is limited to 100 founding members; the site does
+payments open. The offer is limited to the first 100 members; the site does
 not publish a live count of sold memberships or funds raised.
 
 Address: Kosiarzy 21B, 02-953 Warszawa, Poland.
@@ -21,14 +21,14 @@ Contact: matt@hacklab.so.
 - [Events](https://www.hackerbloc.com/events): Upcoming and recent events, with RSVP links and the public calendar.
 - [Membership](https://www.hackerbloc.com/membership): Two ways to pay. Become a member ($100 USD/month plus a $1,000 USD signup fee, first 100 people) or become a patron (a one-time donation of any amount). Benefits, where the money goes, and the risk note.
 - [Roadmap](https://www.hackerbloc.com/roadmap): The space, one version at a time. Hacker Bloc 1.0 (10 hackers) gets it working: bathroom, kitchen, lighting, Wi-Fi, lockers, member door lock. 2.0 (20 hackers) adds tools (monitors, 3D printers, welding station). 3.0 (30 hackers) adds a garden sauna and jacuzzi, graffiti, and rent fully covered by the hackerspace.
-- [Members](https://www.hackerbloc.com/members): Everyone with an account, by role: founder (runs the house), resident (lives in it), hacklab team (builds Hacklab here), founding member (one of the first 100 who paid), member (approved by the founders), patron (one-time contribution) or lurker (account only). GitHub usernames only.
+- [Members](https://www.hackerbloc.com/members): Everyone with an account, by role: founder (runs the house), resident (lives in it), member (paid, or approved by the founders), patron (one-time contribution) or lurker (account only). GitHub usernames only.
 - [Wishlist](https://www.hackerbloc.com/wishlist): The things the space needs next, with a way to fund specific items (coming soon), and how to contribute equipment, time, or resources.
 
 ## Additional existing pages
 
 - [Rules](https://www.hackerbloc.com/rules): The hackerspace rules.
 - [Roles](https://www.hackerbloc.com/roles): The hierarchy of roles (founder down to lurker), what each rung means, and who is on it.
-- [Join](https://www.hackerbloc.com/join): The existing house application form, separate from founding membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
+- [Join](https://www.hackerbloc.com/join): The existing house application form, separate from membership checkout. Fields: type (founder / media / investor / content / factory / partner), name, Hacklab profile, how you can be useful, how you heard about us, what excites you most, house-rules confirmation.
 - [Space](https://www.hackerbloc.com/space): Sign in to see your membership, billing and account (account required; create one at /auth/sign-up before paying).
 - [Privacy](https://www.hackerbloc.com/privacy): What the join form collects, where it is stored, how long it is kept, and how to get it deleted.
 

@@ -8,7 +8,7 @@ import { ROLES, getPeople } from "@/lib/people";
 export const metadata: Metadata = {
   title: "Roles",
   description:
-    "The Hacker Bloc hierarchy: founder, resident, Hacklab team, founding member, member, patron, lurker. Who decides what, and who is on each rung.",
+    "The Hacker Bloc hierarchy: founder, resident, member, patron, lurker. Who decides what, and who is on each rung.",
 };
 
 /* Mirrored in lib/markdown.ts (rolesMarkdown); change both. */

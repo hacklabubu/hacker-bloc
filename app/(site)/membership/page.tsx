@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { FeeNote } from "@/components/site/fee-note";
 import { MemberForm } from "@/components/site/member-form";
 import { authConfigured, getSessionUser } from "@/lib/auth";
 import { rememberProfile } from "@/lib/profile";
@@ -68,6 +69,7 @@ export default async function MembershipPage({
               </>
             }
           />
+          <FeeNote />
         </div>
       </section>
 

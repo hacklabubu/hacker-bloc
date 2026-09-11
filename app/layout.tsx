@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     template: "%s // HACKER BLOC",
   },
   description:
-    "A hackerspace in Warsaw for people who build. Become a founding member and help shape the space.",
+    "A hackerspace in Warsaw for people who build. Become a member and help shape the space.",
   openGraph: {
     type: "website",
     siteName: "HACKER BLOC",

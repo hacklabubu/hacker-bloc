@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SIGNUP_FOR_MEMBERSHIP } from "@/components/site/member-form";
+import { NO_EXCEPTIONS, WHY_FEE } from "@/lib/copy";
 import { MEMBERSHIP, ROADMAP, formatUsd } from "@/lib/membership";
 import { LUMA, SITE } from "@/lib/site";
 
@@ -19,7 +20,7 @@ export const STEPS = [
   },
   {
     title: "Become a member",
-    body: `${formatUsd(MEMBERSHIP.signupUsd)} once, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month. Stripe hosts the checkout; you manage the card and invoices yourself in your space. First ${MEMBERSHIP.limit} members only.`,
+    body: `${formatUsd(MEMBERSHIP.signupUsd)} once, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month. Stripe hosts the checkout; you manage the card and invoices yourself in your space. First ${MEMBERSHIP.limit} members only. ${WHY_FEE.heading} ${WHY_FEE.body} ${NO_EXCEPTIONS.heading} ${NO_EXCEPTIONS.body}`,
   },
   {
     title: "Get the key",

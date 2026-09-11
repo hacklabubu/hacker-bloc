@@ -9,14 +9,7 @@ import { isFounder } from "@/lib/founders";
  * pinned. Only the GitHub username is ever shown; accounts without one appear
  * as anonymous.
  */
-export type PersonStatus =
-  | "founder"
-  | "resident"
-  | "hacklab_team"
-  | "founding_member"
-  | "member"
-  | "patron"
-  | "lurker";
+export type PersonStatus = "founder" | "resident" | "member" | "patron" | "lurker";
 
 export type Role = {
   id: PersonStatus;
@@ -45,28 +38,12 @@ export const ROLES: readonly Role[] = [
       "Live and work in the house. Keep it standing, keep it clean, and say yes or no to guests.",
   },
   {
-    id: "hacklab_team",
-    label: "Hacklab team",
-    plural: "hacklab team",
-    mark: "[>]",
-    responsibilities:
-      "Build Hacklab here. The house is their workplace and crash pad; always welcome, can crash anytime.",
-  },
-  {
-    id: "founding_member",
-    label: "Founding member",
-    plural: "founding members",
-    mark: "[+]",
-    responsibilities:
-      "One of the first 100 to pay the membership. Every event, 24/7 access to the hackerspace, and a say in what gets bought and built next.",
-  },
-  {
     id: "member",
     label: "Member",
     plural: "members",
     mark: "[+]",
     responsibilities:
-      "Approved by the founders. Access to the hackerspace and the events, on the same rules as founding members.",
+      "Paid the membership, or approved by the founders. Every event, 24/7 access to the hackerspace, and a say in what gets bought and built next.",
   },
   {
     id: "patron",
@@ -97,8 +74,7 @@ export function isStatus(value: unknown): value is PersonStatus {
 
 function computed(email: string, isMember: boolean, isPatron: boolean): PersonStatus {
   if (isFounder(email)) return "founder";
-  /* A paid membership today is a founding membership: the first 100. */
-  return isMember ? "founding_member" : isPatron ? "patron" : "lurker";
+  return isMember ? "member" : isPatron ? "patron" : "lurker";
 }
 
 /* One account as the founders see it on /space/admin. */

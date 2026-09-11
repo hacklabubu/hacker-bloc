@@ -32,6 +32,7 @@ import {
 } from "@/lib/membership";
 import { authConfigured } from "@/lib/auth";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
+import { EXPERIMENT_NOTE, NO_EXCEPTIONS, WHY_FEE } from "@/lib/copy";
 import { getHomeData } from "@/lib/home";
 import { ROLES, getPeople, roleOf } from "@/lib/people";
 import { HACKERSPACE_RULES } from "@/lib/rules";
@@ -156,12 +157,17 @@ async function homeMarkdown(): Promise<string> {
     "",
     "We are not community builders. We are founders. We rented this house to build the next billion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, [pure potential](https://www.youtube.com/shorts/n5dAIvH2cQw), so we figured a hackerspace would help us not die in the initial grind.",
     "",
+    EXPERIMENT_NOTE,
+    "",
     ...(signalLines.length > 0 ? ["## Right now in the space", "", list(signalLines), ""] : []),
     "## What you get",
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. An account is free and puts you on the list; paying comes after: [create an account](${url("/auth/sign-up")}) · [membership](${url("/membership")}#member)`,
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. An account is free and puts you on the list; paying comes after: [create an account](${url("/auth/sign-up")}) · [membership](${url("/membership")}#member)`,    "",
+    `**${WHY_FEE.heading}** ${WHY_FEE.body}`,
+    "",
+    `**${NO_EXCEPTIONS.heading}** ${NO_EXCEPTIONS.body}`,
     "",
     ...(faces.length > 0
       ? ["## Who is in", "", list(faces.map((p) => `[${p.github}](https://github.com/${p.github}) — ${roleOf(p.status).label.toLowerCase()}`)), "", `Everyone with a key: ${url("/members")}`, ""]
@@ -578,7 +584,7 @@ export function markdownNotFound(pathname: string): string {
       `[Home](${url("/")}) — a space for people who build`,
       `[Events](${url("/events")}) — upcoming and recent events`,
       `[How it works](${url("/how-it-works")}) — account, membership, key, in four steps`,
-      `[Membership](${url("/membership")}) — founding membership, benefits, pricing, and payment availability`,
+      `[Membership](${url("/membership")}) — membership, benefits, pricing, and payment availability`,
       `[Wishlist](${url("/wishlist")}) — what the space needs next, and how to give equipment or time`,
       `[Members](${url("/members")}) — everyone with an account: members, patrons, lurkers`,
       `[Rules](${url("/rules")}) — the hackerspace rules`,

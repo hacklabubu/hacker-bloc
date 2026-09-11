@@ -9,7 +9,7 @@ import { membershipCheckoutEnabled } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Members",
-  description: "Everyone with an account at Hacker Bloc, by role: founders, residents, Hacklab team, founding members, members, patrons, and lurkers.",
+  description: "Everyone with an account at Hacker Bloc, by role: founders, residents, members, patrons, and lurkers.",
   alternates: { canonical: "/members" },
 };
 

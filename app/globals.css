@@ -867,6 +867,9 @@ button.terminal-button:disabled { border-style: dashed; }
 .terminal-footer > div { flex-wrap: wrap; gap: 8px 18px; }
 .terminal-footer a { white-space: nowrap; }
 
+.terminal-fee-note { margin-top: 26px; font-size: 13px; color: var(--terminal-secondary); }
+.terminal-fee-note strong { color: var(--terminal-text); font-weight: 500; }
+
 /* ── auth + members forms ───────────────────────────────── */
 
 .terminal-form {
