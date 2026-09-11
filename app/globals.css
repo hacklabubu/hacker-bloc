@@ -857,6 +857,16 @@ button.terminal-button:disabled { border-style: dashed; }
 .terminal-people li > span:first-child { color: var(--terminal-muted); }
 .terminal-people a { text-decoration: underline; text-underline-offset: 4px; }
 
+/* Landing page spacing. */
+.terminal-section-content > .terminal-perks:first-child,
+.terminal-section-content > .sr-only + .terminal-perks { margin-top: 0; }
+.terminal-signup + .terminal-checkout { margin-top: 28px; }
+.terminal-rules + p,
+.terminal-people + p,
+.terminal-upcoming + p { margin-top: 18px; }
+.terminal-footer > div { flex-wrap: wrap; gap: 8px 18px; }
+.terminal-footer a { white-space: nowrap; }
+
 /* ── auth + members forms ───────────────────────────────── */
 
 .terminal-form {
