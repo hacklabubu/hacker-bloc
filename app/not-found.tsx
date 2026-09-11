@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site/footer";
+import { Masthead } from "@/components/site/masthead";
 import { SiteNav } from "@/components/site/nav";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function NotFound() {
   return (
     <>
     <SiteNav />
+    <Masthead />
     <main id="top" className="terminal-page">
       <section className="terminal-intro" aria-labelledby="nf-heading">
         <p className="terminal-location">404</p>

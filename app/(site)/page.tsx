@@ -3,12 +3,10 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { SIGNUP_FOR_MEMBERSHIP } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
-import { TerminalWordmark } from "@/components/site/terminal-art";
 import { formatEventDate, getUpcomingEvents } from "@/lib/luma";
 import { MEMBERSHIP, formatUsd } from "@/lib/membership";
 import { LUMA, SITE, SOCIALS } from "@/lib/site";
 import { patronCheckoutEnabled } from "@/lib/stripe";
-import { getWordmarks } from "@/lib/wordmarks";
 
 const description =
   "A hackerspace in Warsaw, built by founders. Palo Alto at home: a house where startup founders meet, build, and start companies. Become a member or a patron.";
@@ -53,9 +51,7 @@ const organizationJsonLd = {
 };
 
 export default async function Home() {
-  // Read the collection on refresh so new artwork can be tried without a rebuild.
   await connection();
-  const wordmarks = getWordmarks();
   const patronEnabled = patronCheckoutEnabled();
   const upcoming = (await getUpcomingEvents()).slice(0, 2);
 
@@ -68,7 +64,6 @@ export default async function Home() {
         }}
       />
       <section className="terminal-intro" aria-labelledby="home-heading">
-        <TerminalWordmark wordmarks={wordmarks} />
         <p className="terminal-location">
           {SITE.city} / {SITE.district} /{" "}
           <a href={SITE.mapsUrl} className="underline underline-offset-4">

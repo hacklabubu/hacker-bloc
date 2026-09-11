@@ -293,9 +293,16 @@ body:has(.terminal-page)::after {
   outline-offset: 6px;
 }
 
+.terminal-masthead {
+  width: min(680px, calc(100% - 40px));
+  margin: 40px auto 0;
+}
+
+.terminal-masthead .terminal-wordmark { margin-bottom: 0; }
+
 .terminal-page {
   position: relative;
-  margin-top: 64px;
+  margin-top: 36px;
   isolation: isolate;
   border: 1px dashed var(--terminal-border);
   background: var(--terminal-bg);
@@ -975,7 +982,8 @@ button.terminal-button:disabled { border-style: dashed; }
 }
 
 @media (max-width: 600px) {
-  .terminal-page { margin-top: 32px; }
+  .terminal-page { margin-top: 24px; }
+  .terminal-masthead { margin-top: 24px; }
   .terminal-intro { padding: 28px 20px 30px; }
   .terminal-intro h1 { font-size: 18px; }
   .terminal-section-content { padding: 24px 20px 30px; }
