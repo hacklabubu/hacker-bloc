@@ -32,6 +32,7 @@ import {
 } from "@/lib/membership";
 import { authConfigured } from "@/lib/auth";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
+import { getHomeData } from "@/lib/home";
 import { ROLES, getPeople, roleOf } from "@/lib/people";
 import { HACKERSPACE_RULES } from "@/lib/rules";
 import { STEPS } from "@/app/(site)/how-it-works/page";
@@ -130,37 +131,54 @@ function ordered(items: readonly string[]): string {
 
 /* Mirrors the overview in app/page.tsx. */
 async function homeMarkdown(): Promise<string> {
-  const upcoming = (await getUpcomingEvents()).slice(0, 2);
+  const { people, upcoming, signals } = await getHomeData();
+  const faces = people.filter((p) => p.github).slice(0, 24);
+  const signalLines = [
+    signals.people !== null ? `${signals.people} ${signals.people === 1 ? "person" : "people"} on the list: ${url("/members")}` : null,
+    signals.roadmap ? `${signals.roadmap.claimed} / ${signals.roadmap.next} members to Hacker Bloc ${signals.roadmap.version}: ${url("/roadmap")}` : null,
+    signals.event ? `Next: ${calendarEventLine(signals.event)}` : null,
+  ].filter((line): line is string => line !== null);
+
   const body = [
-    "A space for people who build.",
+    "A hackerspace in a house in Warsaw, run by the founders who live in it.",
     "",
     `${SITE.city} / ${SITE.district} / ${SITE.postal.streetAddress}`,
     "",
-    "We're building Palo Alto at home. We want the kind of space we saw in San Francisco: a house where startup founders meet, build, start their first Delaware C-corp, get their first check, find cofounders, and eventually build billion-dollar companies.",
+    "We're building Palo Alto at home. We want the kind of space we saw in Silicon Valley: a house where startup founders meet, build, start their first Delaware C-corp, get their first check, find cofounders, and build billion-dollar companies.",
     "",
     "We are not community builders. We are founders. We rented this house to build the next billion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, [pure potential](https://www.youtube.com/shorts/n5dAIvH2cQw), so we figured a hackerspace would help us not die in the initial grind.",
     "",
-    "If you want a place like this in Warsaw, and want to help Poland become Europe's Silicon Valley, there are two ways in.",
-    "",
-    "## Become a member",
-    "",
-    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. No refunds.`,
+    ...(signalLines.length > 0 ? ["## Right now", "", list(signalLines), ""] : []),
+    "## What you get",
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    `[Become a member](${url("/membership")}#member)`,
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. An account is free and puts you on the list; paying comes after: [create an account](${url("/auth/sign-up")}) · [membership](${url("/membership")}#member)`,
     "",
-    "## Become a patron",
+    ...(faces.length > 0
+      ? ["## Who is in", "", list(faces.map((p) => `[${p.github}](https://github.com/${p.github}) — ${roleOf(p.status).label.toLowerCase()}`)), "", `Everyone with a key: ${url("/members")}`, ""]
+      : []),
+    "## How it works",
     "",
-    `Not moving in, but want this to exist? Put any amount into the space: [become a patron](${url("/membership")}#patron).`,
+    ordered([
+      "**Account.** Sign up with GitHub or an email. Free, and you are on the list.",
+      `**Membership.** ${formatUsd(MEMBERSHIP.signupUsd)} once, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month. Stripe hosts the checkout.`,
+      "**Key.** Every event, the hackerspace 24/7, and a say in what gets built next.",
+    ]),
+    "",
+    `[The whole model](${url("/how-it-works")}) · [Rules](${url("/rules")}) · [Roadmap](${url("/roadmap")})`,
     "",
     "## What is on",
     "",
     upcoming.length > 0
-      ? list(upcoming.map(calendarEventLine))
+      ? list(upcoming.slice(0, 2).map(calendarEventLine))
       : "Nothing scheduled right now. The calendar fills up fast.",
     "",
-    `[All events](${url("/events")}) · [Read the rules](${url("/rules")}) · [See the roadmap](${url("/roadmap")}) · [Calendar](${LUMA.calendarUrl})`,
+    `[All events](${url("/events")}) · [Calendar](${LUMA.calendarUrl})`,
+    "",
+    "## Become a patron",
+    "",
+    `Not moving in, but want this to exist? Put any amount into the space: [become a patron](${url("/membership")}#patron).`,
   ].join("\n");
 
   return doc("/", "Home", body);
