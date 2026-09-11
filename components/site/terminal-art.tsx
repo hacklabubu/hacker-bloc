@@ -14,6 +14,11 @@ export function TerminalWordmark({ wordmarks }: { wordmarks: Wordmark[] }) {
         >
           {wordmark.art}
         </pre>
+        <span className="terminal-wordmark-text" aria-hidden="true">
+          Hacker
+          <br />
+          Bloc
+        </span>
       </div>
     </div>
   );

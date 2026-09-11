@@ -127,7 +127,8 @@ function ordered(items: readonly string[]): string {
 /* ── / ─────────────────────────────────────────────────────────── */
 
 /* Mirrors the overview in app/page.tsx. */
-function homeMarkdown(): string {
+async function homeMarkdown(): Promise<string> {
+  const upcoming = (await getUpcomingEvents()).slice(0, 2);
   const body = [
     "A space for people who build.",
     "",
@@ -150,6 +151,14 @@ function homeMarkdown(): string {
     "## Become a patron",
     "",
     `Not moving in, but want this to exist? Put any amount into the space: [become a patron](${url("/membership")}#patron).`,
+    "",
+    "## What is on",
+    "",
+    upcoming.length > 0
+      ? list(upcoming.map(calendarEventLine))
+      : "Nothing scheduled right now. The calendar fills up fast.",
+    "",
+    `[All events](${url("/events")}) · [Read the rules](${url("/rules")}) · [See the roadmap](${url("/roadmap")}) · [Calendar](${LUMA.calendarUrl})`,
   ].join("\n");
 
   return doc("/", "Home", body);

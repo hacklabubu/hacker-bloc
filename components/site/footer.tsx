@@ -6,7 +6,7 @@ export function SiteFooter() {
     <footer className="terminal-footer">
       <p>Hacker Bloc / Warsaw, PL</p>
       <div>
-        <a href={`mailto:${SITE.email}`}>Contact</a>
+        <a href={`mailto:${SITE.email}`}>Contact <span aria-hidden="true">↗</span></a>
         <Link href="/rules">Rules</Link>
         <Link href="/join">Apply</Link>
         <Link href="/terms">Terms</Link>

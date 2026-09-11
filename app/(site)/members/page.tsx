@@ -3,6 +3,10 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { getPeople, type PersonStatus } from "@/lib/people";
 
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+const SINCE = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric", timeZone: "Europe/Warsaw" });
+
 export const metadata: Metadata = {
   title: "Members",
   description: "Everyone with an account at Hacker Bloc: members, patrons, and lurkers.",
@@ -34,7 +38,7 @@ export default async function MembersPage() {
         <p className="terminal-location">Members</p>
         <h1 id="members-heading">Everyone with a key to the Bloc.</h1>
         <p className="terminal-muted">
-          {counts.member} members · {counts.patron} patrons · {counts.lurker} lurkers.
+          {plural(counts.member, "member")} · {plural(counts.patron, "patron")} · {plural(counts.lurker, "lurker")}.
           Members pay the membership, patrons put money in once, lurkers made an
           account and are thinking about it.
         </p>
@@ -48,20 +52,19 @@ export default async function MembersPage() {
           ) : people.length === 0 ? (
             <p className="terminal-muted">Nobody yet. Be the first.</p>
           ) : (
-            <ul className="terminal-perks" aria-label="People">
+            <ul className="terminal-list" aria-label="People">
               {people.map((person, i) => (
                 <li key={`${person.github ?? "anon"}-${i}`}>
                   <span aria-hidden="true">{MARK[person.status]}</span>
                   <span>
                     {person.github ? (
-                      <a href={`https://github.com/${person.github}`} className="underline underline-offset-4">
-                        {person.github}
-                      </a>
+                      <a href={`https://github.com/${person.github}`}>{person.github}</a>
                     ) : (
                       "anonymous"
                     )}{" "}
                     <span className="terminal-muted">{LABEL[person.status]}</span>
                   </span>
+                  <time dateTime={person.since}>{SINCE.format(new Date(person.since))}</time>
                 </li>
               ))}
             </ul>

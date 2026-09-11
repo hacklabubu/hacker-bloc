@@ -4,8 +4,9 @@ import { connection } from "next/server";
 import { SIGNUP_FOR_MEMBERSHIP } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
 import { TerminalWordmark } from "@/components/site/terminal-art";
+import { formatEventDate, getUpcomingEvents } from "@/lib/luma";
 import { MEMBERSHIP, formatUsd } from "@/lib/membership";
-import { SITE, SOCIALS } from "@/lib/site";
+import { LUMA, SITE, SOCIALS } from "@/lib/site";
 import { patronCheckoutEnabled } from "@/lib/stripe";
 import { getWordmarks } from "@/lib/wordmarks";
 
@@ -56,6 +57,7 @@ export default async function Home() {
   await connection();
   const wordmarks = getWordmarks();
   const patronEnabled = patronCheckoutEnabled();
+  const upcoming = (await getUpcomingEvents()).slice(0, 2);
 
   return (
     <main id="top" className="terminal-page">
@@ -135,6 +137,33 @@ export default async function Home() {
         </div>
       </section>
 
+      <section id="on" className="terminal-section" aria-labelledby="on-heading">
+        <h2 id="on-heading" className="terminal-legend">What is on</h2>
+        <div className="terminal-section-content">
+          {upcoming.length > 0 ? (
+            <ul className="terminal-upcoming" aria-label="Upcoming events">
+              {upcoming.map((event) => {
+                const when = formatEventDate(event);
+                return (
+                  <li key={event.url}>
+                    <span aria-hidden="true">[{when ? when.label.slice(0, 6) : "soon"}]</span>
+                    <a href={event.url}>{event.name}</a>
+                    {when ? <span className="terminal-muted">{when.label}</span> : null}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="terminal-muted">Nothing scheduled right now. The calendar fills up fast.</p>
+          )}
+          <p>
+            <Link href="/events" className="underline underline-offset-4">All events →</Link>{" "}
+            <Link href="/rules" className="underline underline-offset-4">Read the rules →</Link>{" "}
+            <Link href="/roadmap" className="underline underline-offset-4">See the roadmap →</Link>{" "}
+            <a href={LUMA.calendarUrl} className="underline underline-offset-4">Calendar ↗</a>
+          </p>
+        </div>
+      </section>
     </main>
   );
 }

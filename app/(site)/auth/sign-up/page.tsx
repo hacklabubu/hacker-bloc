@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <AuthPage title="Create your member account." legend="Create account">
       <GitHubButton label="Sign up with GitHub" />
-      <p className="terminal-muted">Or with email and password:</p>
+      <p className="terminal-or">Or with email and password:</p>
       <SignUpForm />
     </AuthPage>
   );
