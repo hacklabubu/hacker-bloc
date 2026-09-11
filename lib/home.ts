@@ -2,6 +2,7 @@ import { getUpcomingEvents, type LumaEvent } from "@/lib/luma";
 import { getMembershipStats } from "@/lib/members";
 import { ROADMAP } from "@/lib/membership";
 import { getPeople, type Person } from "@/lib/people";
+import { getPresence, type Presence } from "@/lib/presence";
 
 /*
  * Photos of the house for the landing page. `src` under public/photos; while
@@ -21,6 +22,8 @@ export type HomeSignals = {
   roadmap: { claimed: number; next: number; version: string } | null;
   /* Next event, or null to hide. */
   event: LumaEvent | null;
+  /* Who is on the house Wi-Fi, only while the reading is fresh and non-zero. */
+  inSpace: Presence | null;
 };
 
 /* Everything the landing page shows that changes on its own. */
@@ -29,11 +32,14 @@ export async function getHomeData(): Promise<{
   upcoming: LumaEvent[];
   signals: HomeSignals;
 }> {
-  const [people, stats, upcoming] = await Promise.all([
+  const [people, stats, upcoming, presence] = await Promise.all([
     getPeople(),
     getMembershipStats(),
     getUpcomingEvents(),
+    getPresence(),
   ]);
+  const inSpace =
+    presence && presence.fresh && (presence.people ?? presence.devices) > 0 ? presence : null;
   const list = people ?? [];
   const claimed = stats?.claimed ?? 0;
   const nextMilestone = ROADMAP.find((m) => m.hackers > claimed);
@@ -47,6 +53,7 @@ export async function getHomeData(): Promise<{
           ? { claimed, next: nextMilestone.hackers, version: nextMilestone.version }
           : null,
       event: upcoming[0] ?? null,
+      inSpace,
     },
   };
 }

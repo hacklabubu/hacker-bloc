@@ -135,6 +135,9 @@ async function homeMarkdown(): Promise<string> {
   const { people, upcoming, signals } = await getHomeData();
   const faces = people.filter((p) => p.github).slice(0, 24);
   const signalLines = [
+    signals.inSpace
+      ? `${signals.inSpace.people ?? signals.inSpace.devices} ${signals.inSpace.people !== null ? "people in the space" : "devices on the house Wi-Fi"} right now${signals.inSpace.github.length > 0 ? `: ${signals.inSpace.github.join(", ")}` : ""}`
+      : null,
     signals.people !== null ? `${signals.people} ${signals.people === 1 ? "person" : "people"} on the list: ${url("/members")}` : null,
     signals.roadmap ? `${signals.roadmap.claimed} / ${signals.roadmap.next} members to Hacker Bloc ${signals.roadmap.version}: ${url("/roadmap")}` : null,
     signals.event ? `Next: ${calendarEventLine(signals.event)}` : null,
@@ -149,7 +152,7 @@ async function homeMarkdown(): Promise<string> {
     "",
     "We are not community builders. We are founders. We rented this house to build the next billion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, [pure potential](https://www.youtube.com/shorts/n5dAIvH2cQw), so we figured a hackerspace would help us not die in the initial grind.",
     "",
-    ...(signalLines.length > 0 ? ["## Right now", "", list(signalLines), ""] : []),
+    ...(signalLines.length > 0 ? ["## Right now in the space", "", list(signalLines), ""] : []),
     "## What you get",
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),

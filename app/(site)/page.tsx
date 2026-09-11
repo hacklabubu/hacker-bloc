@@ -58,7 +58,8 @@ export default async function Home() {
   const { people, upcoming, signals } = await getHomeData();
   const nextEvents = upcoming.slice(0, 2);
   const nextWhen = signals.event ? formatEventDate(signals.event) : null;
-  const hasSignals = signals.people !== null || signals.roadmap !== null || signals.event !== null;
+  const hasSignals =
+    signals.inSpace !== null || signals.people !== null || signals.roadmap !== null || signals.event !== null;
   const faces = people.filter((p) => p.github).slice(0, 24);
 
   return (
@@ -118,9 +119,20 @@ export default async function Home() {
 
       {hasSignals ? (
         <section id="now" className="terminal-section" aria-labelledby="now-heading">
-          <h2 id="now-heading" className="terminal-legend">Right now</h2>
+          <h2 id="now-heading" className="terminal-legend">Right now in the space</h2>
           <div className="terminal-section-content">
             <ul className="terminal-signals" aria-label="Live numbers">
+              {signals.inSpace ? (
+                <li>
+                  <strong>{signals.inSpace.people ?? signals.inSpace.devices}</strong>
+                  <span>
+                    {signals.inSpace.people !== null
+                      ? `${signals.inSpace.people === 1 ? "person" : "people"} in the space`
+                      : `${signals.inSpace.devices === 1 ? "device" : "devices"} on the house Wi‑Fi`}
+                    {signals.inSpace.github.length > 0 ? `: ${signals.inSpace.github.join(", ")}` : ""}
+                  </span>
+                </li>
+              ) : null}
               {signals.people !== null ? (
                 <li>
                   <strong>{signals.people}</strong>
@@ -199,22 +211,6 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section id="how" className="terminal-section" aria-labelledby="how-heading">
-        <h2 id="how-heading" className="terminal-legend">How it works</h2>
-        <div className="terminal-section-content">
-          <ol className="terminal-rules">
-            <li><span><strong>Account.</strong> Sign up with GitHub or an email. Free, and you are on the list.</span></li>
-            <li><span><strong>Membership.</strong> {formatUsd(MEMBERSHIP.signupUsd)} once, then {formatUsd(MEMBERSHIP.monthlyUsd)} a month. Stripe hosts the checkout.</span></li>
-            <li><span><strong>Key.</strong> Every event, the hackerspace 24/7, and a say in what gets built next.</span></li>
-          </ol>
-          <p>
-            <Link href="/how-it-works" className="underline underline-offset-4">The whole model →</Link>{" "}
-            <Link href="/rules" className="underline underline-offset-4">Rules →</Link>{" "}
-            <Link href="/roles" className="underline underline-offset-4">Roles →</Link>{" "}
-            <Link href="/roadmap" className="underline underline-offset-4">Roadmap →</Link>
-          </p>
-        </div>
-      </section>
 
       <section id="on" className="terminal-section" aria-labelledby="on-heading">
         <h2 id="on-heading" className="terminal-legend">What is on</h2>

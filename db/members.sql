@@ -69,3 +69,15 @@ create table if not exists patron_payments (
   created_at timestamptz not null default now()
 );
 create index if not exists patron_payments_email_idx on patron_payments (lower(email));
+
+-- Who is in the space right now, reported by scripts/presence-agent.sh from a
+-- machine on the house Wi-Fi (POST /api/presence). One row; stale after
+-- PRESENCE_MAX_AGE_MINUTES (lib/presence.ts), so a dead reporter hides the tile
+-- instead of freezing a number on the homepage.
+create table if not exists presence (
+  id integer primary key default 1 check (id = 1),
+  devices integer not null default 0,
+  people integer,
+  github text[] not null default '{}',
+  reported_at timestamptz not null default now()
+);

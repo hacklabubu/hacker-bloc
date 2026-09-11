@@ -1,0 +1,3 @@
+# One device per line: MAC address, then the GitHub username it belongs to.
+# Copy to known-devices.txt next to presence-agent.sh (that file is ignored by git).
+# aa:bb:cc:dd:ee:ff mattbratos
