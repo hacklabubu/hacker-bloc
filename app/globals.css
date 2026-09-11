@@ -188,11 +188,13 @@ body:has(.terminal-page)::after {
   color: var(--terminal-text);
 }
 
+/* Same 680px band as the frame and the footer, so logo, links, frame edges
+   and footer text all share the same left and right lines. */
 .terminal-nav-inner {
   display: flex;
   align-items: center;
-  gap: 28px;
-  width: min(1040px, calc(100% - 40px));
+  gap: 18px;
+  width: min(680px, calc(100% - 40px));
   margin-inline: auto;
   padding-block: 16px;
 }
@@ -202,7 +204,7 @@ body:has(.terminal-page)::after {
   flex: 1;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 12px 30px;
+  gap: 12px 18px;
 }
 
 .terminal-home {
