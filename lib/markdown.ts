@@ -136,7 +136,11 @@ async function homeMarkdown(): Promise<string> {
   const faces = people.filter((p) => p.github).slice(0, 24);
   const signalLines = [
     signals.inSpace
-      ? `${signals.inSpace.people ?? signals.inSpace.devices} ${signals.inSpace.people !== null ? "people in the space" : "devices on the house Wi-Fi"} right now${signals.inSpace.github.length > 0 ? `: ${signals.inSpace.github.join(", ")}` : ""}`
+      ? `${signals.inSpace.people ?? signals.inSpace.devices} ${
+          signals.inSpace.people !== null
+            ? `${signals.inSpace.people === 1 ? "person" : "people"} in the space`
+            : `${signals.inSpace.devices === 1 ? "device" : "devices"} on the house Wi-Fi`
+        } right now${signals.inSpace.github.length > 0 ? `: ${signals.inSpace.github.join(", ")}` : ""}`
       : null,
     signals.people !== null ? `${signals.people} ${signals.people === 1 ? "person" : "people"} on the list: ${url("/members")}` : null,
     signals.roadmap ? `${signals.roadmap.claimed} / ${signals.roadmap.next} members to Hacker Bloc ${signals.roadmap.version}: ${url("/roadmap")}` : null,
