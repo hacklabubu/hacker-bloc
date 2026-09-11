@@ -34,6 +34,7 @@ import { authConfigured } from "@/lib/auth";
 import { membershipCheckoutEnabled, patronCheckoutEnabled } from "@/lib/stripe";
 import { getHouseRoles, getMembers, getRules } from "@/lib/notion";
 import { getPeople } from "@/lib/people";
+import { STEPS } from "@/app/(site)/how-it-works/page";
 import { REFUNDS, TERMS, type LegalDoc } from "@/lib/legal";
 import { LUMA, OPERATOR, SITE } from "@/lib/site";
 
@@ -51,6 +52,7 @@ import { LUMA, OPERATOR, SITE } from "@/lib/site";
 const PAGES: Record<string, () => string | Promise<string>> = {
   "/": homeMarkdown,
   "/events": eventsMarkdown,
+  "/how-it-works": howItWorksMarkdown,
   "/membership": membershipMarkdown,
   "/roadmap": roadmapMarkdown,
   "/wishlist": wishlistMarkdown,
@@ -136,7 +138,7 @@ async function homeMarkdown(): Promise<string> {
     "",
     "We're building Palo Alto at home. We want the kind of space we saw in San Francisco: a house where startup founders meet, build, start their first Delaware C-corp, get their first check, find cofounders, and eventually build billion-dollar companies.",
     "",
-    "We are not community builders. We are founders. We rented this house to build the next trillion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, [pure potential](https://www.youtube.com/shorts/n5dAIvH2cQw), so we figured a hackerspace would help us not die in the initial grind.",
+    "We are not community builders. We are founders. We rented this house to build the next billion-dollar company, [hacklab.so](https://hacklab.so), and we live and work here 24/7. We're pre-seed, pre-revenue, [pure potential](https://www.youtube.com/shorts/n5dAIvH2cQw), so we figured a hackerspace would help us not die in the initial grind.",
     "",
     "If you want a place like this in Warsaw, and want to help Poland become Europe's Silicon Valley, there are two ways in.",
     "",
@@ -220,6 +222,35 @@ async function eventsMarkdown(): Promise<string> {
   }
 
   return doc("/events", "Events", sections.join("\n"));
+}
+
+/* ── /how-it-works ────────────────────────────────────────────── */
+
+/* Mirrors app/(site)/how-it-works/page.tsx. */
+function howItWorksMarkdown(): string {
+  const body = [
+    "Account, membership, key. A hackerspace in Warsaw run by the founders who live in it. The whole model in four steps, and the two other ways to be part of it.",
+    "",
+    "## The steps",
+    "",
+    ordered(STEPS.map((step) => `**${step.title}.** ${step.body}`)),
+    "",
+    `[Create an account](${url("/auth/sign-up")}) · [Membership details](${url("/membership")}#member)`,
+    "",
+    "## Not moving in?",
+    "",
+    `**Patrons** put any amount into the space once, no membership attached: ${url("/membership")}#patron. **Residents** live and work in the house, by invitation: apply at ${url("/join")}. **Everyone** is welcome at public events: ${LUMA.calendarUrl} and ${url("/events")}.`,
+    "",
+    "## Read next",
+    "",
+    list([
+      `[House rules and the hierarchy](${url("/rules")})`,
+      `[Roadmap](${url("/roadmap")})`,
+      `[Wishlist](${url("/wishlist")})`,
+      `[Who is in](${url("/members")})`,
+    ]),
+  ].join("\n");
+  return doc("/how-it-works", "How it works", body);
 }
 
 /* ── /membership ──────────────────────────────────────────────── */
@@ -530,6 +561,7 @@ export function markdownNotFound(pathname: string): string {
     list([
       `[Home](${url("/")}) — a space for people who build`,
       `[Events](${url("/events")}) — upcoming and recent events`,
+      `[How it works](${url("/how-it-works")}) — account, membership, key, in four steps`,
       `[Membership](${url("/membership")}) — founding membership, benefits, pricing, and payment availability`,
       `[Wishlist](${url("/wishlist")}) — what the space needs next, and how to give equipment or time`,
       `[Members](${url("/members")}) — everyone with an account: members, patrons, lurkers`,

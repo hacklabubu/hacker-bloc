@@ -1,8 +1,5 @@
 export const MAIN_NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/events", label: "Events" },
-  { href: "/membership", label: "Membership" },
-  { href: "/roadmap", label: "Roadmap" },
-  { href: "/wishlist", label: "Wishlist" },
+  { href: "/how-it-works", label: "How it works" },
   { href: "/members", label: "Members" },
 ] as const;

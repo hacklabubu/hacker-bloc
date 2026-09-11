@@ -1,6 +1,6 @@
 # Hacker Bloc
 
-> Hacker Bloc is a hackerspace in Warsaw, Poland, built by the people who use it. The main site has five pages: Home, Events, Membership, Roadmap, and Wishlist.
+> Hacker Bloc is a hackerspace in Warsaw, Poland, built by the people who use it. The menu has three pages: Home, How it works, and Members; Events, Membership, Roadmap, Wishlist and the legal pages are linked from the footer.
 
 Founding membership costs $100 USD per month plus a $1,000 USD one-time signup
 fee. Members get access to every event in the Bloc, 24/7 access to the
@@ -17,6 +17,7 @@ Contact: matt@hacklab.so.
 ## Start here
 
 - [Home](https://www.hackerbloc.com/): An introduction to the space and links to its main pages.
+- [How it works](https://www.hackerbloc.com/how-it-works): The model in four steps: create an account, become a member ($1,000 once then $100/month), get the key, build the space; plus patrons, residents, and public events.
 - [Events](https://www.hackerbloc.com/events): Upcoming and recent events, with RSVP links and the public calendar.
 - [Membership](https://www.hackerbloc.com/membership): Two ways to pay. Become a member ($100 USD/month plus a $1,000 USD signup fee, first 100 people) or become a patron (a one-time donation of any amount). Benefits, where the money goes, and the risk note.
 - [Roadmap](https://www.hackerbloc.com/roadmap): The space, one version at a time. Hacker Bloc 1.0 (10 hackers) gets it working: bathroom, kitchen, lighting, Wi-Fi, lockers, member door lock. 2.0 (20 hackers) adds tools (monitors, 3D printers, welding station). 3.0 (30 hackers) adds a garden sauna and jacuzzi, graffiti, and rent fully covered by the hackerspace.

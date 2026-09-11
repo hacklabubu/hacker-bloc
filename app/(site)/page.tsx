@@ -79,7 +79,7 @@ export default async function Home() {
         </p>
         <p>
           We are not community builders. We are founders. We rented this house
-          to build the next trillion-dollar company,{" "}
+          to build the next billion-dollar company,{" "}
           <a href="https://hacklab.so" className="underline underline-offset-4">hacklab.so</a>,
           and we live and work here 24/7. We&apos;re pre-seed, pre-revenue,{" "}
           <a href="https://www.youtube.com/shorts/n5dAIvH2cQw" className="underline underline-offset-4">pure potential</a>,
