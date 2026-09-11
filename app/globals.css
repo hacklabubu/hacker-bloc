@@ -310,18 +310,6 @@ body:has(.terminal-page)::after {
   background: var(--terminal-bg);
 }
 
-.terminal-page::before,
-.terminal-page::after {
-  position: absolute;
-  top: -12px;
-  color: var(--terminal-text);
-  content: "+";
-  font-size: 16px;
-}
-
-.terminal-page::before { left: -5px; }
-.terminal-page::after { right: -5px; }
-
 .terminal-intro {
   padding: 36px 32px 32px;
 }
@@ -740,8 +728,8 @@ a.terminal-button:hover {
 
 .space-main {
   min-width: 0;
-  width: min(680px, 100%);
-  padding: 24px;
+  width: min(1100px, 100%);
+  padding: 24px 32px;
 }
 
 .space-main .terminal-section:first-child { border-top: 0; }
@@ -759,7 +747,8 @@ a.terminal-button:hover {
 
 .terminal-table th,
 .terminal-table td {
-  padding: 8px 12px 8px 0;
+  padding: 6px 20px 6px 0;
+  white-space: nowrap;
   text-align: left;
   vertical-align: top;
   border-bottom: 1px dashed var(--terminal-border);
