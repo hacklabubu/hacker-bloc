@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
-import { SIGNUP_FOR_MEMBERSHIP } from "@/components/site/member-form";
 import { PatronForm } from "@/components/site/patron-form";
 import { formatEventDate } from "@/lib/luma";
 import { EXPERIMENT_NOTE } from "@/lib/copy";
 import { FeeNote } from "@/components/site/fee-note";
+import { JoinCta } from "@/components/site/join-cta";
 import { HOME_PHOTOS, getHomeData } from "@/lib/home";
 import { MEMBERSHIP, formatUsd } from "@/lib/membership";
 import { roleOf } from "@/lib/people";
@@ -159,17 +159,7 @@ export default async function Home() {
           <p className="terminal-signup">
             + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee. First {MEMBERSHIP.limit} members.
           </p>
-          <div className="terminal-checkout">
-            <Link href={SIGNUP_FOR_MEMBERSHIP} className="terminal-button">
-              Create an account <span aria-hidden="true">↗</span>
-            </Link>
-            <p className="terminal-muted">
-              An account is free and puts you on the list. Paying comes after, on the{" "}
-              <Link href="/membership#member" className="underline underline-offset-4">membership page</Link>.{" "}
-              <Link href="/membership#risk" className="underline underline-offset-4">Risk note →</Link>{" "}
-              <Link href="/terms" className="underline underline-offset-4">Terms →</Link>
-            </p>
-          </div>
+          <JoinCta />
           <FeeNote />
         </div>
       </section>

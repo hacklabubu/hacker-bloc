@@ -164,7 +164,7 @@ async function homeMarkdown(): Promise<string> {
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. An account is free and puts you on the list; paying comes after: [create an account](${url("/auth/sign-up")}) · [membership](${url("/membership")}#member)`,    "",
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. [Join](${url("/auth/login")}): sign in or create an account, then become a member.`,    "",
     `**${WHY_FEE.heading}** ${WHY_FEE.body}`,
     "",
     `**${NO_EXCEPTIONS.heading}** ${NO_EXCEPTIONS.body}`,
