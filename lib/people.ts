@@ -139,7 +139,7 @@ export async function getAdminPeople(): Promise<AdminPerson[] | null> {
       ) m ON true
       ORDER BY p.created_at
     `) as {
-      id: string; email: string; github: string | null; since: string; override: string | null;
+      id: string; email: string; github: string | null; since: string | Date; override: string | null;
       membership_status: string | null; is_member: boolean | null; patron_payments: number;
     }[];
     return rows.map((row) => {
@@ -149,7 +149,7 @@ export async function getAdminPeople(): Promise<AdminPerson[] | null> {
         id: row.id,
         email: row.email,
         github: row.github,
-        since: row.since,
+        since: new Date(row.since).toISOString(),
         computed: auto,
         override,
         status: override ?? auto,
@@ -193,7 +193,7 @@ export async function getPeople(): Promise<Person[] | null> {
         ) AS is_patron
       FROM profiles p
       ORDER BY p.created_at
-    `) as { email: string; github: string | null; since: string; override: string | null; is_member: boolean; is_patron: boolean }[];
+    `) as { email: string; github: string | null; since: string | Date; override: string | null; is_member: boolean; is_patron: boolean }[];
 
     /* Patrons who paid without ever making an account still count. */
     const anonymousPatrons = (await sql`
@@ -202,16 +202,16 @@ export async function getPeople(): Promise<Person[] | null> {
       WHERE pp.email IS NULL
          OR NOT EXISTS (SELECT 1 FROM profiles p WHERE lower(p.email) = lower(pp.email))
       GROUP BY lower(coalesce(pp.email, pp.stripe_session_id))
-    `) as { since: string }[];
+    `) as { since: string | Date }[];
 
     const people: Person[] = [
       ...rows.map((row) => ({
         github: row.github,
         /* A founder's override (/space/admin) beats what the payments say. */
         status: isStatus(row.override) ? row.override : computed(row.email, row.is_member, row.is_patron),
-        since: row.since,
+        since: new Date(row.since).toISOString(),
       })),
-      ...anonymousPatrons.map((row) => ({ github: null, status: "patron" as PersonStatus, since: row.since })),
+      ...anonymousPatrons.map((row) => ({ github: null, status: "patron" as PersonStatus, since: new Date(row.since).toISOString() })),
     ];
     return people.sort((a, b) => ORDER[a.status] - ORDER[b.status] || a.since.localeCompare(b.since));
   } catch (error) {

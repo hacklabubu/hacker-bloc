@@ -87,8 +87,8 @@ export const TERMS: LegalDoc = {
     {
       heading: "Price and billing",
       paragraphs: [
-        `The price is ${signup} once, then ${monthly} per month. Amounts are in US dollars and include VAT where it applies. Payment is by card through Stripe, which hosts the checkout; we never see your card number.`,
-        `At checkout you pay the ${signup} signup fee, and nothing else. Exactly one month after checkout your card is charged the first ${monthly}, and the same amount is charged automatically on the same day of every month after that, until the membership ends. Your receipts come from Stripe by email.`,
+        `Founding membership is ${signup} once, then ${monthly} per month starting next month. Regular membership is ${monthly} per month with no signup fee, starting today. Amounts are in US dollars and include VAT where it applies. Payment is by card through Stripe, which hosts the checkout; we never see your card number.`,
+        `For founding membership, at checkout you pay the ${signup} signup fee, and nothing else. Exactly one month after checkout your card is charged the first ${monthly}, and the same amount is charged automatically on the same day of every month after that, until the membership ends. Your receipts come from Stripe by email.`,
         "If a monthly charge fails, Stripe retries it over the following days and emails you to update the card. While a payment is overdue your access is paused. If the payment is still missing after Stripe's retries end, the membership is cancelled for non-payment.",
         "We may change the monthly price with at least 30 days' notice by email. A price change never applies to a period you have already paid for, and you can cancel before it takes effect.",
       ],
@@ -96,7 +96,7 @@ export const TERMS: LegalDoc = {
     {
       heading: "Term and cancellation",
       paragraphs: [
-        "The membership runs month to month from the day you paid the signup fee. Either side can end it.",
+        "The membership runs month to month from the day of your first payment. Either side can end it.",
         `You can cancel at any time by emailing ${OPERATOR.email} from the address you used at checkout, or by using the cancel link on the [refund policy page](/refunds). Cancellation takes effect at the end of the monthly period you have already paid for; you keep access until then, and no further charges are taken. Paid periods and the signup fee are not refunded, except where the refund policy or the law says otherwise.`,
         "We can end a membership for a serious or repeated breach of the house rules, for non-payment, or for behaviour that endangers people or the space. Where the breach can be fixed we will warn you first and give you a chance to fix it. Where it cannot, access ends immediately. The refund policy says what, if anything, comes back.",
       ],
@@ -177,7 +177,7 @@ export const REFUNDS: LegalDoc = {
     {
       heading: "Withdrawing within 14 days (consumers)",
       paragraphs: [
-        "If you joined as a consumer, meaning for yourself and not for a business, you can withdraw from the membership contract within 14 days of the day you paid the signup fee, without giving a reason.",
+        "If you joined as a consumer, meaning for yourself and not for a business, you can withdraw from the membership contract within 14 days of the day of your first payment, without giving a reason.",
         `To withdraw, use the [withdrawal button](withdraw) or email ${OPERATOR.email} with a clear statement that you are withdrawing, your name, and the email you used at checkout. You can also use the model form at the bottom of this page. Sending the message before the 14 days end is enough; we confirm receipt by email.`,
         "Because access starts the moment you pay and you agreed to that at checkout, you owe us a proportionate amount for the days between payment and withdrawal, calculated as the number of days used divided by 30, applied to the signup fee and to the first monthly fee. We refund the rest to the card you paid with within 14 days of receiving your withdrawal, and cancel the subscription so nothing further is charged.",
         "The withdrawal right does not apply where the member is a company or someone joining for their business.",

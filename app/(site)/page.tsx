@@ -5,7 +5,6 @@ import { PatronForm } from "@/components/site/patron-form";
 import { formatEventDate } from "@/lib/luma";
 import { EXPERIMENT_NOTE } from "@/lib/copy";
 import { FeeNote } from "@/components/site/fee-note";
-import { JoinCta } from "@/components/site/join-cta";
 import { HOME_PHOTOS, getHomeData } from "@/lib/home";
 import { MEMBERSHIP, formatUsd } from "@/lib/membership";
 import { roleOf } from "@/lib/people";
@@ -157,9 +156,9 @@ export default async function Home() {
             <strong>{formatUsd(MEMBERSHIP.monthlyUsd)}</strong> USD / month
           </p>
           <p className="terminal-signup">
-            + {formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee. First {MEMBERSHIP.limit} members.
+            No signup fee. Or become a founding member with a {formatUsd(MEMBERSHIP.signupUsd)} USD contribution.
           </p>
-          <JoinCta />
+          <Link href="/pricing" className="terminal-button">Compare the three tiers →</Link>
           <FeeNote />
         </div>
       </section>

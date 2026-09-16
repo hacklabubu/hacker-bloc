@@ -26,15 +26,17 @@ export function MemberForm({
   signedIn,
   note,
   thanks = false,
+  tier = "founding",
 }: {
   accountsEnabled: boolean;
   paymentsEnabled: boolean;
   signedIn: boolean;
   note: React.ReactNode;
   thanks?: boolean;
+  tier?: "founding" | "member";
 }) {
   const [state, action, pending] = useActionState<MembershipState, FormData>(
-    startMembershipCheckout,
+    () => startMembershipCheckout(tier),
     initial
   );
 
@@ -51,12 +53,12 @@ export function MemberForm({
     }
     return (
       <div className="terminal-checkout">
-        <Link href={SIGNUP_FOR_MEMBERSHIP} className="terminal-button">
+        <Link href={`/auth/sign-up?next=${encodeURIComponent(`/pricing#${tier}`)}`} className="terminal-button">
           Create an account <span aria-hidden="true">↗</span>
         </Link>
         <p className="terminal-muted" role="status">
           Step one is an account, step two is the payment. Already have one?{" "}
-          <Link href={LOGIN_FOR_MEMBERSHIP} className="underline underline-offset-4">Sign in</Link>.
+          <Link href={`/auth/login?next=${encodeURIComponent(`/pricing#${tier}`)}`} className="underline underline-offset-4">Sign in</Link>.
         </p>
       </div>
     );
@@ -80,7 +82,7 @@ export function MemberForm({
   else if (thanks)
     status = (
       <>
-        Welcome in. Your membership is active; the receipt is in your inbox. Manage it in{" "}
+        Thanks. Your payment is being confirmed. Check your membership in{" "}
         <Link href="/space" className="underline underline-offset-4">your space</Link>.
       </>
     );
@@ -88,7 +90,7 @@ export function MemberForm({
   return (
     <form action={action} className="terminal-checkout">
       <button type="submit" className="terminal-button" disabled={pending}>
-        {pending ? "Opening checkout" : "Become a member"}{" "}
+        {pending ? "Opening checkout" : (tier === "founding" ? "Become a founding member" : "Become a member")}{" "}
         <span aria-hidden="true">↗</span>
       </button>
       <p className="terminal-muted" role="status">{status}</p>

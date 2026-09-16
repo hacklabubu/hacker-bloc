@@ -56,6 +56,7 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/events": eventsMarkdown,
   "/how-it-works": howItWorksMarkdown,
   "/membership": membershipMarkdown,
+  "/pricing": membershipMarkdown,
   "/roadmap": roadmapMarkdown,
   "/wishlist": wishlistMarkdown,
   "/members": membersMarkdown,
@@ -164,7 +165,7 @@ async function homeMarkdown(): Promise<string> {
     "",
     list(MEMBERSHIP.benefits.map((benefit) => benefit.description)),
     "",
-    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** First ${MEMBERSHIP.limit} members. [Join](${url("/auth/login")}): sign in or create an account, then become a member.`,    "",
+    `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time contribution for founding members.** Regular membership is $100 USD/month with no signup fee. [Join](${url("/auth/login")}): sign in or create an account, then become a member.`,    "",
     `**${WHY_FEE.heading}** ${WHY_FEE.body}`,
     "",
     `**${NO_EXCEPTIONS.heading}** ${NO_EXCEPTIONS.body}`,
@@ -176,7 +177,7 @@ async function homeMarkdown(): Promise<string> {
     "",
     ordered([
       "**Account.** Sign up with GitHub or an email. Free, and you are on the list.",
-      `**Membership.** ${formatUsd(MEMBERSHIP.signupUsd)} once, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month. Stripe hosts the checkout.`,
+      `**Membership.** ${formatUsd(MEMBERSHIP.monthlyUsd)} a month with no signup fee, or become a founding member for ${formatUsd(MEMBERSHIP.signupUsd)} today, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month. Stripe hosts the checkout.`,
       "**Key.** Every event, the hackerspace 24/7, and a say in what gets built next.",
     ]),
     "",
@@ -190,7 +191,13 @@ async function homeMarkdown(): Promise<string> {
     "",
     `[All events](${url("/events")}) · [Calendar](${LUMA.calendarUrl})`,
     "",
-    "## Become a patron",
+    "## Member",
+    "",
+    "$100 USD per month, starting today. No signup fee. Includes the same event and hackerspace access as founding membership.",
+    "",
+    `[Choose membership](${url("/pricing")}#member).`,
+    "",
+    "## Patron",
     "",
     `Not moving in, but want this to exist? Put any amount into the space: [become a patron](${url("/membership")}#patron).`,
   ].join("\n");
@@ -293,9 +300,9 @@ function membershipMarkdown(): string {
   const memberEnabled = membershipCheckoutEnabled();
   const patronEnabled = patronCheckoutEnabled();
   const body = [
-    `Become one of the first ${MEMBERSHIP.limit} members of the Bloc.`,
+    `Three ways to be part of the Bloc.`,
     "",
-    "## Become a member",
+    "## Founding member",
     "",
     `**${formatUsd(MEMBERSHIP.monthlyUsd)} USD per month + ${formatUsd(MEMBERSHIP.signupUsd)} USD one-time signup fee.** ${formatUsd(MEMBERSHIP.signupUsd)} today, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month.`,
     "",
@@ -304,14 +311,20 @@ function membershipMarkdown(): string {
     authConfigured()
       ? `Step one: [create an account](${url("/auth/sign-up")}). Step two: ${
           memberEnabled
-            ? `press "Become a member" on [the membership page](${url("/membership")}#member); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
+            ? `press "Become a member" on [the pricing page](${url("/pricing")}#founding); checkout is hosted by Stripe. By paying you accept the [terms](${url("/terms")}) and [refund policy](${url("/refunds")}); read the risk note below.`
             : "payments open soon; members with an account will be emailed."
         }`
       : "Accounts and payments open soon.",
     "",
-    "## Become a patron",
+    "## Member",
     "",
-    "Not moving in, but want this to exist? Put any amount into the space.",
+    "$100 USD per month, starting today. No signup fee. Includes the same event and hackerspace access as founding membership.",
+    "",
+    `[Choose membership](${url("/pricing")}#member).`,
+    "",
+    "## Patron",
+    "",
+    "Support the community with any amount as a one-time contribution. No space access or membership included.",
     "",
     patronEnabled
       ? `Enter an amount on [the membership page](${url("/membership")}#patron); checkout is hosted by Stripe.`
@@ -329,7 +342,7 @@ function membershipMarkdown(): string {
     RISK_NOTE,
   ].join("\n");
 
-  return doc("/membership", "Membership", body);
+  return doc("/pricing", "Pricing", body);
 }
 
 /* ── /roadmap ─────────────────────────────────────────────────── */

@@ -20,7 +20,7 @@ export const STEPS = [
   },
   {
     title: "Become a member",
-    body: `${formatUsd(MEMBERSHIP.signupUsd)} once, then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month from next month. Stripe hosts the checkout; you manage the card and invoices yourself in your space. First ${MEMBERSHIP.limit} members only. ${WHY_FEE.heading} ${WHY_FEE.body} ${NO_EXCEPTIONS.heading} ${NO_EXCEPTIONS.body}`,
+    body: `${formatUsd(MEMBERSHIP.monthlyUsd)} a month with no signup fee, or join as a founding member. Stripe hosts the checkout; you manage the card and invoices yourself in your space. ${WHY_FEE.heading} ${WHY_FEE.body} ${NO_EXCEPTIONS.heading} ${NO_EXCEPTIONS.body}`,
   },
   {
     title: "Get the key",

@@ -51,8 +51,8 @@ export async function startPatronCheckout(
       ],
       metadata: { kind: "patron" },
       integration_identifier: "hacker-bloc-patron-kwzqmtev",
-      success_url: `${origin}/membership?patron=thanks#patron`,
-      cancel_url: `${origin}/membership#patron`,
+      success_url: `${origin}/pricing?patron=thanks#patron`,
+      cancel_url: `${origin}/pricing#patron`,
     });
     checkoutUrl = session.url;
   } catch (error) {

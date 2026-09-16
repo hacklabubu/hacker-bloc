@@ -28,13 +28,15 @@ export type MembershipState = { error: string | null };
  * Fulfillment is in app/api/stripe/webhook/route.ts, which mirrors the
  * customer, subscription, and invoices into Neon.
  */
-export async function startMembershipCheckout(): Promise<MembershipState> {
+export async function startMembershipCheckout(tier: "founding" | "member" = "founding"): Promise<MembershipState> {
+  if (tier !== "founding" && tier !== "member") return { error: "Choose a membership tier." };
+  const founding = tier === "founding";
   const stripe = getMembershipStripe();
-  const prices = getMembershipPrices();
+  const prices = getMembershipPrices(tier);
   if (!stripe || !prices) return { error: "Payments open soon." };
 
   const user = await getSessionUser();
-  if (!user) redirect("/auth/sign-up?next=%2Fmembership%23member");
+  if (!user) redirect(`/auth/sign-up?next=${encodeURIComponent(`/pricing#${tier}`)}`);
 
   const origin = await requestOrigin();
   const anchor = nextMonthUnix();
@@ -55,21 +57,21 @@ export async function startMembershipCheckout(): Promise<MembershipState> {
       client_reference_id: user.id,
       line_items: [
         { price: prices.monthly, quantity: 1 },
-        { price: prices.signup, quantity: 1 },
+        ...(founding ? [{ price: prices.signup!, quantity: 1 }] : []),
       ],
       subscription_data: {
-        trial_end: anchor,
-        metadata: { kind: "membership", supabase_user_id: user.id },
+        ...(founding ? { trial_end: anchor } : {}),
+        metadata: { kind: "membership", tier, supabase_user_id: user.id },
       },
       custom_text: {
         submit: {
-          message: `${formatUsd(MEMBERSHIP.signupUsd)} today. Then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month, first on ${firstMonthly}. By paying you accept the membership terms and refund policy at ${origin}/terms and ${origin}/refunds, and ask us to start your membership immediately.`,
+          message: `${founding ? `${formatUsd(MEMBERSHIP.signupUsd)} today. Then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month, first on ${firstMonthly}.` : `${formatUsd(MEMBERSHIP.monthlyUsd)} today and every month.`} By paying you accept the membership terms and refund policy at ${origin}/terms and ${origin}/refunds, and ask us to start your membership immediately.`,
         },
       },
-      metadata: { kind: "membership", supabase_user_id: user.id },
+      metadata: { kind: "membership", tier, supabase_user_id: user.id },
       integration_identifier: "hacker-bloc-membership-kwzqmtev",
-      success_url: `${origin}/membership?member=thanks#member`,
-      cancel_url: `${origin}/membership#member`,
+      success_url: `${origin}/pricing?member=thanks&tier=${tier}#${tier}`,
+      cancel_url: `${origin}/pricing#${tier}`,
     });
     checkoutUrl = session.url;
   } catch (error) {

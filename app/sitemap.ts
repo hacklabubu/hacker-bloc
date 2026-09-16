@@ -10,6 +10,7 @@ const ROUTES = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/events", changeFrequency: "daily", priority: 0.9 },
   { path: "/how-it-works", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
   { path: "/membership", changeFrequency: "monthly", priority: 0.9 },
   { path: "/roadmap", changeFrequency: "monthly", priority: 0.8 },
   { path: "/wishlist", changeFrequency: "weekly", priority: 0.7 },

@@ -10,8 +10,7 @@ four separate pages:
 
 - **Home** (`/`): the ASCII wordmark, an introduction, and links to the main pages.
 - **Events** (`/events`): upcoming and recent events from the public Luma calendar.
-- **Membership** (`/membership`): the founding offer for the first 100 members,
-  $100 USD/month plus a $1,000 USD signup fee, benefits, and payment availability.
+- **Pricing** (`/pricing`, also available at `/membership`): founding membership ($1,000 USD today, then $100/month starting next month), regular membership ($100/month starting today, no signup fee), and one-time patron support (any whole-dollar amount, no access).
 - **Roadmap** (`/roadmap`): Hacker Bloc 1.0, 2.0, and 3.0, what each costs and buys.
 - **Wishlist** (`/wishlist`): what the space needs next, and how to contribute equipment or time.
   `/support` redirects here.
@@ -41,15 +40,12 @@ Two ways in, both on the homepage and on the Membership page. Each stays
 disabled with “Payments open soon.” until its environment variable is set in
 `.env.local` and in the deployment environment.
 
-- `STRIPE_SECRET_KEY_MEMBERSHIP` + `STRIPE_PRICE_ID_MEMBERSHIP_1000` +
-  `STRIPE_PRICE_ID_MEMBERSHIP_100` — become a member: `app/actions/membership.ts`
-  creates a Stripe Checkout Session in subscription mode with both prices on
-  it. The €1,000 EUR one-time price lands on the first invoice; the €100
-  EUR/month price is anchored to the same day next month with prorations off,
-  so the first charge is exactly €1,000, the second (a month later) €100, and
-  then €100 monthly. Stripe sends the member back to `/membership?member=thanks`.
-  Amounts shown on the site come from `MEMBERSHIP` in `lib/membership.ts` and
-  must match the prices in Stripe.
+- `STRIPE_SECRET_KEY_MEMBERSHIP` (or `STRIPE_SECRET_KEY`) and
+  `STRIPE_PRICE_ID_MEMBERSHIP_100` enable regular membership at $100 USD/month.
+  `STRIPE_PRICE_ID_MEMBERSHIP_1000` additionally enables founding membership:
+  $1,000 USD today, then $100/month starting next month. Tier metadata is saved
+  on the Checkout Session and subscription. Regular membership has no trial
+  or one-time line item. Amounts must match the configured Stripe prices.
 - `STRIPE_SECRET_KEY` — become a patron: the visitor types any whole amount
   (bounds in `PATRON` in `lib/membership.ts`) and `app/actions/patron.ts`
   creates a Stripe Checkout Session for it. A restricted key with write

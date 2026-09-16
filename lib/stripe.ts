@@ -42,16 +42,16 @@ export function getMembershipStripe(): Stripe | null {
  *   - monthly:  $100 USD, recurring every month
  *   - signup:   $1,000 USD, one-time
  */
-export function getMembershipPrices(): { monthly: string; signup: string } | null {
+export function getMembershipPrices(tier: "founding" | "member" = "founding"): { monthly: string; signup?: string } | null {
   const monthly = process.env.STRIPE_PRICE_ID_MEMBERSHIP_100?.trim();
   const signup = process.env.STRIPE_PRICE_ID_MEMBERSHIP_1000?.trim();
-  if (!monthly || !signup) return null;
+  if (!monthly || (tier === "founding" && !signup)) return null;
   return { monthly, signup };
 }
 
-export function membershipCheckoutEnabled(): boolean {
+export function membershipCheckoutEnabled(tier: "founding" | "member" = "founding"): boolean {
   return (
     Boolean(process.env[membershipKeyName()]?.trim()) &&
-    getMembershipPrices() !== null
+    getMembershipPrices(tier) !== null
   );
 }
