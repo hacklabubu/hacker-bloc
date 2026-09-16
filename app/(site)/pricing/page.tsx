@@ -92,7 +92,7 @@ export default async function PricingPage({
         <h2 id="money-heading" className="terminal-legend">Where the money goes</h2>
         <div className="terminal-section-content terminal-roadmap">
           <p>
-            {MEMBERSHIP.rentPercent}% rent, {MEMBERSHIP.setupPercent}% setting up the space.
+            {MEMBERSHIP.rentPercent}% rent &amp; utilities, {MEMBERSHIP.setupPercent}% setting up the space.
           </p>
           <Link href="/roadmap" className="underline underline-offset-4">See the roadmap →</Link>
         </div>

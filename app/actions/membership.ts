@@ -21,9 +21,7 @@ export type MembershipState = { error: string | null };
  * exactly $1,000, the second (a month later) $100, and every month after that
  * $100. The subscription is "trialing" for the first month and "active" after.
  *
- * The member creates an account first (app/auth/sign-up); checkout is only
- * offered to a signed-in user and is locked to that account's email, so the
- * webhook's email match in lib/member-account.ts always finds the right person.
+ * Guests pay first; verified accounts are matched to the checkout email later.
  *
  * Fulfillment is in app/api/stripe/webhook/route.ts, which mirrors the
  * customer, subscription, and invoices into Neon.
@@ -36,7 +34,7 @@ export async function startMembershipCheckout(tier: "founding" | "member" = "fou
   if (!stripe || !prices) return { error: "Payments open soon." };
 
   const user = await getSessionUser();
-  if (!user) redirect(`/auth/sign-up?next=${encodeURIComponent(`/pricing#${tier}`)}`);
+
 
   const origin = await requestOrigin();
   const anchor = nextMonthUnix();
@@ -53,22 +51,22 @@ export async function startMembershipCheckout(tier: "founding" | "member" = "fou
       mode: "subscription",
       /* Always charge in USD; no local-currency conversion offers. */
       adaptive_pricing: { enabled: false },
-      customer_email: user.email,
-      client_reference_id: user.id,
+      customer_email: user?.email,
+      client_reference_id: user?.id,
       line_items: [
         { price: prices.monthly, quantity: 1 },
         ...(founding ? [{ price: prices.signup!, quantity: 1 }] : []),
       ],
       subscription_data: {
         ...(founding ? { trial_end: anchor } : {}),
-        metadata: { kind: "membership", tier, supabase_user_id: user.id },
+        metadata: { kind: "membership", tier, ...(user ? { supabase_user_id: user.id } : {}) },
       },
       custom_text: {
         submit: {
           message: `${founding ? `${formatUsd(MEMBERSHIP.signupUsd)} today. Then ${formatUsd(MEMBERSHIP.monthlyUsd)} a month, first on ${firstMonthly}.` : `${formatUsd(MEMBERSHIP.monthlyUsd)} today and every month.`} By paying you accept the membership terms and refund policy at ${origin}/terms and ${origin}/refunds, and ask us to start your membership immediately.`,
         },
       },
-      metadata: { kind: "membership", tier, supabase_user_id: user.id },
+      metadata: { kind: "membership", tier, ...(user ? { supabase_user_id: user.id } : {}) },
       integration_identifier: "hacker-bloc-membership-kwzqmtev",
       success_url: `${origin}/pricing?member=thanks&tier=${tier}#${tier}`,
       cancel_url: `${origin}/pricing#${tier}`,

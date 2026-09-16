@@ -14,7 +14,6 @@ const EXITS = [
   { href: "/events", label: "Events", note: "what is on at the house" },
   { href: "/rules", label: "Rules", note: "the hackerspace rules" },
   { href: "/roles", label: "Roles", note: "who decides what, and why" },
-  { href: "/join", label: "Join", note: "apply to the house" },
 ] as const;
 
 export default function NotFound() {

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { getSql } from "@/lib/db";
+import { sendMembershipSetupEmail } from "@/lib/membership-email";
 
 /*
  * Stripe → Neon membership ledger.
@@ -96,7 +97,7 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
   /* Patron contributions (app/actions/patron.ts) are one-time payments, not
    * memberships; they get their own ledger for the members list. */
   if (session.metadata?.kind === "patron") return onPatronPaid(session);
-  if (session.mode !== "subscription") return;
+  if (session.mode !== "subscription" || session.metadata?.kind !== "membership") return;
 
   const customerId = idOf(session.customer);
   if (!customerId) return;
@@ -111,6 +112,9 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
      * marks the signup fee as settled once Checkout says the money landed. */
     signupPaidAt: paid ? toIso(session.created) : null,
   });
+  if (paid && session.customer_details?.email) {
+    await sendMembershipSetupEmail(session.id, session.customer_details.email);
+  }
 }
 
 async function onInvoicePaid(invoice: Stripe.Invoice) {
@@ -209,6 +213,7 @@ export async function POST(request: Request) {
   }
 
   switch (event.type) {
+    case "checkout.session.async_payment_succeeded":
     case "checkout.session.completed":
       await onCheckoutCompleted(event.data.object);
       break;

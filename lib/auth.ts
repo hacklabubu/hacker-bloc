@@ -28,6 +28,8 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   if (!authConfigured()) return null;
   try {
     const supabase = await createClient();
+    const { data: verified } = await supabase.auth.getUser();
+    if (!verified.user?.email_confirmed_at) return null;
     const { data } = await supabase.auth.getClaims();
     const claims = data?.claims as Record<string, unknown> | undefined;
     if (!claims || typeof claims.sub !== "string" || typeof claims.email !== "string") return null;

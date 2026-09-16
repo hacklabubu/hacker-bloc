@@ -5,7 +5,7 @@
  */
 export const HACKERSPACE_RULES: readonly string[] = [
   "Bring more value than you take. Think about what you can give before asking what you can get.",
-  "The hackerspace is floors 0 and 1 and the dungeon. Floor 2 and residents’ rooms are off-limits, always.",
+  "The hackerspace is in floors 0 (the dungeons) and 1 of the Hacker House. The upper floors are our private living spaces and generally off-limits to hackerspace members.",
   "Your key is yours. No lending it, no letting strangers in. Guests come to public events or with a resident’s okay.",
   "Clean up after yourself. Wash the dish you used, clear the bench you used, take your trash out.",
   "Don’t touch what isn’t yours. Ask before borrowing tools, cables, monitors or chargers, and put them back where they live.",

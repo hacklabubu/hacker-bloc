@@ -75,8 +75,7 @@ export default function HowItWorksPage() {
             membership attached. <Link href="/membership#patron">Become a patron</Link>.
           </p>
           <p>
-            <strong>Residents</strong> live and work in the house. That is by
-            invitation; <Link href="/join">apply</Link> and tell us what you are building.
+            <strong>Residents</strong> live and work in the house by invitation.
           </p>
           <p>
             <strong>Everyone</strong> is welcome at public events. The calendar is

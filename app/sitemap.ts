@@ -17,7 +17,6 @@ const ROUTES = [
   { path: "/members", changeFrequency: "daily", priority: 0.7 },
   { path: "/rules", changeFrequency: "monthly", priority: 0.7 },
   { path: "/roles", changeFrequency: "weekly", priority: 0.7 },
-  { path: "/join", changeFrequency: "monthly", priority: 0.9 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
   { path: "/refunds", changeFrequency: "yearly", priority: 0.3 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
