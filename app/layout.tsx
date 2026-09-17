@@ -43,16 +43,16 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/og.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Hacker Bloc — the crowd at a house event",
+        url: "/hacker-bloc-og.png",
+        width: 1731,
+        height: 909,
+        alt: "Hacker Bloc — Warsaw startup community",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/og.jpg"],
+    images: [{ url: "/hacker-bloc-og.png", alt: "Hacker Bloc — Warsaw startup community" }],
   },
   manifest: "/site.webmanifest",
   icons: {
