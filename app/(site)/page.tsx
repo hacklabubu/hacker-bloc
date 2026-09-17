@@ -12,10 +12,10 @@ import { LUMA, SITE, SOCIALS } from "@/lib/site";
 import { patronCheckoutEnabled } from "@/lib/stripe";
 
 const description =
-  "A hackerspace in Warsaw, built by founders. Palo Alto at home: a house where startup founders meet, build, and start companies. Become a member or a patron.";
+  "Warsaw startup community.";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: { absolute: "Hacker Bloc" },
   description,
   alternates: { canonical: "/" },
 };

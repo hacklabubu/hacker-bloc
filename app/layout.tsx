@@ -32,15 +32,14 @@ const terminal = Kode_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "HACKER BLOC — The bloc where Warsaw builds",
-    template: "%s // HACKER BLOC",
+    default: "Hacker Bloc",
+    template: "%s — Hacker Bloc",
   },
   description:
-    "A hackerspace in Warsaw for people who build. Become a member and help shape the space.",
+    "Warsaw startup community.",
   openGraph: {
     type: "website",
-    siteName: "HACKER BLOC",
-    url: "/",
+    siteName: "Hacker Bloc",
     images: [
       {
         url: "/hacker-bloc-og.png",
