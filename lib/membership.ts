@@ -61,8 +61,8 @@ export const ROADMAP = [
     items: [
       "Bathroom",
       "Kitchen",
-      "Wi-Fi 1 Gb/s",
       "Lockers",
+      "Cool Lighting & Decoration",
       "Access for members 24/7",
     ],
   },
@@ -96,4 +96,4 @@ export const PATRON = {
 } as const;
 
 export const RISK_NOTE =
-  "Our landlord is looking for a buyer for this house. This project is one big experiment: we are trying to buy the house, but if we get kicked out we will have to move or close the space. Invest at your own risk. We don't do refunds.";
+  "Our landlord is looking for a buyer for this house. This project is one big experiment: we are trying to buy the house, but if we get kicked out we will have to move or close the space. Invest at your own risk. Refunds are not available.";

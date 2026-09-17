@@ -15,8 +15,7 @@ four separate pages:
 - **Wishlist** (`/wishlist`): what the space needs next, and how to contribute equipment or time.
   `/support` redirects here.
 
-The existing community, information, and application pages remain available
-at their URLs.
+The existing community and information pages remain available at their URLs.
 
 ## Stack
 
@@ -99,3 +98,21 @@ Usage: base 60% / support 30% / accent 10%. Text on dark. Signal over status.
 ---
 
 СТРОИМ БУДУЩЕЕ. ЖИВЁМ СЕЙЧАС. // CC BY-NC-SA 4.0
+
+## Pay first, account later
+
+Membership checkout accepts guests and collects their email in Stripe. The
+signed webhook records payment even if the buyer never returns to the site.
+The return page offers account setup; membership access uses a verified
+Supabase email matching the checkout email (case-insensitive). Keep Supabase
+email confirmation enabled. Patron checkout does not require an account.
+
+Optionally configure RESEND_API_KEY, MEMBERSHIP_EMAIL_FROM (a verified Resend
+sender), and SITE_URL for the post-payment account setup email. Signed checkout completion
+and async payment success events trigger it only after payment is paid. An
+email failure leaves the payment saved and returns an error so Stripe retries.
+Resend uses the checkout session ID as an idempotency key (24-hour window).
+Subscribe the Stripe webhook to checkout.session.async_payment_succeeded in
+addition to its existing events. Local real checkout also requires Stripe
+prices/keys, DATABASE_URL with db/members.sql applied, Supabase configuration,
+and Stripe CLI webhook forwarding. No real payments are run by the tests.

@@ -22,7 +22,6 @@
  * module must never be imported from a "use client" component.
  */
 
-import { JOIN_TYPES } from "@/lib/community";
 import { getPastEvents, getUpcomingEvents, type LumaEvent } from "@/lib/luma";
 import {
   MEMBERSHIP,
@@ -62,7 +61,6 @@ const PAGES: Record<string, () => string | Promise<string>> = {
   "/members": membersMarkdown,
   "/rules": rulesMarkdown,
   "/roles": rolesMarkdown,
-  "/join": joinMarkdown,
   "/terms": () => legalMarkdown(TERMS),
   "/refunds": () => legalMarkdown(REFUNDS),
   "/privacy": privacyMarkdown,
@@ -278,7 +276,7 @@ function howItWorksMarkdown(): string {
     "",
     "## Not moving in?",
     "",
-    `**Patrons** put any amount into the space once, no membership attached: ${url("/membership")}#patron. **Residents** live and work in the house, by invitation: apply at ${url("/join")}. **Everyone** is welcome at public events: ${LUMA.calendarUrl} and ${url("/events")}.`,
+    `**Patrons** put any amount into the space once, no membership attached: ${url("/membership")}#patron. **Residents** live and work in the house by invitation. **Everyone** is welcome at public events: ${LUMA.calendarUrl} and ${url("/events")}.`,
     "",
     "## Read next",
     "",
@@ -375,7 +373,25 @@ function wishlistMarkdown(): string {
     "",
     "## Items",
     "",
-    "Coming soon.",
+    "### Restroom essentials — about $210",
+    "",
+    "A toilet, sink, and the basics to get the restroom ready.",
+    "[Fund this item — $210 USD](/wishlist#items)",
+    "",
+    "### Mini Kitchen — about $1,200",
+    "",
+    "Kitchen furniture, mini-stove, microwave, sink, dishes & cutlery.",
+    "[Fund this item — $1,200 USD](/wishlist#items)",
+    "",
+    "### Five 4K monitors — about $750",
+    "",
+    "Five second-hand 4K monitors available to all members.",
+    "[Fund this item — $750 USD](/wishlist#items)",
+    "",
+    "### Lighting & decoration — about $500",
+    "",
+    "LED lights, posters, decorations, and cool items to improve the atmosphere.",
+    "[Fund this item — $500 USD](/wishlist#items)",
     "",
     "## Have something to give?",
     "",
@@ -419,13 +435,12 @@ async function membersMarkdown(): Promise<string> {
 /* Mirrors app/(site)/rules/page.tsx. */
 function rulesMarkdown(): string {
   const body = [
-    `Read them before you show up. We are not a hostel, not a coworking, not a party flat — we are laser focused on building Hacklab. Who decides what: ${url("/roles")}`,
+    "Read before arriving. Hacker Bloc is not a party hostel. We are a team laser-focused on building Hacklab. Please read and respect our rules to ensure a positive experience for everyone.",
     "",
     "## The rules",
     "",
     ordered(HACKERSPACE_RULES),
     "",
-    `Applying means confirming you read this page: ${url("/join")}.`,
   ].join("\n");
   return doc("/rules", "Rules", body);
 }
@@ -448,47 +463,6 @@ async function rolesMarkdown(): Promise<string> {
     }).join("\n\n"),
   ].join("\n");
   return doc("/roles", "Roles", body);
-}
-
-/* ── /join ─────────────────────────────────────────────────────── */
-
-/*
- * The form is a client component posting to a server action
- * (app/actions/join.ts), so there is nothing an agent can usefully submit from
- * here — what it needs is what the form asks and where the answers go.
- */
-function joinMarkdown(): string {
-  const body = [
-    "Apply to the house. Ambitious founders only — we review every application.",
-    "",
-    `Use the form at ${url("/join")} to apply to the house. Emailing an application instead gets it read later, if at all.`,
-    "",
-    "## What the form asks",
-    "",
-    ordered([
-      `**I am a** — one of: ${JOIN_TYPES.map((t) => t.label.toLowerCase()).join(", ")}.`,
-      "**Name.**",
-      "**Hacklab profile** — e.g. `hacklab.so/your-handle`.",
-      "**How can you be useful to our community?** — skills, projects, intros; what you actually bring to the bloc.",
-      "**How did you hear about our community?**",
-      "**What are you most excited about?** — what would be the highest value we could give you.",
-      `**Confirmation that you read the house rules** (${url("/rules")}). We want you to read them for real.`,
-    ]),
-    "",
-    "## What happens to it",
-    "",
-    `Submissions land in our Notion CRM and are mirrored to a Postgres backup. We read everything. What is collected, how long it is kept, and how to have it deleted: ${url("/privacy")}`,
-    "",
-    "## Before you apply",
-    "",
-    list([
-      `The rules: ${url("/rules")}`,
-      `The roles and who decides what: ${url("/roles")}`,
-      `Questions that are not an application: ${SITE.email}`,
-    ]),
-  ].join("\n");
-
-  return doc("/join", "Join", body);
 }
 
 /* ── /terms, /refunds ──────────────────────────────────────────── */
@@ -524,11 +498,11 @@ function legalMarkdown(legal: LegalDoc): string {
 
 function privacyMarkdown(): string {
   const body = [
-    "Short version: the only personal data we collect is what you type into the join form and, if you pay, what Stripe needs to take the payment. We use it to read your application, to write back, and to run your membership. We don't sell it, we don't track you around the web, and you can have it deleted by asking.",
+    "Short version: we keep information previously submitted through the former join form and, if you pay, what Stripe needs to take the payment. We use it to handle past applications, to write back, and to run your membership. We don't sell it, we don't track you around the web, and you can have it deleted by asking.",
     "",
     "## What we collect",
     "",
-    `The [join form](${url("/join")}) asks for: what you're applying as (founder, investor, media, content, factory, or partner), your name, your Hacklab profile, how you can be useful, how you heard about us, what excites you most, and a confirmation that you've read the house rules. That is the whole form. There are no hidden fields, and nothing else about you is captured when you submit it.`,
+    "The former join form asked for: what you were applying as (founder, investor, media, content, factory, or partner), your name, your Hacklab profile, how you could be useful, how you heard about us, what excited you most, and confirmation that you had read the house rules.",
     "",
     "If you email us or book a call instead, we obviously end up with whatever you put in that email or booking. Same rules apply.",
     "",
@@ -602,10 +576,9 @@ export function markdownNotFound(pathname: string): string {
       `[Members](${url("/members")}) — everyone with an account: members, patrons, lurkers`,
       `[Rules](${url("/rules")}) — the hackerspace rules`,
       `[Roles](${url("/roles")}) — the hierarchy, who decides what`,
-      `[Join](${url("/join")}) — apply to the house`,
       `[Terms](${url("/terms")}) — membership terms`,
       `[Refunds](${url("/refunds")}) — cancellation, withdrawal, and refunds`,
-      `[Privacy](${url("/privacy")}) — what the join form and checkout collect`,
+      `[Privacy](${url("/privacy")}) — what past applications and checkout collect`,
     ]),
     "",
     `Every page above serves this same markdown when asked with \`Accept: text/markdown\`.`,

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy",
   description:
-    "What Hacker Bloc collects when you apply or pay, where it is stored, how long we keep it, and how to get it deleted.",
+    "What Hacker Bloc collects when you contact us or pay, where it is stored, how long we keep it, and how to get it deleted.",
 };
 
 /* Mirrored in lib/markdown.ts (privacyMarkdown); change both. */
@@ -14,7 +13,7 @@ const SECTIONS: { heading: string; paragraphs: React.ReactNode[] }[] = [
     heading: "What we collect",
     paragraphs: [
       <>
-        The <Link href="/join">join form</Link> asks for: what you&apos;re applying
+        The former join form asked for: what you were applying
         as (founder, investor, media, content, factory, or partner), your name,
         your Hacklab profile, how you can be useful, how you heard about us, what
         excites you most, and a confirmation that you&apos;ve read the house
@@ -95,11 +94,11 @@ export default function PrivacyPage() {
         <p className="terminal-location">Privacy</p>
         <h1 id="privacy-heading">Privacy</h1>
         <p>
-          Short version: the only personal data we collect is what you type into
-          the join form and, if you pay, what Stripe needs to take the payment.
-          We use it to read your application, to write back, and to run your
-          membership. We don&apos;t sell it, we don&apos;t track you around the
-          web, and you can have it deleted by asking.
+          Short version: we keep information previously submitted through the
+          former join form and, if you pay, what Stripe needs to take the
+          payment. We use it to handle past applications, to write back, and to
+          run your membership. We don&apos;t sell it, we don&apos;t track you around
+          the web, and you can have it deleted by asking.
         </p>
       </section>
 
